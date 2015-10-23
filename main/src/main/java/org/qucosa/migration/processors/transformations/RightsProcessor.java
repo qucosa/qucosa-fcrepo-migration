@@ -26,12 +26,14 @@ public class RightsProcessor extends MappingProcessor {
 
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final String vgwortOpenKey = vgwortEncoding(opusDocument.getOpus().getOpusDocument().getVgWortOpenKey());
+        final String vgwortOpenKey = opusDocument.getOpus().getOpusDocument().getVgWortOpenKey();
         if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
+            final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
             InfoType info = infoDocument.getInfo();
+
             if (info.getVgwortOpenKey() == null
-                    || !info.getVgwortOpenKey().equals(vgwortOpenKey)) {
-                info.setVgwortOpenKey(vgwortOpenKey);
+                    || !info.getVgwortOpenKey().equals(encodedVgWortOpenKey)) {
+                info.setVgwortOpenKey(encodedVgWortOpenKey);
                 signalChanges(SLUB_INFO_CHANGES);
             }
         }
