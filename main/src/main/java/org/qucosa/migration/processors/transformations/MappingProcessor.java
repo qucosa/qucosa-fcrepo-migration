@@ -18,6 +18,7 @@
 package org.qucosa.migration.processors.transformations;
 
 import de.slubDresden.InfoDocument;
+import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
@@ -29,6 +30,9 @@ import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static de.slubDresden.YesNo.NO;
+import static de.slubDresden.YesNo.YES;
 
 public abstract class MappingProcessor implements Processor {
     public static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
@@ -170,5 +174,9 @@ public abstract class MappingProcessor implements Processor {
             }
         }
         return prefix + String.format("%02X", sb.toString().hashCode());
+    }
+
+    protected YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
+        return (oaiExport) ? YES : NO;
     }
 }
