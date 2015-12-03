@@ -67,7 +67,7 @@ public abstract class ModsRelatedItemProcessor extends MappingProcessor {
     protected RelatedItemDefinition getRelatedItemDefinition(ModsDefinition mods, String label, Type.Enum type) {
         final String query = (label == null || label.isEmpty()) ?
                 "mods:relatedItem[@type='" + type + "']" :
-                "mods:relatedItem[@type='" + type + "' and @displayLabel='" + qq(label) + "']";
+                "mods:relatedItem[@type='" + type + "' and @displayLabel='" + singleLine(label) + "']";
 
         RelatedItemDefinition rid = (RelatedItemDefinition)
                 select(query, mods);

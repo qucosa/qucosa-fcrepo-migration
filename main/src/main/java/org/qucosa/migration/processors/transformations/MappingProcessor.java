@@ -25,6 +25,9 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
+import org.qucosa.migration.stringfilter.StringFilter;
+import org.qucosa.migration.stringfilter.StringFilterChain;
+import org.qucosa.migration.stringfilter.TextInputStringFilters;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
@@ -48,7 +51,12 @@ public abstract class MappingProcessor implements Processor {
                     "declare namespace slub='" + NS_SLUB + "'; " +
                     "declare namespace foaf='" + NS_FOAF + "'; " +
                     "declare namespace xlink='" + NS_XLINK + "'; ";
-
+    private final StringFilter singleLineFilter = new StringFilterChain(
+            TextInputStringFilters.NEW_LINE_FILTER,
+            TextInputStringFilters.TRIM_FILTER,
+            TextInputStringFilters.TRIM_TAB_FILTER,
+            TextInputStringFilters.SINGLE_QUOTE_Filter
+    );
     private String label;
     private boolean modsChanges;
     private boolean slubChanges;
@@ -162,8 +170,9 @@ public abstract class MappingProcessor implements Processor {
         return dateFormat.format(cal.getTime());
     }
 
-    protected String qq(String s) {
-        return s.replace("'", "''");
+    public String singleLine(String s) {
+        return singleLineFilter.apply(s);
+    }
     }
 
     protected String buildTokenFrom(String prefix, String... strings) {
