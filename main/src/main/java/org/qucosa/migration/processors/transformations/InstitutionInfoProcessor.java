@@ -137,22 +137,22 @@ public class InstitutionInfoProcessor extends MappingProcessor {
     private void createOrganizationType(CorporationType ct, String hierarchy, String name) throws XPathExpressionException {
         switch (hierarchy) {
             case "institution":
-                if (!nodeExists("slub:institution[text()='" + singleLine(name) + "']", ct)) ct.addInstitution(name);
+                if (!nodeExists("slub:institution[text()='" + singleline(name) + "']", ct)) ct.addInstitution(name);
                 break;
             case "section":
-                if (!nodeExists("slub:section[text()='" + singleLine(name) + "']", ct)) ct.addSection(name);
+                if (!nodeExists("slub:section[text()='" + singleline(name) + "']", ct)) ct.addSection(name);
                 break;
             case "university":
-                if (!nodeExists("slub:university[text()='" + singleLine(name) + "']", ct)) ct.addUniversity(name);
+                if (!nodeExists("slub:university[text()='" + singleline(name) + "']", ct)) ct.addUniversity(name);
                 break;
             case "faculty":
-                if (!nodeExists("slub:faculty[text()='" + singleLine(name) + "']", ct)) ct.addFaculty(name);
+                if (!nodeExists("slub:faculty[text()='" + singleline(name) + "']", ct)) ct.addFaculty(name);
                 break;
             case "institute":
-                if (!nodeExists("slub:institute[text()='" + singleLine(name) + "']", ct)) ct.addInstitute(name);
+                if (!nodeExists("slub:institute[text()='" + singleline(name) + "']", ct)) ct.addInstitute(name);
                 break;
             case "chair":
-                if (!nodeExists("slub:chair[text()='" + singleLine(name) + "']", ct)) ct.addChair(name);
+                if (!nodeExists("slub:chair[text()='" + singleline(name) + "']", ct)) ct.addChair(name);
                 break;
         }
     }

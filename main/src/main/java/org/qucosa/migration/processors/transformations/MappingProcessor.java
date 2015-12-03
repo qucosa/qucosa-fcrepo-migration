@@ -51,11 +51,18 @@ public abstract class MappingProcessor implements Processor {
                     "declare namespace slub='" + NS_SLUB + "'; " +
                     "declare namespace foaf='" + NS_FOAF + "'; " +
                     "declare namespace xlink='" + NS_XLINK + "'; ";
+    private final StringFilter multiLineFilter = new StringFilterChain(
+            TextInputStringFilters.TRIM_FILTER,
+            TextInputStringFilters.TRIM_TAB_FILTER,
+            TextInputStringFilters.SINGLE_QUOTE_Filter,
+            TextInputStringFilters.NFC_NORMALIZATION_FILTER
+    );
     private final StringFilter singleLineFilter = new StringFilterChain(
             TextInputStringFilters.NEW_LINE_FILTER,
             TextInputStringFilters.TRIM_FILTER,
             TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter
+            TextInputStringFilters.SINGLE_QUOTE_Filter,
+            TextInputStringFilters.NFC_NORMALIZATION_FILTER
     );
     private String label;
     private boolean modsChanges;
@@ -170,9 +177,12 @@ public abstract class MappingProcessor implements Processor {
         return dateFormat.format(cal.getTime());
     }
 
-    public String singleLine(String s) {
+    public String singleline(String s) {
         return singleLineFilter.apply(s);
     }
+
+    public String multiline(String s) {
+        return multiLineFilter.apply(s);
     }
 
     protected String buildTokenFrom(String prefix, String... strings) {

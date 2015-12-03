@@ -85,7 +85,7 @@ public class TitleInfoProcessor extends MappingProcessor {
 
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang, Type.ALTERNATIVE);
 
-            if (!nodeExists("mods:title[text()='" + singleLine(ot.getValue()) + "']", tid)) {
+            if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(ot.getValue());
                 signalChanges(MODS_CHANGES);
@@ -112,7 +112,7 @@ public class TitleInfoProcessor extends MappingProcessor {
 
                 TitleInfoDefinition tid = ensureTitleInfoElement(relatedItemDefinition, encLang);
 
-                if (!nodeExists("mods:title[text()='" + singleLine(ot.getValue()) + "']", tid)) {
+                if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
                     StringPlusLanguage mt = tid.addNewTitle();
                     mt.setStringValue(ot.getValue());
                     signalChanges(MODS_CHANGES);
@@ -129,7 +129,7 @@ public class TitleInfoProcessor extends MappingProcessor {
 
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
 
-            if (!nodeExists("mods:subTitle[text()='" + singleLine(ot.getValue()) + "']", tid)) {
+            if (!nodeExists("mods:subTitle[text()='" + singleline(ot.getValue()) + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewSubTitle();
                 mt.setStringValue(ot.getValue());
                 signalChanges(MODS_CHANGES);
@@ -146,7 +146,7 @@ public class TitleInfoProcessor extends MappingProcessor {
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
             tid.setUsage(XmlString.Factory.newValue("primary"));
 
-            if (!nodeExists("mods:title[text()='" + singleLine(ot.getValue()) + "']", tid)) {
+            if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(ot.getValue());
                 signalChanges(MODS_CHANGES);

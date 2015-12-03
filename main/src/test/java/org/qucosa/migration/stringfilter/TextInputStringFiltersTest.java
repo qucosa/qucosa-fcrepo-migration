@@ -22,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.qucosa.migration.stringfilter.TextInputStringFilters.*;
 
-public class TextInputStringFilterTest {
+public class TextInputStringFiltersTest {
 
     @Test
     public void Newlines_should_be_removed() {
@@ -42,6 +42,11 @@ public class TextInputStringFilterTest {
     @Test
     public void Tabs_should_get_trimmed_on_both_sides() {
         assertEquals("ABC\tDEF", TRIM_TAB_FILTER.apply("\t\tABC\tDEF\t"));
+    }
+
+    @Test
+    public void UTF8_gets_normalized_to_NFC() {
+        assertEquals("\u03D3", NFC_NORMALIZATION_FILTER.apply("\u03D2\u0301"));
     }
 
 }

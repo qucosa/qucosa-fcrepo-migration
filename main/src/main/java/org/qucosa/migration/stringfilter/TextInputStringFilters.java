@@ -17,9 +17,12 @@
 
 package org.qucosa.migration.stringfilter;
 
+import java.text.Normalizer;
+
 public class TextInputStringFilters {
 
     static public final StringFilter NEW_LINE_FILTER = in -> in.replaceAll("\\n|\\r", "");
+    static public final StringFilter NFC_NORMALIZATION_FILTER = in -> Normalizer.normalize(in, Normalizer.Form.NFC);
     static public final StringFilter SINGLE_QUOTE_Filter = in -> in.replace("'", "''");
     static public final StringFilter TRIM_FILTER = String::trim;
     static public final StringFilter TRIM_TAB_FILTER = in -> in.replaceAll("^(\\t)+|(\\t)+$", "");
