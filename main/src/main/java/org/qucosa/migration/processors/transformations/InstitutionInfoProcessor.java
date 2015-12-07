@@ -80,6 +80,9 @@ public class InstitutionInfoProcessor extends MappingProcessor {
                 NameDefinition nd = getNameDefinition(mods, token);
                 setNamePart(significantName, nd);
 
+                // FIXME Bad mapping hack to make up for inaptness of TYPO3 mapping configuration
+                addMappingHack(nd, type);
+
                 RoleDefinition rd = getRoleDefinition(nd);
                 setRoleTerm(role, rd);
 
@@ -206,6 +209,19 @@ public class InstitutionInfoProcessor extends MappingProcessor {
             signalChanges(MODS_CHANGES);
         }
         return nd;
+    }
+
+    private void addMappingHack(NameDefinition nd, Type.Enum type) {
+        String mappingHack = "";
+        if (Type.OTHER.equals(type)) {
+            mappingHack = "mapping-hack-other";
+        } else if (Type.UNIVERSITY.equals(type)) {
+            mappingHack = "mapping-hack-university";
+        }
+        if (!mappingHack.equals(nd.getDisplayLabel())) {
+            nd.setDisplayLabel(mappingHack);
+            signalChanges(MODS_CHANGES);
+        }
     }
 
     private Stack<String> stackOfNames(Organisation org) {
