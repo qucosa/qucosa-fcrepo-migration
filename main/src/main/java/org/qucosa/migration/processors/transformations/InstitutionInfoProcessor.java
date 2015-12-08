@@ -27,39 +27,14 @@ import noNamespace.Organisation;
 import noNamespace.Organisation.Type;
 
 import javax.xml.xpath.XPathExpressionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
 
 public class InstitutionInfoProcessor extends MappingProcessor {
-
-    final private static HashMap<Type.Enum, LinkedList<String>> hierarchies = new HashMap<Type.Enum, LinkedList<String>>() {{
-        put(Type.OTHER, new LinkedList<String>() {{
-            add("institution");
-            add("section");
-            add("section");
-            add("section");
-        }});
-        put(Type.UNIVERSITY, new LinkedList<String>() {{
-            add("university");
-            add("faculty");
-            add("institute");
-            add("chair");
-        }});
-        put(Type.CHAIR, new LinkedList<String>() {{
-            add("university");
-            add("faculty");
-            add("institute");
-        }});
-        put(Type.FACULTY, new LinkedList<String>() {{
-            add("university");
-        }});
-        put(Type.INSTITUTE, new LinkedList<String>() {{
-            add("university");
-            add("faculty");
-        }});
-    }};
 
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
@@ -71,10 +46,11 @@ public class InstitutionInfoProcessor extends MappingProcessor {
             final String place = org.getAddress();
             final String role = marcrelatorEncoding(org.getRole());
 
-            final Stack<String> stackOfNames = stackOfNames(org);
-            final String significantName = stackOfNames.pop();
+            final ArrayList<String> nameArray = buildNameArray(org);
+            final String significantName = nameArray.get(0);
 
             if (significantName != null) {
+                nameArray.remove(0);
                 final String token = buildTokenFrom("CORP_", significantName);
 
                 NameDefinition nd = getNameDefinition(mods, token);
@@ -86,10 +62,9 @@ public class InstitutionInfoProcessor extends MappingProcessor {
                 RoleDefinition rd = getRoleDefinition(nd);
                 setRoleTerm(role, rd);
 
-                if (!stackOfNames.isEmpty()) {
-                    Collections.reverse(stackOfNames);
+                if (!nameArray.isEmpty()) {
                     ExtensionDefinition ed = getExtensionDefinition(mods);
-                    InfoDocument id = getInfoDocument(type, place, stackOfNames, token, ed);
+                    InfoDocument id = getInfoDocument(type, place, nameArray, token, ed);
                     if (id != null) {
                         ed.set(id);
                     }
@@ -99,7 +74,7 @@ public class InstitutionInfoProcessor extends MappingProcessor {
         }
     }
 
-    private InfoDocument getInfoDocument(Type.Enum type, String place, Stack<String> nameStack, String token, ExtensionDefinition ed) throws Exception {
+    private InfoDocument getInfoDocument(Type.Enum type, String place, ArrayList<String> names, String token, ExtensionDefinition ed) throws Exception {
         InfoDocument id = null;
         InfoType it = (InfoType) select("slub:info", ed);
         if (it == null) {
@@ -114,24 +89,37 @@ public class InstitutionInfoProcessor extends MappingProcessor {
             ct.setRef(token);
             signalChanges(MODS_CHANGES);
         }
-        if (ct.getType() == null || !ct.getType().equals(type.toString())) {
-            ct.setType(type.toString());
+
+        final String mappedType = (Type.OTHER.equals(type)) ? type.toString() : Type.UNIVERSITY.toString();
+        if (ct.getType() == null || !ct.getType().equals(mappedType)) {
+            ct.setType(mappedType);
             signalChanges(MODS_CHANGES);
         }
+
         if (ct.getPlace() == null || !ct.getPlace().equals(place)) {
             ct.setPlace(place);
             signalChanges(MODS_CHANGES);
         }
 
-        LinkedList<String> hierarchy = hierarchies.get(type);
-        if (hierarchy == null) {
-            throw new Exception("No hierarchy for type '" + type + "'");
-        }
+        final LinkedList<String> otherHierarchy = new LinkedList<String>() {{
+            add("section");
+            add("section");
+            add("section");
+        }};
 
-        Iterator<String> hi = hierarchy.listIterator();
-        while (!nameStack.isEmpty() && hi.hasNext()) {
-            createOrganizationType(ct, hi.next(), nameStack.pop());
-            signalChanges(MODS_CHANGES);
+        final LinkedList<String> universityHierarchy = new LinkedList<String>() {{
+            add("faculty");
+            add("institute");
+            add("chair");
+        }};
+
+        Iterator<String> hi = (Type.OTHER.equals(type) ? otherHierarchy : universityHierarchy).listIterator();
+        for (String name : names) {
+            String hierarchyLevel = (hi.hasNext()) ? hi.next() : null;
+            if (hierarchyLevel != null) {
+                createOrganizationType(ct, hierarchyLevel, name);
+                signalChanges(MODS_CHANGES);
+            }
         }
 
         return id;
@@ -224,8 +212,8 @@ public class InstitutionInfoProcessor extends MappingProcessor {
         }
     }
 
-    private Stack<String> stackOfNames(Organisation org) {
-        Stack<String> names = new Stack<>();
+    private ArrayList<String> buildNameArray(Organisation org) {
+        ArrayList<String> names = new ArrayList<>();
         addIfNotEmpty(org.getFirstLevelName(), names);
         addIfNotEmpty(org.getSecondLevelName(), names);
         addIfNotEmpty(org.getThirdLevelName(), names);
@@ -233,8 +221,8 @@ public class InstitutionInfoProcessor extends MappingProcessor {
         return names;
     }
 
-    private void addIfNotEmpty(String s, Stack<String> ss) {
-        if (s != null && !s.isEmpty()) ss.push(s);
+    private void addIfNotEmpty(String s, ArrayList<String> ss) {
+        if (s != null && !s.isEmpty()) ss.add(s);
     }
 
     private String marcrelatorEncoding(String role) {
