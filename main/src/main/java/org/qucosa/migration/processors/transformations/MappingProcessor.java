@@ -146,7 +146,7 @@ public abstract class MappingProcessor implements Processor {
     }
 
     protected String dateEncoding(BigInteger year) {
-        if (year == null) return null;
+        if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy");
         Calendar cal = new GregorianCalendar();

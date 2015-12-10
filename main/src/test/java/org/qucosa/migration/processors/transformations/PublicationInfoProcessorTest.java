@@ -103,8 +103,8 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void extractsCompletedYear() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setCompletedYear(BigInteger.valueOf(2009));
+    public void extractsPublishedYear() throws Exception {
+        opusDocument.getOpus().getOpusDocument().setPublishedYear(BigInteger.valueOf(2009));
 
         runProcessor(processor);
 
@@ -115,8 +115,8 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void handlesEmptyCompletedYear() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setCompletedYear(null);
+    public void handlesEmptyPublishedYear() throws Exception {
+        opusDocument.getOpus().getOpusDocument().setPublishedYear(null);
 
         runProcessor(processor);
 
@@ -125,6 +125,16 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
                 modsDocument.getMods().getDomNode().getOwnerDocument());
     }
 
+    @Test
+    public void handlesZeroPublishedYear() throws Exception {
+        opusDocument.getOpus().getOpusDocument().setPublishedYear(BigInteger.ZERO);
+
+        runProcessor(processor);
+
+        XMLAssert.assertXpathNotExists(
+                "//mods:originInfo[@eventType='publication']/mods:dateIssued",
+                modsDocument.getMods().getDomNode().getOwnerDocument());
+    }
 
     @Test
     public void extractsEdition() throws Exception {

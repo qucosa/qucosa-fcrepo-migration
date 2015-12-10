@@ -41,10 +41,10 @@ public class PublicationInfoProcessor extends MappingProcessor {
 
     private void mapOriginInfoElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
         final Boolean hasCompletedDate = nodeExists("CompletedDate", opus);
-        final Boolean hasCompletedYear = nodeExists("CompletedYear", opus);
+        final Boolean hasPublishedYear = nodeExists("PublishedYear", opus);
         final Boolean hasDateAccepted = nodeExists("DateAccepted", opus);
         final Boolean hasEdition = nodeExists("Edition", opus);
-        if (hasCompletedDate || hasCompletedYear || hasDateAccepted || hasEdition) {
+        if (hasCompletedDate || hasPublishedYear || hasDateAccepted || hasEdition) {
 
             OriginInfoDefinition oid = (OriginInfoDefinition)
                     select("mods:originInfo[@eventType='publication']", mods);
@@ -56,7 +56,7 @@ public class PublicationInfoProcessor extends MappingProcessor {
             }
 
             if (hasCompletedDate) mapCompletedDate(opus, oid);
-            if (hasCompletedYear) mapCompletedYear(opus, oid);
+            if (hasPublishedYear) mapPublishedYear(opus, oid);
             if (hasDateAccepted) mapDateAccepted(opus, oid);
             if (hasEdition) mapEdition(opus, oid);
 
@@ -104,10 +104,10 @@ public class PublicationInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapCompletedYear(Document opus, OriginInfoDefinition oid) {
-        final String mappedCompletedYear = dateEncoding(opus.getCompletedYear());
+    private void mapPublishedYear(Document opus, OriginInfoDefinition oid) {
+        final String mappedPublishedYear = dateEncoding(opus.getPublishedYear());
 
-        if (mappedCompletedYear != null) {
+        if (mappedPublishedYear != null) {
 
             DateDefinition dateIssuedDefinition = (DateDefinition)
                     select("mods:dateIssued[@encoding='iso8601']", oid);
@@ -118,8 +118,8 @@ public class PublicationInfoProcessor extends MappingProcessor {
                 signalChanges(MODS_CHANGES);
             }
 
-            if (!dateIssuedDefinition.getStringValue().equals(mappedCompletedYear)) {
-                dateIssuedDefinition.setStringValue(mappedCompletedYear);
+            if (!dateIssuedDefinition.getStringValue().equals(mappedPublishedYear)) {
+                dateIssuedDefinition.setStringValue(mappedPublishedYear);
                 signalChanges(MODS_CHANGES);
             }
         }
