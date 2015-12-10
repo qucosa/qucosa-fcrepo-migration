@@ -84,7 +84,7 @@ public class PersonInfoProcessor extends MappingProcessor {
         }
 
         PersonDocument.Person foafPerson = (PersonDocument.Person)
-                select("foaf:Person[@ID='" + nd.getID() + "']", mods);
+                select("foaf:Person[@about='#" + nd.getID() + "']", mods);
 
         boolean _importPd = false;
         PersonDocument pd = PersonDocument.Factory.newInstance();
@@ -92,7 +92,7 @@ public class PersonInfoProcessor extends MappingProcessor {
         if (foafPerson == null) {
             foafPerson = pd.addNewPerson();
             foafPerson.newCursor().setAttributeText(
-                    new QName(NS_RDF, "about"), nd.getID());
+                    new QName(NS_RDF, "about"), "#" + nd.getID());
             _importPd = true;
             signalChanges(MODS_CHANGES);
         }

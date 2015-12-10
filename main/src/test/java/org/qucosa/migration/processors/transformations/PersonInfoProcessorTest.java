@@ -228,7 +228,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         runProcessor(processor);
 
         Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]", xml);
+        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[@rdf:about=concat('#', //mods:name/@ID)]", xml);
     }
 
     @Test
