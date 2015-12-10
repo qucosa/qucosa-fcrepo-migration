@@ -51,6 +51,18 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
     }
 
     @Test
+    public void extracts_Qucosa_Urn() throws Exception {
+        String urn = "urn:nbn:de:bsz:14-qucosa-172331";
+        opusDocument.getOpus().getOpusDocument().addNewIdentifierUrn().setValue(urn);
+
+        runProcessor(processor);
+
+        XMLAssert.assertXpathExists(
+                "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
+                modsDocument.getMods().getDomNode().getOwnerDocument());
+    }
+
+    @Test
     public void extractsDoi() throws Exception {
         String doi = "10.3389/fnins.2015.00227";
         opusDocument.getOpus().getOpusDocument().addNewIdentifierDoi().setValue(doi);
