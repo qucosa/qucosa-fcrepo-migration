@@ -34,6 +34,7 @@ public class CataloguingProcessor extends MappingProcessor {
         mapTableOfContent(opus, mods);
         mapSubject("ddc", opus, mods);
         mapSubject("rvk", opus, mods);
+        mapSubject("swd", opus, mods);
         mapSubject("uncontrolled", opus, mods);
     }
 
@@ -47,6 +48,9 @@ public class CataloguingProcessor extends MappingProcessor {
                 break;
             case "rvk":
                 subjects = opus.getSubjectRvkArray();
+                break;
+            case "swd":
+                subjects = opus.getSubjectSwdArray();
                 break;
             case "uncontrolled":
                 subjects = opus.getSubjectUncontrolledArray();

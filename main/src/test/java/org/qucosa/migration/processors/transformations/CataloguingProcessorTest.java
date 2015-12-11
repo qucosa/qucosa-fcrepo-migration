@@ -79,6 +79,19 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
     }
 
     @Test
+    public void extractsSubjectSwd() throws Exception {
+        Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectSwd();
+        os.setType("swd");
+        os.setValue("XYZ");
+
+        runProcessor(processor);
+
+        XMLAssert.assertXpathExists(
+                "//mods:classification[@authority='swd' and text()='XYZ']",
+                modsDocument.getMods().getDomNode().getOwnerDocument());
+    }
+
+    @Test
     public void extractsSubjectUncontrolled() throws Exception {
         Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectUncontrolled();
         os.setType("uncontrolled");
