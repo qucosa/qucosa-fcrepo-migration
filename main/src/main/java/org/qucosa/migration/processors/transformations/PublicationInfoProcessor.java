@@ -24,6 +24,7 @@ import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
 
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
@@ -148,32 +149,36 @@ public class PublicationInfoProcessor extends MappingProcessor {
     }
 
     private void mapLanguageElement(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        String languageText = null;
-        if (opus.getLanguageArray().length > 0) {
-            languageText = opus.getLanguageArray(0);
+        ArrayList<String> languageCodes = new ArrayList<>();
+
+        for (String opusLanguage : opus.getLanguageArray()) {
+            for (String code : opusLanguage.split(",")) {
+                final String mappedCode = languageEncoding(code);
+                if (mappedCode != null) {
+                    languageCodes.add(mappedCode.trim().toLowerCase());
+                }
+            }
         }
 
-        if (languageText != null) {
-            languageText = languageEncoding(languageText);
-
+        for (String languageCode : languageCodes) {
             LanguageDefinition ld = (LanguageDefinition)
                     select("mods:language", mods);
+
             if (ld == null) {
                 ld = mods.addNewLanguage();
                 signalChanges(MODS_CHANGES);
             }
 
-            if (!nodeExists(
-                    String.format("mods:languageTerm[@authority='%s' and @type='%s' and text()='%s']",
-                            "iso639-2b", "code", languageText),
-                    ld
-            )) {
+            final String query = String.format("//mods:language/mods:languageTerm[@authority='%s' and @type='%s' and text()='%s']",
+                    "iso639-2b", "code", languageCode);
+            if (!nodeExists(query, ld)) {
                 LanguageTermDefinition lngtd = ld.addNewLanguageTerm();
                 lngtd.setAuthority(ISO_639_2_B);
                 lngtd.setType(CODE);
-                lngtd.setStringValue(languageText);
+                lngtd.setStringValue(languageCode);
                 signalChanges(MODS_CHANGES);
             }
         }
     }
+
 }

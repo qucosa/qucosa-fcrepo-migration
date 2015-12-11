@@ -20,6 +20,7 @@ package org.qucosa.migration.processors.transformations;
 import noNamespace.Date;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import java.math.BigInteger;
 
@@ -38,6 +39,21 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
                 "//mods:language/" +
                         "mods:languageTerm[@authority='iso639-2b' and @type='code' and text()='" + lang + "']",
                 modsDocument.getMods().getDomNode().getOwnerDocument());
+    }
+
+
+    @Test
+    public void Extracts_comma_separated_language_list() throws Exception {
+        final String lang = "ger,eng,chi";
+        opusDocument.getOpus().getOpusDocument().addLanguage(lang);
+
+        runProcessor(processor);
+
+        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final String s = "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code'";
+        XMLAssert.assertXpathExists(s + " and text()='ger']", ownerDocument);
+        XMLAssert.assertXpathExists(s + " and text()='eng']", ownerDocument);
+        XMLAssert.assertXpathExists(s + " and text()='chi']", ownerDocument);
     }
 
     @Test

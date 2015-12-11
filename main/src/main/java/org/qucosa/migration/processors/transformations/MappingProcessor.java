@@ -135,7 +135,8 @@ public abstract class MappingProcessor implements Processor {
     public String languageEncoding(String code) {
         if (code != null) {
             if (code.length() != 3) {
-                return Locale.forLanguageTag(code).getISO3Language();
+                String result = Locale.forLanguageTag(code).getISO3Language();
+                if (result == null || result.isEmpty()) return null;
             }
         }
         return code;
