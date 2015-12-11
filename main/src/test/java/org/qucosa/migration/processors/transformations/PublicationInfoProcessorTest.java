@@ -57,8 +57,8 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void extractsCompletedDate() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewCompletedDate();
+    public void extractsPublishedDate() throws Exception {
+        Date ocd = opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
         ocd.setYear(BigInteger.valueOf(2009));
         ocd.setMonth(BigInteger.valueOf(6));
         ocd.setDay(BigInteger.valueOf(4));
@@ -76,8 +76,8 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void handlesEmptyCompleteDate() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewCompletedDate();
+    public void handlesEmptyPublishedDate() throws Exception {
+        Date ocd = opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
 
         runProcessor(processor);
 

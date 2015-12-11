@@ -41,11 +41,11 @@ public class PublicationInfoProcessor extends MappingProcessor {
     }
 
     private void mapOriginInfoElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        final Boolean hasCompletedDate = nodeExists("CompletedDate", opus);
+        final Boolean hasPublishedDate = nodeExists("PublishedDate", opus);
         final Boolean hasPublishedYear = nodeExists("PublishedYear", opus);
         final Boolean hasDateAccepted = nodeExists("DateAccepted", opus);
         final Boolean hasEdition = nodeExists("Edition", opus);
-        if (hasCompletedDate || hasPublishedYear || hasDateAccepted || hasEdition) {
+        if (hasPublishedDate || hasPublishedYear || hasDateAccepted || hasEdition) {
 
             OriginInfoDefinition oid = (OriginInfoDefinition)
                     select("mods:originInfo[@eventType='publication']", mods);
@@ -56,7 +56,7 @@ public class PublicationInfoProcessor extends MappingProcessor {
                 signalChanges(MODS_CHANGES);
             }
 
-            if (hasCompletedDate) mapCompletedDate(opus, oid);
+            if (hasPublishedDate) mapPublishedDate(opus, oid);
             if (hasPublishedYear) mapPublishedYear(opus, oid);
             if (hasDateAccepted) mapDateAccepted(opus, oid);
             if (hasEdition) mapEdition(opus, oid);
@@ -126,8 +126,8 @@ public class PublicationInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapCompletedDate(Document opus, OriginInfoDefinition oid) {
-        final String mappedDateEncoding = dateEncoding(opus.getCompletedDate());
+    private void mapPublishedDate(Document opus, OriginInfoDefinition oid) {
+        final String mappedDateEncoding = dateEncoding(opus.getPublishedDate());
 
         if (mappedDateEncoding != null) {
             DateOtherDefinition dateOther = (DateOtherDefinition)
