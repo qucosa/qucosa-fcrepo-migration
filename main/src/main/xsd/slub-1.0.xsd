@@ -44,6 +44,7 @@
             <xs:element type="xs:string" name="documentType"/>
             <xs:element type="rightsType" name="rights"/>
             <xs:element type="corporationType" name="corporation"/>
+            <xs:element type="noteType" name="note" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="submitterType">
@@ -86,6 +87,21 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="yes"/>
             <xs:enumeration value="no"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="noteType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="from"/>
+                <xs:attribute type="scopeType" name="scope"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:simpleType name="scopeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="private"/>
+            <xs:enumeration value="public"/>
+            <xs:enumeration value="reference"/>
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

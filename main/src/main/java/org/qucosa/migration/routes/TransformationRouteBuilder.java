@@ -163,6 +163,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
     private void configureTransformationPipeline() throws IllegalAccessException, InstantiationException {
         Class[] pipeline = {
+                AdministrationProcessor.class,
                 CataloguingProcessor.class,
                 DistributionInfoProcessor.class,
                 DocumentTypeProcessor.class,
