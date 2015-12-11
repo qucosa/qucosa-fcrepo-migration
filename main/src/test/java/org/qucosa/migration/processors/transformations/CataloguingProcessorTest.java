@@ -88,7 +88,7 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         runProcessor(processor);
 
         XMLAssert.assertXpathExists(
-                "//mods:classification[@lang='ger' and text()='A, B, C']",
+                "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
                 modsDocument.getMods().getDomNode().getOwnerDocument());
     }
 }
