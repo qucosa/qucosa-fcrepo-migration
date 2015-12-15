@@ -55,12 +55,13 @@ public class IdentifierProcessor extends MappingProcessor {
     }
 
     private void ensureIdentifierElement(String type, String id, ModsDefinition mods) {
-        if (id != null && !nodeExists(
-                String.format("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), singleline(id)),
+        final String mid = singleline(id);
+        if (mid != null && !nodeExists(
+                String.format("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), mid),
                 mods)) {
             IdentifierDefinition identifierDefinition = mods.addNewIdentifier();
             identifierDefinition.setType(type.toLowerCase());
-            identifierDefinition.setStringValue(id);
+            identifierDefinition.setStringValue(mid);
             signalChanges(MODS_CHANGES);
         }
     }

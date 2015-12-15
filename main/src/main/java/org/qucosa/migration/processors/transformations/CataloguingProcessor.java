@@ -61,12 +61,12 @@ public class CataloguingProcessor extends MappingProcessor {
         }
 
         for (Subject subject : subjects) {
-            final String value = subject.getValue();
+            final String value = singleline(subject.getValue());
             final String lang = languageEncoding(subject.getLanguage());
 
             ClassificationDefinition cl;
             cl = (ClassificationDefinition)
-                    select("mods:classification" + String.format(query, mappedType, singleline(value)), mods);
+                    select("mods:classification" + String.format(query, mappedType, value), mods);
 
             if (cl == null) {
                 cl = mods.addNewClassification();
@@ -84,13 +84,14 @@ public class CataloguingProcessor extends MappingProcessor {
 
     private void mapTableOfContent(Document opus, ModsDefinition mods) {
         String opusTableOfContent = opus.getTableOfContent();
+        final String mappedToc = multiline(opusTableOfContent);
         if (opusTableOfContent != null && !opusTableOfContent.isEmpty()) {
             TableOfContentsDefinition toc = (TableOfContentsDefinition)
                     select("mods:tableOfContents", mods);
 
             if (toc == null) {
                 toc = mods.addNewTableOfContents();
-                toc.setStringValue(multiline(opusTableOfContent));
+                toc.setStringValue(mappedToc);
                 signalChanges(MODS_CHANGES);
             }
         }
@@ -99,11 +100,11 @@ public class CataloguingProcessor extends MappingProcessor {
     private void mapTitleAbstract(Document opus, ModsDefinition mods) {
         for (Title ot : opus.getTitleAbstractArray()) {
             final String lang = languageEncoding(ot.getLanguage());
-            final String abst = ot.getValue();
+            final String abst = multiline(ot.getValue());
 
             AbstractDefinition ad = (AbstractDefinition) select(
                     String.format("mods:abstract[@lang='%s' and @type='%s' and text()='%s']",
-                            lang, "summary", multiline(abst)), mods);
+                            lang, "summary", abst), mods);
 
             if (ad == null) {
                 ad = mods.addNewAbstract();

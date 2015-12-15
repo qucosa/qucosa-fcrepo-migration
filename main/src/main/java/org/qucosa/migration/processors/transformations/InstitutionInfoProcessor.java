@@ -64,7 +64,7 @@ public class InstitutionInfoProcessor extends MappingProcessor {
 
                 if (!nameArray.isEmpty()) {
                     ExtensionDefinition ed = getExtensionDefinition(mods);
-                    InfoDocument id = getInfoDocument(type, place, nameArray, token, ed);
+                    InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed);
                     if (id != null) {
                         ed.set(id);
                     }
@@ -74,7 +74,7 @@ public class InstitutionInfoProcessor extends MappingProcessor {
         }
     }
 
-    private InfoDocument getInfoDocument(Type.Enum type, String place, ArrayList<String> names, String token, ExtensionDefinition ed) throws Exception {
+    private InfoDocument getSlubInfoExtension(Type.Enum type, String place, ArrayList<String> names, String token, ExtensionDefinition ed) throws Exception {
         InfoDocument id = null;
         InfoType it = (InfoType) select("slub:info", ed);
         if (it == null) {
@@ -126,24 +126,25 @@ public class InstitutionInfoProcessor extends MappingProcessor {
     }
 
     private void createOrganizationType(CorporationType ct, String hierarchy, String name) throws XPathExpressionException {
+        final String mappedName = singleline(name);
         switch (hierarchy) {
             case "institution":
-                if (!nodeExists("slub:institution[text()='" + singleline(name) + "']", ct)) ct.addInstitution(name);
+                if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) ct.addInstitution(mappedName);
                 break;
             case "section":
-                if (!nodeExists("slub:section[text()='" + singleline(name) + "']", ct)) ct.addSection(name);
+                if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) ct.addSection(mappedName);
                 break;
             case "university":
-                if (!nodeExists("slub:university[text()='" + singleline(name) + "']", ct)) ct.addUniversity(name);
+                if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) ct.addUniversity(mappedName);
                 break;
             case "faculty":
-                if (!nodeExists("slub:faculty[text()='" + singleline(name) + "']", ct)) ct.addFaculty(name);
+                if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) ct.addFaculty(mappedName);
                 break;
             case "institute":
-                if (!nodeExists("slub:institute[text()='" + singleline(name) + "']", ct)) ct.addInstitute(name);
+                if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) ct.addInstitute(mappedName);
                 break;
             case "chair":
-                if (!nodeExists("slub:chair[text()='" + singleline(name) + "']", ct)) ct.addChair(name);
+                if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) ct.addChair(mappedName);
                 break;
         }
     }

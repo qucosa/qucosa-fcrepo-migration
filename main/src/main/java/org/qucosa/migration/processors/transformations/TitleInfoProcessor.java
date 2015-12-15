@@ -85,9 +85,10 @@ public class TitleInfoProcessor extends MappingProcessor {
 
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang, Type.ALTERNATIVE);
 
-            if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
+            final String value = singleline(ot.getValue());
+            if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
-                mt.setStringValue(ot.getValue());
+                mt.setStringValue(value);
                 signalChanges(MODS_CHANGES);
             }
         }
@@ -112,9 +113,11 @@ public class TitleInfoProcessor extends MappingProcessor {
 
                 TitleInfoDefinition tid = ensureTitleInfoElement(relatedItemDefinition, encLang);
 
-                if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
+
+                final String value = singleline(ot.getValue());
+                if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                     StringPlusLanguage mt = tid.addNewTitle();
-                    mt.setStringValue(ot.getValue());
+                    mt.setStringValue(value);
                     signalChanges(MODS_CHANGES);
                 }
             }
@@ -129,9 +132,10 @@ public class TitleInfoProcessor extends MappingProcessor {
 
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
 
-            if (!nodeExists("mods:subTitle[text()='" + singleline(ot.getValue()) + "']", tid)) {
+            final String value = singleline(ot.getValue());
+            if (!nodeExists("mods:subTitle[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewSubTitle();
-                mt.setStringValue(ot.getValue());
+                mt.setStringValue(value);
                 signalChanges(MODS_CHANGES);
             }
         }
@@ -146,9 +150,10 @@ public class TitleInfoProcessor extends MappingProcessor {
             TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
             tid.setUsage(XmlString.Factory.newValue("primary"));
 
-            if (!nodeExists("mods:title[text()='" + singleline(ot.getValue()) + "']", tid)) {
+            final String value = singleline(ot.getValue());
+            if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
-                mt.setStringValue(ot.getValue());
+                mt.setStringValue(value);
                 signalChanges(MODS_CHANGES);
             }
         }

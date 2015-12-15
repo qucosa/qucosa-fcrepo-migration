@@ -74,7 +74,7 @@ public class DistributionInfoProcessor extends MappingProcessor {
     }
 
     private void mapPublisherPlace(Document opus, OriginInfoDefinition oid) {
-        final String publisherPlace = opus.getPublisherPlace();
+        final String publisherPlace = singleline(opus.getPublisherPlace());
 
         PlaceDefinition pd = (PlaceDefinition)
                 select("mods:place", oid);
@@ -85,7 +85,7 @@ public class DistributionInfoProcessor extends MappingProcessor {
         }
 
         PlaceTermDefinition ptd = (PlaceTermDefinition)
-                select("mods:placeTerm[@type='text' and text()='" + singleline(publisherPlace) + "']", pd);
+                select("mods:placeTerm[@type='text' and text()='" + publisherPlace + "']", pd);
 
         if (ptd == null) {
             ptd = pd.addNewPlaceTerm();

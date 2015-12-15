@@ -179,11 +179,11 @@ public abstract class MappingProcessor implements Processor {
     }
 
     public String singleline(String s) {
-        return singleLineFilter.apply(s);
+        return (s == null) ? null : singleLineFilter.apply(s);
     }
 
     public String multiline(String s) {
-        return multiLineFilter.apply(s);
+        return (s == null) ? null : multiLineFilter.apply(s);
     }
 
     protected String buildTokenFrom(String prefix, String... strings) {

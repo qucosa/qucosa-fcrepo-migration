@@ -195,11 +195,13 @@ public class PersonInfoProcessor extends MappingProcessor {
         StringBuilder sb = new StringBuilder();
         sb.append("mods:name[");
         sb.append("@type='personal'");
-        if (given != null && !given.isEmpty()) {
-            sb.append(" and mods:namePart[@type='given' and text()='" + singleline(given) + "']");
+        final String mGiven = singleline(given);
+        if (mGiven != null && !mGiven.isEmpty()) {
+            sb.append(" and mods:namePart[@type='given' and text()='" + mGiven + "']");
         }
-        if (family != null && !family.isEmpty()) {
-            sb.append(" and mods:namePart[@type='family' and text()='" + singleline(family) + "']");
+        final String mFamily = singleline(family);
+        if (mFamily != null && !mFamily.isEmpty()) {
+            sb.append(" and mods:namePart[@type='family' and text()='" + mFamily + "']");
         }
         if (date != null) {
             sb.append(" and mods:namePart[@type='date' and text()='" + date + "']");
@@ -218,13 +220,14 @@ public class PersonInfoProcessor extends MappingProcessor {
     }
 
     private void checkOrSetNamePart(NamePartDefinition.Type.Enum type, String value, NameDefinition nd) {
+        final String mValue = singleline(value);
         NamePartDefinition np = (NamePartDefinition)
-                select("mods:namePart[@type='" + type + "' and text()='" + singleline(value) + "']", nd);
+                select("mods:namePart[@type='" + type + "' and text()='" + mValue + "']", nd);
 
         if (np == null) {
             np = nd.addNewNamePart();
             np.setType(type);
-            np.setStringValue(value);
+            np.setStringValue(mValue);
             signalChanges(MODS_CHANGES);
         }
     }
@@ -252,12 +255,12 @@ public class PersonInfoProcessor extends MappingProcessor {
 
     private void mapPersonSubmitter(Document opus, InfoType info) {
         for (Person submitter : opus.getPersonSubmitterArray()) {
-            final String name = combineName(submitter.getFirstName(), submitter.getLastName());
+            final String name = singleline(combineName(submitter.getFirstName(), submitter.getLastName()));
             final String phone = submitter.getPhone();
             final String mbox = submitter.getEmail();
 
             SubmitterType st = (SubmitterType)
-                    select("slub:submitter[foaf:Person/foaf:name='" + singleline(name) + "']", info);
+                    select("slub:submitter[foaf:Person/foaf:name='" + name + "']", info);
 
             if (st == null) {
                 st = info.addNewSubmitter();
