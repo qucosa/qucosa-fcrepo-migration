@@ -18,6 +18,7 @@
 package org.qucosa.migration.processors.transformations;
 
 import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class StaticInfoProcessorTest extends ProcessorTestBase {
@@ -35,9 +36,10 @@ public class StaticInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
+    @Ignore
     public void setsPhysicalDescription() throws Exception {
         runProcessor(processor);
-
+        // TODO Remove mapping of physical description if confirmed
         XMLAssert.assertXpathExists(
                 "//mods:physicalDescription/" +
                         "mods:digitalOrigin[text()='born digital']",

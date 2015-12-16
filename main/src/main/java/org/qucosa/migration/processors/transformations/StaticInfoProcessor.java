@@ -38,7 +38,8 @@ public class StaticInfoProcessor extends MappingProcessor {
         final InfoType info = infoDocument.getInfo();
 
         ensureEdition(mods);
-        ensurePhysicalDescription(mods);
+        // TODO Remove mapping of physical description if confirmed
+//        ensurePhysicalDescription(mods);
         ensureRightsAgreement(info);
     }
 
