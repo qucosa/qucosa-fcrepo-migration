@@ -47,7 +47,7 @@ public class InstitutionInfoProcessor extends MappingProcessor {
             final String role = marcrelatorEncoding(org.getRole());
 
             final ArrayList<String> nameArray = buildNameArray(org);
-            final String significantName = nameArray.get(0);
+            final String significantName = singleline(nameArray.get(0));
 
             if (significantName != null) {
                 nameArray.remove(0);
