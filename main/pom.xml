@@ -84,6 +84,12 @@
             <version>8.7</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.fge</groupId>
+            <artifactId>uri-template</artifactId>
+            <version>0.9</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -17,6 +17,9 @@
 
 package org.qucosa.migration.processors;
 
+import com.github.fge.uritemplate.URITemplate;
+import com.github.fge.uritemplate.URITemplateException;
+import com.github.fge.uritemplate.vars.VariableMap;
 import de.slubDresden.InfoDocument;
 import gov.loc.mets.AmdSecType;
 import gov.loc.mets.FileType;
@@ -44,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -131,7 +133,9 @@ public class DepositMetsGenerator implements Processor {
             }
 
             FLocat fLocat = metsFile.addNewFLocat();
-            URI href = buildProperlyEscapedURI(opusDocument, baseFileUrl, opusFile);
+            URI href = buildProperlyEscapedURI(baseFileUrl,
+                    opusDocument.getOpus().getOpusDocument().getDocumentId(),
+                    opusFile.getPathName());
             fLocat.setLOCTYPE(URL);
             fLocat.setHref(href.toASCIIString());
         }
@@ -170,20 +174,14 @@ public class DepositMetsGenerator implements Processor {
         return bestHash;
     }
 
-    private URI buildProperlyEscapedURI(OpusDocument opusDocument, URL baseFileUrl, File opusFile)
-            throws MalformedURLException, URISyntaxException {
-        URL url = new URL(baseFileUrl.toExternalForm()
-                + "/"
-                + opusDocument.getOpus().getOpusDocument().getDocumentId()
-                + "/" + opusFile.getPathName());
-        return new URI(
-                url.getProtocol(),
-                url.getUserInfo(),
-                url.getHost(),
-                url.getPort(),
-                url.getPath(),
-                url.getQuery(),
-                url.getRef());
+    private URI buildProperlyEscapedURI(URL baseFileUrl, String documentId, String opusFilePathName)
+            throws URITemplateException, URISyntaxException {
+        final VariableMap vars = VariableMap.newBuilder()
+                .addScalarValue("documentId", documentId)
+                .addScalarValue("pathName", opusFilePathName)
+                .freeze();
+        final URITemplate template = new URITemplate(baseFileUrl.toExternalForm() + "/{documentId}/{pathName}");
+        return template.toURI(vars);
     }
 
     private void generateBasicMods(Mets metsDocument, OpusDocument opusDocument) {
