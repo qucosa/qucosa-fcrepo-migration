@@ -44,9 +44,9 @@ public class AdministrationProcessor extends MappingProcessor {
         }
 
         for (Note note : noteArray) {
-            final String creator = note.getCreator();
-            final String scope = note.getScope();
-            final String message = note.getMessage();
+            final String creator = singleline(note.getCreator());
+            final String scope = singleline(note.getScope());
+            final String message = multiline(note.getMessage());
 
             NoteType noteElement = (NoteType) select(String.format("slub:note[@from='%s' and @scope='%s' and @message='%s']",
                     creator, scope, message), it);
