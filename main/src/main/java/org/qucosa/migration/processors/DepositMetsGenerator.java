@@ -21,22 +21,16 @@ import com.github.fge.uritemplate.URITemplate;
 import com.github.fge.uritemplate.URITemplateException;
 import com.github.fge.uritemplate.vars.VariableMap;
 import de.slubDresden.InfoDocument;
-import gov.loc.mets.AmdSecType;
-import gov.loc.mets.FileType;
+import gov.loc.mets.*;
 import gov.loc.mets.FileType.FLocat;
-import gov.loc.mets.MdSecType;
 import gov.loc.mets.MdSecType.MdWrap;
-import gov.loc.mets.MetsDocument;
 import gov.loc.mets.MetsDocument.Mets;
 import gov.loc.mets.MetsType.FileSec.FileGrp;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
-import noNamespace.File;
-import noNamespace.Hash;
-import noNamespace.OpusDocument;
-import noNamespace.Title;
+import noNamespace.*;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -56,6 +50,7 @@ import java.util.Map;
 import static gov.loc.mets.FileType.FLocat.LOCTYPE.URL;
 import static gov.loc.mets.MdSecType.MdWrap.MDTYPE;
 import static gov.loc.mets.MetsType.FileSec;
+import static noNamespace.Document.ServerState.*;
 
 public class DepositMetsGenerator implements Processor {
 
@@ -96,6 +91,7 @@ public class DepositMetsGenerator implements Processor {
         } else {
             OpusDocument opusDocument = msg.getBody(OpusDocument.class);
             embedQucosaXml(metsRecord, opusDocument);
+            embedMetsHeader(metsRecord, opusDocument);
             generateBasicMods(metsRecord, opusDocument);
             URL fileUrl = new URL(msg.getHeader("Qucosa-File-Url").toString());
             attachUploadFileSections(metsRecord, opusDocument, fileUrl);
@@ -212,6 +208,22 @@ public class DepositMetsGenerator implements Processor {
         mt.setStringValue(title);
 
         mdWrap.addNewXmlData().set(modsDocument);
+    }
+
+    private void embedMetsHeader(Mets metsRecord, OpusDocument opusDocument) {
+        final Document.ServerState.Enum opusState = opusDocument.getOpus().getOpusDocument().getServerState();
+        String fedoraState = null;
+        if (PUBLISHED.equals(opusState)) {
+            fedoraState = "ACTIVE";
+        } else if (UNPUBLISHED.equals(opusState)) {
+            fedoraState = "INACTIVE";
+        } else if (DELETED.equals(opusState)) {
+            fedoraState = "DELETED";
+        }
+        if (fedoraState != null) {
+            MetsType.MetsHdr metsHeader = metsRecord.addNewMetsHdr();
+            metsHeader.setRECORDSTATUS(fedoraState);
+        }
     }
 
     private void embedQucosaXml(Mets metsRecord, OpusDocument opusDocument) {
