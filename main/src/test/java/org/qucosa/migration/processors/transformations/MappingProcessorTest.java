@@ -88,6 +88,18 @@ public class MappingProcessorTest {
         assertEquals("labeltest", processor.getLabel());
     }
 
+    @Test(expected = Exception.class)
+    public void handles_RuntimeExceptions() throws Exception {
+        MappingProcessor processor = new MappingProcessor() {
+            @Override
+            public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
+                throw new RuntimeException();
+            }
+        };
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        processor.process(exchange);
+    }
+
     private class LabelTestProcessor extends MappingProcessor {
         @Override
         public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

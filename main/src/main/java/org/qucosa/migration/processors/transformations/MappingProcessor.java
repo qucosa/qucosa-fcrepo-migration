@@ -22,7 +22,9 @@ import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangeTimedOutException;
 import org.apache.camel.Processor;
+import org.apache.camel.language.bean.RuntimeBeanExpressionException;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.qucosa.migration.stringfilter.StringFilter;
@@ -75,9 +77,13 @@ public abstract class MappingProcessor implements Processor {
         modsChanges = (boolean) exchange.getProperty(MODS_CHANGES, false);
         slubChanges = (boolean) exchange.getProperty(SLUB_INFO_CHANGES, false);
 
-        process((OpusDocument) m.get("QUCOSA-XML"),
-                (ModsDocument) m.get("MODS"),
-                (InfoDocument) m.get("SLUB-INFO"));
+        try {
+            process((OpusDocument) m.get("QUCOSA-XML"),
+                    (ModsDocument) m.get("MODS"),
+                    (InfoDocument) m.get("SLUB-INFO"));
+        } catch (RuntimeException rte) {
+            throw new Exception("Processor failed with RuntimeException", rte);
+        }
 
         exchange.getIn().setBody(m);
         exchange.setProperty(MODS_CHANGES, modsChanges);
