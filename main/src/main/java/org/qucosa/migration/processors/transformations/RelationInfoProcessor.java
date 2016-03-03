@@ -70,12 +70,12 @@ public class RelationInfoProcessor extends ModsRelatedItemProcessor {
 
     private Type.Enum determineItemType(String relation) {
         switch (relation) {
-            case "series":
+            case "issue":
             case "journal":
             case "proceeding":
+                return Type.HOST;
+            case "series":
                 return Type.SERIES;
-            case "issue":
-                return Type.CONSTITUENT;
             case "predecessor":
                 return Type.PRECEDING;
             default:

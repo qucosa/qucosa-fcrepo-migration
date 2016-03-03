@@ -47,7 +47,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void mapJournalReferenceToSeriesRelatedItem() throws Exception {
+    public void mapJournalReferenceToHostRelatedItem() throws Exception {
         final String urn = "urn:nbn:de:bsz:ch1-qucosa-62094";
         final String link = "http://nbn-resolving.de/" + urn;
         final String sortOrder = "20031";
@@ -57,7 +57,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
-                "@type='series'" +
+                "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
@@ -65,7 +65,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
-    public void mapProceedingReferenceToSeriesRelatedItem() throws Exception {
+    public void mapProceedingReferenceToHostRelatedItem() throws Exception {
         final String urn = "urn:nbn:de:swb:ch1-200300619";
         final String label = "isPartOf";
         final String link = "http://nbn-resolving.de/" + urn;
@@ -75,14 +75,14 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
-                "@type='series'" +
+                "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
     }
 
     @Test
-    public void mapIssueReferenceToConstituentRelatedItem() throws Exception {
+    public void mapIssueReferenceToHostRelatedItem() throws Exception {
         final String urn = "urn:nbn:de:bsz:14-qucosa-32825";
         final String link = "http://nbn-resolving.de/" + urn;
         final String sortOrder = "001";
@@ -92,7 +92,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
-                "@type='constituent'" +
+                "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
