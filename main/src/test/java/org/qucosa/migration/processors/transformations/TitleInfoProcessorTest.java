@@ -24,7 +24,8 @@ import noNamespace.Title;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class TitleInfoProcessorTest extends ProcessorTestBase {
 

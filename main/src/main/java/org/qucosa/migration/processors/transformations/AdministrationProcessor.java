@@ -25,7 +25,6 @@ import gov.loc.mods.v3.ModsDocument;
 import noNamespace.Document;
 import noNamespace.Note;
 import noNamespace.OpusDocument;
-import org.apache.xmlbeans.XmlString;
 
 public class AdministrationProcessor extends MappingProcessor {
     @Override

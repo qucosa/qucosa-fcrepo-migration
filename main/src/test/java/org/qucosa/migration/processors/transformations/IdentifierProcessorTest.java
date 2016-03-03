@@ -18,7 +18,6 @@
 package org.qucosa.migration.processors.transformations;
 
 
-import org.apache.xmlbeans.XmlObject;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 

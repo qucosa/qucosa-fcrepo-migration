@@ -20,9 +20,6 @@ package org.qucosa.migration.processors.transformations;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 
-import static de.slubDresden.YesNo.NO;
-import static de.slubDresden.YesNo.YES;
-
 public class RightsProcessorTest extends ProcessorTestBase {
 
     final private MappingProcessor processor = new RightsProcessor();

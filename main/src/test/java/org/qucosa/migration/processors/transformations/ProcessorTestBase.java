@@ -18,7 +18,6 @@
 package org.qucosa.migration.processors.transformations;
 
 import de.slubDresden.InfoDocument;
-import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.Date;
 import noNamespace.File;
