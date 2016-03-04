@@ -34,7 +34,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <camel.version>2.15.2</camel.version>
+        <camel.version>2.16.2</camel.version>
         <httpclient.version>4.5.1</httpclient.version>
         <xmlbeans.version>2.3.0</xmlbeans.version>
     </properties>
