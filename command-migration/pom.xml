@@ -43,21 +43,11 @@
             <artifactId>commons-configuration</artifactId>
         </dependency>
 
-        <!-- Apache XMLBeans and special Saxon dependencies -->
-
-        <dependency>
-            <groupId>org.apache.xmlbeans</groupId>
-            <artifactId>xmlbeans</artifactId>
-        </dependency>
+        <!-- XMLBean Handling dependencies -->
 
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans-xpath</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.saxon</groupId>
-            <artifactId>saxon</artifactId>
         </dependency>
 
         <dependency>

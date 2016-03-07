@@ -36,7 +36,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <camel.version>2.16.2</camel.version>
         <httpclient.version>4.5.1</httpclient.version>
+        <!-- Newer versions of XMLBeans are available but their Saxon and XMLBeans parent dependencies are incorrect -->
         <xmlbeans.version>2.3.0</xmlbeans.version>
+        <saxon.version>8.7</saxon.version>
     </properties>
 
     <dependencies>
@@ -122,13 +124,6 @@
                 <groupId>org.apache.xmlbeans</groupId>
                 <artifactId>xmlbeans-xpath</artifactId>
                 <version>${xmlbeans.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <!-- Included Saxon XPath doesn't work -->
-                        <groupId>net.sf.saxon</groupId>
-                        <artifactId>saxon</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -143,18 +138,12 @@
                 <version>2.4</version>
             </dependency>
 
-            <!-- Saxon XML libraries providing a proper XPath implementation-->
-
-            <dependency>
-                <groupId>net.sf.saxon</groupId>
-                <artifactId>saxon</artifactId>
-                <version>8.7</version>
-            </dependency>
+            <!-- Explicit Saxon-DOM dependency implicitly needed by xmlbeans-xpath library -->
 
             <dependency>
                 <groupId>net.sf.saxon</groupId>
                 <artifactId>saxon-dom</artifactId>
-                <version>8.7</version>
+                <version>${saxon.version}</version>
             </dependency>
 
         </dependencies>
