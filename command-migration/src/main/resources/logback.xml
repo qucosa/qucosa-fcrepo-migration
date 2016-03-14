@@ -25,7 +25,9 @@
         </encoder>
     </appender>
 
-    <logger name="org.qucosa.migration" level="debug"/>
+    <logger name="org.qucosa.camel.component" level="debug"/>
+    <logger name="org.qucosa.migration.converters" level="debug"/>
+    <logger name="org.qucosa.migration.processors" level="debug"/>
 
     <root level="info">
         <appender-ref ref="STDOUT" />
