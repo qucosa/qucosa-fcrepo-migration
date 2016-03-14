@@ -43,6 +43,11 @@
             <artifactId>commons-configuration</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+
         <!-- XMLBean Handling dependencies -->
 
         <dependency>
