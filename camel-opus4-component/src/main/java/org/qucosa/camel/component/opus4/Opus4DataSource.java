@@ -64,8 +64,7 @@ public class Opus4DataSource {
         PoolingHttpClientConnectionManager mgr = new PoolingHttpClientConnectionManager();
         mgr.setMaxTotal(200);
         mgr.setDefaultMaxPerRoute(100);
-        HttpClient client = HttpClients.createMinimal(mgr);
-        return client;
+        return HttpClients.createMinimal(mgr);
     }
 
     public OpusDocument get(Opus4ResourceID qid) throws Exception {

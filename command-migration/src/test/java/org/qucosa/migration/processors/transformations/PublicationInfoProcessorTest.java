@@ -77,7 +77,7 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
     @Test
     public void handlesEmptyPublishedDate() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
+        opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
 
         runProcessor(processor);
 
@@ -108,7 +108,7 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
     @Test
     public void handlesEmptyDateAccepted() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewDateAccepted();
+        opusDocument.getOpus().getOpusDocument().addNewDateAccepted();
 
         runProcessor(processor);
 

@@ -17,7 +17,7 @@
 
 package org.qucosa.migration.processors;
 
-import org.apache.camel.component.http.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpOperationFailedException;
 
 public class HttpOperationFailedHelper {
 
