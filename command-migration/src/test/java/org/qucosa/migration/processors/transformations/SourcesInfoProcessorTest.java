@@ -30,11 +30,9 @@ public class SourcesInfoProcessorTest extends ProcessorTestBase {
     public void extractsReferenceUrl() throws Exception {
         final String value = "http://dx.doi.org/10.13141/jve.vol5.no1.pp1-7";
         final String label = "Der Artikel ist zuerst in der Open Access-Zeitschrift \"Journal of Vietnamese Environment\" erschienen.";
-        final String sortOrder = "10";
         Reference refUrl = opusDocument.getOpus().getOpusDocument().addNewReferenceUrl();
         refUrl.setValue(value);
         refUrl.setLabel(label);
-        refUrl.setSortOrder(sortOrder);
 
         runProcessor(processor);
 
@@ -45,16 +43,13 @@ public class SourcesInfoProcessorTest extends ProcessorTestBase {
                 " and text()='" + value + "']", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='uri'" +
                 " and text()='" + value + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
     }
 
     @Test
     public void extractsReferenceIsbn() throws Exception {
         final String value = "978-989-95079-6-8";
-        final String sortOrder = "10";
         Reference refUrl = opusDocument.getOpus().getOpusDocument().addNewReferenceIsbn();
         refUrl.setValue(value);
-        refUrl.setSortOrder(sortOrder);
 
         runProcessor(processor);
 
@@ -62,18 +57,15 @@ public class SourcesInfoProcessorTest extends ProcessorTestBase {
         XMLAssert.assertXpathExists("//mods:relatedItem[@type='original']", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='isbn'" +
                 " and text()='" + value + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
     }
 
     @Test
     public void extractsReferenceIssn() throws Exception {
         final String value = "0340-2444";
         final String label = "Some label";
-        final String sortOrder = "10";
         Reference refUrl = opusDocument.getOpus().getOpusDocument().addNewReferenceIssn();
         refUrl.setValue(value);
         refUrl.setLabel(label);
-        refUrl.setSortOrder(sortOrder);
 
         runProcessor(processor);
 
@@ -81,7 +73,6 @@ public class SourcesInfoProcessorTest extends ProcessorTestBase {
         XMLAssert.assertXpathExists("//mods:relatedItem[@type='original' and @displayLabel='" + label + "']", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='issn'" +
                 " and text()='" + value + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
     }
 
 }

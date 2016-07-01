@@ -17,28 +17,29 @@
 
 package org.qucosa.migration.processors.transformations;
 
-import gov.loc.mods.v3.IdentifierDefinition;
-import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.RelatedItemDefinition;
+import gov.loc.mods.v3.*;
 import gov.loc.mods.v3.RelatedItemDefinition.Type;
-import gov.loc.mods.v3.TitleInfoDefinition;
-import org.apache.xmlbeans.XmlString;
 
 public abstract class ModsRelatedItemProcessor extends MappingProcessor {
 
     protected void setSortOrderIfDefined(String partNumber, RelatedItemDefinition rid) {
         if (partNumber != null) {
-            TitleInfoDefinition tid = (TitleInfoDefinition)
-                    select("mods:titleInfo", rid);
-            if (tid == null) {
-                tid = rid.addNewTitleInfo();
+            PartDefinition pd = (PartDefinition) select("mods:part", rid);
+            if (pd == null) {
+                pd = rid.addNewPart();
                 signalChanges(SourcesInfoProcessor.MODS_CHANGES);
             }
 
-            XmlString xs = (XmlString) select("mods:partNumber", tid);
-            if (xs == null) {
-                xs = tid.addNewPartNumber();
-                xs.setStringValue(partNumber);
+            DetailDefinition dd = (DetailDefinition) select("mods:detail", pd);
+            if (dd == null) {
+                dd = pd.addNewDetail();
+                signalChanges(SourcesInfoProcessor.MODS_CHANGES);
+            }
+
+            StringPlusLanguage spl = (StringPlusLanguage) select("mods:number", dd);
+            if (spl == null) {
+                spl = dd.addNewNumber();
+                spl.setStringValue(partNumber);
                 signalChanges(SourcesInfoProcessor.MODS_CHANGES);
             }
         }

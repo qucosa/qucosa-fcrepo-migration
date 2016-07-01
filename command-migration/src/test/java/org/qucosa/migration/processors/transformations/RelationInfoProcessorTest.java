@@ -43,7 +43,9 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
+        XMLAssert.assertXpathExists(
+                String.format("//mods:relatedItem/mods:part/mods:detail[mods:number='%s']", sortOrder),
+                ownerDocument);
     }
 
     @Test
@@ -61,7 +63,9 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
+        XMLAssert.assertXpathExists(
+                String.format("//mods:relatedItem/mods:part/mods:detail[mods:number='%s']", sortOrder),
+                ownerDocument);
     }
 
     @Test
@@ -96,11 +100,13 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
-        XMLAssert.assertXpathExists("//mods:relatedItem/mods:titleInfo[mods:partNumber='" + sortOrder + "']", ownerDocument);
+        XMLAssert.assertXpathExists(
+                String.format("//mods:relatedItem/mods:part/mods:detail[mods:number='%s']", sortOrder),
+                ownerDocument);
     }
 
     @Test
-    public void mapPredecessorReferenceToPreceedingRelatedItem() throws Exception {
+    public void mapPredecessorReferenceToPrecedingRelatedItem() throws Exception {
         final String urn = "urn:nbn:de:bsz:14-qucosa-25559";
         final String link = "http://nbn-resolving.de/" + urn;
         createReferenceUrn(urn, null, "predecessor", null);
