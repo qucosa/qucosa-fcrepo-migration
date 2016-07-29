@@ -32,7 +32,14 @@ import org.qucosa.migration.stringfilter.TextInputStringFilters;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import static de.slubDresden.YesNo.NO;
 import static de.slubDresden.YesNo.YES;
@@ -150,6 +157,11 @@ public abstract class MappingProcessor implements Processor {
         return (select(expression, object) != null);
     }
 
+    protected Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
+        XmlObject node = select(expression, object);
+        return (node != null && node.getDomNode().hasChildNodes());
+    }
+
     protected String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
@@ -160,26 +172,27 @@ public abstract class MappingProcessor implements Processor {
     }
 
     protected String dateEncoding(noNamespace.Date date) {
-        if (!(date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
+        if (date != null && (date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            TimeZone tz;
+            GregorianCalendar cal;
+            if (date.getTimezone() != null) {
+                tz = SimpleTimeZone.getTimeZone(date.getTimezone());
+                cal = new GregorianCalendar(tz);
+            } else {
+                cal = new GregorianCalendar();
+            }
+
+            cal.set(Calendar.YEAR, date.getYear().intValue());
+            cal.set(Calendar.MONTH, date.getMonth().intValue() - 1);
+            cal.set(Calendar.DAY_OF_MONTH, date.getDay().intValue());
+
+            return dateFormat.format(cal.getTime());
+        } else {
             return null;
         }
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-        TimeZone tz;
-        GregorianCalendar cal;
-        if (date.getTimezone() != null) {
-            tz = SimpleTimeZone.getTimeZone(date.getTimezone());
-            cal = new GregorianCalendar(tz);
-        } else {
-            cal = new GregorianCalendar();
-        }
-
-        cal.set(Calendar.YEAR, date.getYear().intValue());
-        cal.set(Calendar.MONTH, date.getMonth().intValue() - 1);
-        cal.set(Calendar.DAY_OF_MONTH, date.getDay().intValue());
-
-        return dateFormat.format(cal.getTime());
     }
 
     public String singleline(String s) {

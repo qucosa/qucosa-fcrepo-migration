@@ -18,7 +18,13 @@
 package org.qucosa.migration.processors.transformations;
 
 import de.slubDresden.InfoDocument;
-import gov.loc.mods.v3.*;
+import gov.loc.mods.v3.DateDefinition;
+import gov.loc.mods.v3.DateOtherDefinition;
+import gov.loc.mods.v3.LanguageDefinition;
+import gov.loc.mods.v3.LanguageTermDefinition;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.ModsDocument;
+import gov.loc.mods.v3.OriginInfoDefinition;
 import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;
@@ -41,26 +47,28 @@ public class PublicationInfoProcessor extends MappingProcessor {
     }
 
     private void mapOriginInfoElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        final Boolean hasPublishedDate = nodeExists("PublishedDate", opus);
-        final Boolean hasPublishedYear = nodeExists("PublishedYear", opus);
-        final Boolean hasDateAccepted = nodeExists("DateAccepted", opus);
-        final Boolean hasEdition = nodeExists("Edition", opus);
+        OriginInfoDefinition oid = (OriginInfoDefinition)
+                select("mods:originInfo[@eventType='publication']", mods);
+
+        if (oid == null) {
+            oid = mods.addNewOriginInfo();
+            oid.setEventType("publication");
+            signalChanges(MODS_CHANGES);
+        }
+
+        final Boolean hasPublishedDate = nodeExistsAndHasChildNodes("PublishedDate", opus);
+        final Boolean hasPublishedYear = nodeExistsAndHasChildNodes("PublishedYear", opus);
+        final Boolean hasDateAccepted = nodeExistsAndHasChildNodes("DateAccepted", opus);
+        final Boolean hasEdition = nodeExistsAndHasChildNodes("Edition", opus);
+
         if (hasPublishedDate || hasPublishedYear || hasDateAccepted || hasEdition) {
-
-            OriginInfoDefinition oid = (OriginInfoDefinition)
-                    select("mods:originInfo[@eventType='publication']", mods);
-
-            if (oid == null) {
-                oid = mods.addNewOriginInfo();
-                oid.setEventType("publication");
-                signalChanges(MODS_CHANGES);
-            }
-
             if (hasPublishedDate) mapPublishedDate(opus, oid);
             if (hasPublishedYear) mapPublishedYear(opus, oid);
             if (hasDateAccepted) mapDateAccepted(opus, oid);
             if (hasEdition) mapEdition(opus, oid);
-
+        } else {
+            // Fallback to ServerDatePublished
+            mapServerDatePublished(opus, oid);
         }
     }
 
@@ -109,7 +117,6 @@ public class PublicationInfoProcessor extends MappingProcessor {
         final String mappedPublishedYear = dateEncoding(opus.getPublishedYear());
 
         if (mappedPublishedYear != null) {
-
             DateDefinition dateIssuedDefinition = (DateDefinition)
                     select("mods:dateIssued[@encoding='iso8601']", oid);
 
@@ -121,6 +128,26 @@ public class PublicationInfoProcessor extends MappingProcessor {
 
             if (!dateIssuedDefinition.getStringValue().equals(mappedPublishedYear)) {
                 dateIssuedDefinition.setStringValue(mappedPublishedYear);
+                signalChanges(MODS_CHANGES);
+            }
+        }
+    }
+
+    private void mapServerDatePublished(Document opus, OriginInfoDefinition oid) {
+        final String mappedServerDatePublished = dateEncoding(opus.getServerDatePublished());
+
+        if (mappedServerDatePublished != null) {
+            DateDefinition dateIssuedDefinition = (DateDefinition)
+                    select("mods:dateIssued[@encoding='iso8601']", oid);
+
+            if (dateIssuedDefinition == null) {
+                dateIssuedDefinition = oid.addNewDateIssued();
+                dateIssuedDefinition.setEncoding(ISO_8601);
+                signalChanges(MODS_CHANGES);
+            }
+
+            if (!dateIssuedDefinition.getStringValue().equals(mappedServerDatePublished)) {
+                dateIssuedDefinition.setStringValue(mappedServerDatePublished);
                 signalChanges(MODS_CHANGES);
             }
         }

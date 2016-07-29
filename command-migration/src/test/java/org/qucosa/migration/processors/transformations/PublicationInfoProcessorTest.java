@@ -153,6 +153,26 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     }
 
     @Test
+    public void usesServerDatePublishedIfNoOtherDateIsPresent() throws Exception {
+        Date ocd = opusDocument.getOpus().getOpusDocument().addNewServerDatePublished();
+        ocd.setYear(BigInteger.valueOf(2009));
+        ocd.setMonth(BigInteger.valueOf(6));
+        ocd.setDay(BigInteger.valueOf(20));
+        ocd.setHour(BigInteger.valueOf(0));
+        ocd.setMinute(BigInteger.valueOf(0));
+        ocd.setSecond(BigInteger.valueOf(0));
+        ocd.setTimezone("GMT-1");
+
+        runProcessor(processor);
+
+        XMLAssert.assertXpathExists(
+                "//mods:originInfo[@eventType='publication']/" +
+                        "mods:dateIssued[@encoding='iso8601' and text()='2009-06-20']",
+                modsDocument.getMods().getDomNode().getOwnerDocument());
+    }
+
+
+    @Test
     public void extractsEdition() throws Exception {
         opusDocument.getOpus().getOpusDocument().setEdition("2nd. Edition");
 
