@@ -49,8 +49,18 @@ public class IdentifierProcessor extends MappingProcessor {
         for (XmlObject xmlObject : selectAll("Identifier" + type, opusDocument)) {
             Identifier oid = (Identifier) xmlObject;
             final String oidValue = oid.getValue();
-            final String mappedType = (oidValue.contains("qucosa")) ? "qucosa:" + type : type;
+            final String mappedType = determineTypeName(type, oidValue);
             ensureIdentifierElement(mappedType, oidValue, mods);
+        }
+    }
+
+    private String determineTypeName(String type, String oidValue) {
+        if (oidValue.contains("qucosa")) {
+            return "qucosa:" + type;
+        } else if ("ppn".equalsIgnoreCase(type)) {
+            return "swb-ppn";
+        } else {
+            return type;
         }
     }
 

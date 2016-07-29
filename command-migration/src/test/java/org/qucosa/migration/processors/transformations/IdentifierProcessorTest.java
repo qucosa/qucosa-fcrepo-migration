@@ -93,7 +93,7 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         runProcessor(processor);
 
         XMLAssert.assertXpathExists(
-                "//mods:identifier[@type='ppn' and text()='" + ppn + "']",
+                "//mods:identifier[@type='swb-ppn' and text()='" + ppn + "']",
                 modsDocument.getMods().getDomNode().getOwnerDocument());
     }
 
