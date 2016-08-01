@@ -45,14 +45,18 @@ public class Main {
         MigrationContext ctx = null;
         try {
             Boolean hasStagingResource = (options.getStageResource() != null);
-            Boolean hasStagingresourceFile = (!options.getIdFile().isEmpty());
+            Boolean hasStagingResourceFile = (!options.getIdFile().isEmpty());
             Boolean hasTransformResource = (options.getTransformResource() != null);
+            Boolean hasTransformResourceFile = (!options.getPidFile().isEmpty());
+            Boolean hasExplicitMappings = options.getMappings().length > 0;
+            Boolean isStageTransform = options.isStageTransform();
 
             Boolean isTransforming = hasTransformResource
-                    || (options.getMappings().length > 0)
-                    || (options.isStageTransform());
+                    || hasTransformResourceFile
+                    || hasExplicitMappings
+                    || isStageTransform;
 
-            Boolean isStaging = hasStagingResource || hasStagingresourceFile;
+            Boolean isStaging = hasStagingResource || hasStagingResourceFile;
 
             System.setProperty("transforming", String.valueOf(isTransforming));
 
@@ -65,11 +69,14 @@ public class Main {
             if (hasStagingResource) {
                 sendExchange("direct:staging", options.getStageResource(), ctx, routingSlip);
             }
-            if (hasStagingresourceFile) {
+            if (hasStagingResourceFile) {
                 sendExchange("direct:staging:file", options.getIdFile(), ctx, routingSlip);
             }
             if (hasTransformResource) {
                 sendExchange("direct:transform", options.getTransformResource(), ctx, routingSlip);
+            }
+            if (hasTransformResourceFile) {
+                sendExchange("direct:transform:file", options.getPidFile(), ctx, routingSlip);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);

@@ -30,7 +30,9 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.qucosa.camel.component.sword.SwordDeposit;
+import org.qucosa.migration.processors.CommentedOutFilter;
 import org.qucosa.migration.processors.DepositMetsGenerator;
+import org.qucosa.migration.processors.FileReaderProcessor;
 import org.qucosa.migration.processors.HttpOperationFailedHelper;
 import org.qucosa.migration.processors.transformations.*;
 
@@ -61,6 +63,16 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 getConfigValueOrThrowException("sword.url"),
                 getConfigValueOrThrowException("sword.user"),
                 getConfigValueOrThrowException("sword.password"));
+
+
+        from("direct:transform:file")
+                .routeId("transform-file")
+                .log("Transforming resources listed in ${body}")
+                .process(new FileReaderProcessor())
+                .process(new CommentedOutFilter("#"))
+                .log("Found ${body.size} elements")
+                .split(body()).parallelProcessing()
+                .to("direct:transform");
 
         from("direct:transform")
                 .routeId("transform")

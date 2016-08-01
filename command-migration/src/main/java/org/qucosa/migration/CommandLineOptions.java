@@ -33,6 +33,7 @@ public class CommandLineOptions {
             required = true
     )
     private String collection = null;
+
     @Option(
             name = "--stage-resource-file",
             aliases = "-f",
@@ -40,18 +41,21 @@ public class CommandLineOptions {
             forbids = "--stage-resource"
     )
     private String idFile = "";
+
     @Option(
             name = "--mappings",
             aliases = "-m",
             usage = "Comma separated list of mappings to apply when transforming a staged resource."
     )
     private String[] mappings = {};
+
     @Option(
             name = "--noop",
             aliases = "-n",
             usage = "Will issue SWORD Noop operation on deposit"
     )
     private Boolean noop = false;
+
     @Option(
             name = "--ownerID",
             aliases = "-o",
@@ -59,12 +63,14 @@ public class CommandLineOptions {
             required = true
     )
     private String ownerId = null;
+
     @Option(
             name = "--purge",
             aliases = "-p",
             usage = "Try to purge object before doing deposit"
     )
     private Boolean purgeBeforeDeposit = false;
+
     @Option(
             name = "--stage-resource",
             aliases = "-s",
@@ -72,6 +78,7 @@ public class CommandLineOptions {
             forbids = "--stage-resource-file"
     )
     private String stageResource = null;
+
     @Option(
             name = "--stage-transform",
             usage = "Applies transformation to staged resources if --stage-resource is given.\n" +
@@ -79,12 +86,23 @@ public class CommandLineOptions {
             forbids = "--noop"
     )
     private Boolean stageTransform = false;
+
+    @Option(
+            name = "--transform-resource-file",
+            aliases = "-F",
+            usage = "Name of file to read PIDs from",
+            forbids = "--transform-resource"
+    )
+    private String pidFile = "";
+
     @Option(
             name = "--transform-resource",
             aliases = "-t",
-            usage = "ID of already staged resource for transformation"
+            usage = "ID of already staged resource for transformation",
+            forbids = "--transform-resource-file"
     )
     private String transformResource = null;
+
     @Option(
             name = "--use-slug",
             usage = "Given this option, the generated Fedora ID will reflect the original Opus ID",
@@ -102,6 +120,10 @@ public class CommandLineOptions {
             exit(1);
         }
 
+    }
+
+    public String getPidFile() {
+        return pidFile;
     }
 
     public Boolean isNoop() {
