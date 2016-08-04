@@ -66,6 +66,7 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -104,6 +105,13 @@
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-http</artifactId>
                 <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-test</artifactId>
+                <version>${camel.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Apache libraries -->

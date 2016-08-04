@@ -21,10 +21,10 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileReaderProcessor implements Processor {
 
@@ -32,8 +32,12 @@ public class FileReaderProcessor implements Processor {
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
         String filename = in.getBody(String.class);
-        List<String> lines = Files.readAllLines(
-                Paths.get(filename), Charset.defaultCharset());
+        List<String> lines =
+                Files.readAllLines(Paths.get(filename))
+                        .stream()
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
         in.setBody(lines);
     }
 
