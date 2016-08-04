@@ -19,6 +19,7 @@ package org.qucosa.migration.processors.transformations;
 
 import noNamespace.Organisation;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -217,6 +218,20 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='TU Chemnitz']", xml);
+    }
+
+    @Test
+    public void no_role_mapping_if_role_is_null() throws Exception {
+        String firstLevelName = "Deutsche Zentralbibliothek für Blinde Leipzig (DZB)";
+        createOrganisation(Organisation.Type.OTHER,
+                "Leipzig", null, firstLevelName, null, null, null);
+
+        runProcessor(processor);
+
+        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+
+        XMLAssert.assertXpathExists("//mods:name[@type='corporate']/mods:namePart[.='" + firstLevelName + "']", xml);
+        XMLAssert.assertXpathNotExists("//mods:name[@type='other']/mods:role", xml);
     }
 
     private void createOrganisation(

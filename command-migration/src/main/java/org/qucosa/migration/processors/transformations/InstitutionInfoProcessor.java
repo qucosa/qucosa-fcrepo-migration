@@ -227,13 +227,12 @@ public class InstitutionInfoProcessor extends MappingProcessor {
     }
 
     private String marcrelatorEncoding(String role) {
-        switch (role) {
-            case "publisher":
-                return "pbl";
-            case "contributor":
-                return "ctb";
-            default:
-                return null;
+        if ("publisher".equals(role)) {
+            return "pbl";
+        } else if ("contributor".equals(role)) {
+            return "ctb";
+        } else {
+            return null;
         }
     }
 }
