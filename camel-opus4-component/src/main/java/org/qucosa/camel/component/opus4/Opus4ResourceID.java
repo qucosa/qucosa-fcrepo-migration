@@ -32,27 +32,6 @@ public class Opus4ResourceID {
         this.identifier = id;
     }
 
-    public static Opus4ResourceID create(String resourceId) {
-        if (resourceId == null || resourceId.isEmpty()) {
-            throw new IllegalArgumentException("Not a valid Opus resource identifier: " + resourceId);
-        }
-
-        String ns, id;
-        if (resourceId.startsWith(NS_OPUS_DOCUMENT)) {
-            Matcher m = PATTERN.matcher(resourceId);
-            if (!m.matches()) {
-                throw new IllegalArgumentException("Not a valid Opus document resource identifier: " + resourceId);
-            }
-            ns = NS_OPUS_DOCUMENT;
-            id = m.group(1);
-        } else {
-            ns = "";
-            id = resourceId;
-        }
-
-        return new Opus4ResourceID(ns, id);
-    }
-
     @Override
     public String toString() {
         return (namespace.isEmpty()) ? identifier : NS_OPUS_DOCUMENT + "/" + identifier;
@@ -74,5 +53,26 @@ public class Opus4ResourceID {
     @Override
     public int hashCode() {
         return toString().hashCode();
+    }
+
+    public static Opus4ResourceID create(String resourceId) {
+        if (resourceId == null || resourceId.isEmpty()) {
+            throw new IllegalArgumentException("Not a valid Opus resource identifier: " + resourceId);
+        }
+
+        String ns, id;
+        if (resourceId.startsWith(NS_OPUS_DOCUMENT)) {
+            Matcher m = PATTERN.matcher(resourceId);
+            if (!m.matches()) {
+                throw new IllegalArgumentException("Not a valid Opus document resource identifier: " + resourceId);
+            }
+            ns = NS_OPUS_DOCUMENT;
+            id = m.group(1);
+        } else {
+            ns = "";
+            id = resourceId;
+        }
+
+        return new Opus4ResourceID(ns, id);
     }
 }

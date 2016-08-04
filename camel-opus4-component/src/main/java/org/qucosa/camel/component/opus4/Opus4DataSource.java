@@ -31,7 +31,11 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,13 +62,6 @@ public class Opus4DataSource {
         password = getConfigValueOrThrowException(conf, DB_PARAM_PASSWORD);
         connection = connectDb();
         httpClient = prepareHttpClient();
-    }
-
-    private HttpClient prepareHttpClient() {
-        PoolingHttpClientConnectionManager mgr = new PoolingHttpClientConnectionManager();
-        mgr.setMaxTotal(200);
-        mgr.setDefaultMaxPerRoute(100);
-        return HttpClients.createMinimal(mgr);
     }
 
     public OpusDocument get(Opus4ResourceID qid) throws Exception {
@@ -154,6 +151,13 @@ public class Opus4DataSource {
     protected void finalize() throws Throwable {
         release();
         super.finalize();
+    }
+
+    private HttpClient prepareHttpClient() {
+        PoolingHttpClientConnectionManager mgr = new PoolingHttpClientConnectionManager();
+        mgr.setMaxTotal(200);
+        mgr.setDefaultMaxPerRoute(100);
+        return HttpClients.createMinimal(mgr);
     }
 
     private Connection connectDb() throws SQLException {
