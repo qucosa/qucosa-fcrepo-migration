@@ -28,7 +28,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.List;
 
-public class Opus4DataSourceTest {
+public class Opus4DataSourceIT {
 
     private Opus4DataSource qucosaProvider;
 
