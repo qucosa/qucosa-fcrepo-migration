@@ -21,7 +21,13 @@ import com.xmlns.foaf.x01.PersonDocument;
 import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import de.slubDresden.SubmitterType;
-import gov.loc.mods.v3.*;
+import gov.loc.mods.v3.ExtensionDefinition;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.ModsDocument;
+import gov.loc.mods.v3.NameDefinition;
+import gov.loc.mods.v3.NamePartDefinition;
+import gov.loc.mods.v3.RoleDefinition;
+import gov.loc.mods.v3.RoleTermDefinition;
 import noNamespace.Document;
 import noNamespace.OpusDocument;
 import noNamespace.Person;
@@ -30,7 +36,10 @@ import javax.xml.namespace.QName;
 
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.NameDefinition.Type.PERSONAL;
-import static gov.loc.mods.v3.NamePartDefinition.Type.*;
+import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
+import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
+import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
+import static gov.loc.mods.v3.NamePartDefinition.Type.TERMS_OF_ADDRESS;
 
 public class PersonInfoProcessor extends MappingProcessor {
 

@@ -17,12 +17,17 @@
 
 package org.qucosa.migration.processors.transformations;
 
-import gov.loc.mods.v3.*;
+import gov.loc.mods.v3.DetailDefinition;
+import gov.loc.mods.v3.IdentifierDefinition;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.PartDefinition;
+import gov.loc.mods.v3.RelatedItemDefinition;
 import gov.loc.mods.v3.RelatedItemDefinition.Type;
+import gov.loc.mods.v3.StringPlusLanguage;
 
-public abstract class ModsRelatedItemProcessor extends MappingProcessor {
+abstract class ModsRelatedItemProcessor extends MappingProcessor {
 
-    protected void setSortOrderIfDefined(String partNumber, RelatedItemDefinition rid) {
+    void setSortOrderIfDefined(String partNumber, RelatedItemDefinition rid) {
         if (partNumber != null) {
             PartDefinition pd = (PartDefinition) select("mods:part", rid);
             if (pd == null) {
@@ -45,7 +50,7 @@ public abstract class ModsRelatedItemProcessor extends MappingProcessor {
         }
     }
 
-    protected void setIdentifierIfNotFound(String uri, RelatedItemDefinition rid, final String type) {
+    void setIdentifierIfNotFound(String uri, RelatedItemDefinition rid, final String type) {
         IdentifierDefinition id = (IdentifierDefinition)
                 select("mods:identifier[@type='" + type + "' and text()='" + uri + "']", rid);
         if (id == null) {
@@ -56,7 +61,7 @@ public abstract class ModsRelatedItemProcessor extends MappingProcessor {
         }
     }
 
-    protected void setLabelIfdefined(String label, RelatedItemDefinition rid) {
+    void setLabelIfdefined(String label, RelatedItemDefinition rid) {
         if (label != null) {
             if (!label.equals(rid.getDisplayLabel())) {
                 rid.setDisplayLabel(label);
@@ -65,7 +70,7 @@ public abstract class ModsRelatedItemProcessor extends MappingProcessor {
         }
     }
 
-    protected RelatedItemDefinition getRelatedItemDefinition(ModsDefinition mods, String label, Type.Enum type) {
+    RelatedItemDefinition getRelatedItemDefinition(ModsDefinition mods, String label, Type.Enum type) {
         final String mappedLabel = singleline(label);
         final String query = (mappedLabel == null || mappedLabel.isEmpty()) ?
                 "mods:relatedItem[@type='" + type + "']" :

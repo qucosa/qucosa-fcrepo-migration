@@ -41,7 +41,7 @@ import static org.apache.commons.io.IOUtils.toInputStream;
 
 public class SwordConnection {
 
-    public static final String DATA_SOURCE_NAME = "swordConnection";
+    static final String DATA_SOURCE_NAME = "swordConnection";
     private static final Logger log = LoggerFactory.getLogger(SwordConnection.class);
     private HttpClient httpClient;
     private String password;
@@ -62,11 +62,10 @@ public class SwordConnection {
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(user, password));
 
-        HttpClient client = HttpClientBuilder.create()
+        return HttpClientBuilder.create()
                 .setConnectionManager(connectionManager)
                 .setDefaultCredentialsProvider(credentialsProvider)
                 .build();
-        return client;
     }
 
     private String getConfigValueOrThrowException(Configuration conf, String key) throws ConfigurationException {
@@ -77,7 +76,7 @@ public class SwordConnection {
         return val;
     }
 
-    public HttpResponse deposit(SwordDeposit deposit, Boolean noop, String slugHeader, String onBehalfOfHeader) throws Exception {
+    HttpResponse deposit(SwordDeposit deposit, Boolean noop, String slugHeader, String onBehalfOfHeader) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(url + "/" + deposit.getCollection());
         HttpPost httpPost = new HttpPost(uriBuilder.build());
         httpPost.setHeader("X-No-Op", String.valueOf(noop));
@@ -118,7 +117,7 @@ public class SwordConnection {
         return response;
     }
 
-    public HttpResponse update(String pid, SwordDeposit deposit, Boolean noop, String onBehalfOfHeader) throws Exception {
+    HttpResponse update(String pid, SwordDeposit deposit, Boolean noop, String onBehalfOfHeader) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(url + "/" + deposit.getCollection() + "/" + pid);
         HttpPut httpPut = new HttpPut(uriBuilder.build());
         httpPut.setHeader("X-No-Op", String.valueOf(noop));

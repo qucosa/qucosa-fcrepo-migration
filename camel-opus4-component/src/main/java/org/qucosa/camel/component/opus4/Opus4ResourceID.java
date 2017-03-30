@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 
 public class Opus4ResourceID {
 
-    public static final String NS_OPUS_DOCUMENT = "Opus/Document";
+    static final String NS_OPUS_DOCUMENT = "Opus/Document";
     private static final Pattern PATTERN = Pattern.compile(NS_OPUS_DOCUMENT + "/(\\d+)");
     private final String identifier;
     private final String namespace;
@@ -37,11 +37,11 @@ public class Opus4ResourceID {
         return (namespace.isEmpty()) ? identifier : NS_OPUS_DOCUMENT + "/" + identifier;
     }
 
-    public String getIdentifier() {
+    String getIdentifier() {
         return identifier;
     }
 
-    public boolean isDocumentId() {
+    boolean isDocumentId() {
         return (!namespace.isEmpty());
     }
 
@@ -55,7 +55,7 @@ public class Opus4ResourceID {
         return toString().hashCode();
     }
 
-    public static Opus4ResourceID create(String resourceId) {
+    static Opus4ResourceID create(String resourceId) {
         if (resourceId == null || resourceId.isEmpty()) {
             throw new IllegalArgumentException("Not a valid Opus resource identifier: " + resourceId);
         }

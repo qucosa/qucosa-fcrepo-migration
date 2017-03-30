@@ -21,16 +21,24 @@ import com.github.fge.uritemplate.URITemplate;
 import com.github.fge.uritemplate.URITemplateException;
 import com.github.fge.uritemplate.vars.VariableMap;
 import de.slubDresden.InfoDocument;
-import gov.loc.mets.*;
+import gov.loc.mets.AmdSecType;
+import gov.loc.mets.FileType;
 import gov.loc.mets.FileType.FLocat;
+import gov.loc.mets.MdSecType;
 import gov.loc.mets.MdSecType.MdWrap;
+import gov.loc.mets.MetsDocument;
 import gov.loc.mets.MetsDocument.Mets;
+import gov.loc.mets.MetsType;
 import gov.loc.mets.MetsType.FileSec.FileGrp;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
-import noNamespace.*;
+import noNamespace.Document;
+import noNamespace.File;
+import noNamespace.Hash;
+import noNamespace.OpusDocument;
+import noNamespace.Title;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -50,12 +58,14 @@ import java.util.Map;
 import static gov.loc.mets.FileType.FLocat.LOCTYPE.URL;
 import static gov.loc.mets.MdSecType.MdWrap.MDTYPE;
 import static gov.loc.mets.MetsType.FileSec;
-import static noNamespace.Document.ServerState.*;
+import static noNamespace.Document.ServerState.DELETED;
+import static noNamespace.Document.ServerState.PUBLISHED;
+import static noNamespace.Document.ServerState.UNPUBLISHED;
 
 public class DepositMetsGenerator implements Processor {
 
-    public static final String METS_SCHEMA_LOCATION = "http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd";
-    public static final String MODS_SCHEMA_LOCATION = "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd";
+    private static final String METS_SCHEMA_LOCATION = "http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd";
+    private static final String MODS_SCHEMA_LOCATION = "http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd";
     private static final Logger log = LoggerFactory.getLogger(DepositMetsGenerator.class);
     private static final XmlOptions xmlOptions;
 
@@ -96,7 +106,6 @@ public class DepositMetsGenerator implements Processor {
             URL fileUrl = new URL(msg.getHeader("Qucosa-File-Url").toString());
             attachUploadFileSections(metsRecord, opusDocument, fileUrl);
         }
-
 
         if (log.isDebugEnabled()) {
             log.debug("\n" + metsDocument.xmlText(xmlOptions));

@@ -18,7 +18,12 @@
 package org.qucosa.migration.processors.transformations;
 
 import de.slubDresden.InfoDocument;
-import gov.loc.mods.v3.*;
+import gov.loc.mods.v3.DateDefinition;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.ModsDocument;
+import gov.loc.mods.v3.OriginInfoDefinition;
+import gov.loc.mods.v3.PlaceDefinition;
+import gov.loc.mods.v3.PlaceTermDefinition;
 import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;

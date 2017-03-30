@@ -45,14 +45,14 @@ import static de.slubDresden.YesNo.NO;
 import static de.slubDresden.YesNo.YES;
 
 public abstract class MappingProcessor implements Processor {
-    public static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
-    public static final String NS_SLUB = "http://slub-dresden.de/";
-    public static final String NS_FOAF = "http://xmlns.com/foaf/0.1/";
-    public static final String NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    public static final String NS_XLINK = "http://www.w3.org/1999/xlink";
+    static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
+    static final String NS_SLUB = "http://slub-dresden.de/";
+    static final String NS_FOAF = "http://xmlns.com/foaf/0.1/";
+    static final String NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    static final String NS_XLINK = "http://www.w3.org/1999/xlink";
     public static final String MODS_CHANGES = "MODS_CHANGES";
-    public static final String SLUB_INFO_CHANGES = "SLUB-INFO_CHANGES";
-    protected static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
+    static final String SLUB_INFO_CHANGES = "SLUB-INFO_CHANGES";
+    static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
     private static final String xpathNSDeclaration =
             "declare namespace mods='" + NS_MODS_V3 + "'; " +
                     "declare namespace slub='" + NS_SLUB + "'; " +
@@ -119,7 +119,7 @@ public abstract class MappingProcessor implements Processor {
         }
     }
 
-    public Boolean hasChanges() {
+    Boolean hasChanges() {
         return this.modsChanges;
     }
 
@@ -131,7 +131,7 @@ public abstract class MappingProcessor implements Processor {
         return result;
     }
 
-    protected List<XmlObject> selectAll(String query, XmlObject xmlObject) {
+    List<XmlObject> selectAll(String query, XmlObject xmlObject) {
         List<XmlObject> results = new ArrayList<>();
         XmlCursor cursor = xmlObject.newCursor();
         cursor.selectPath(xpathNSDeclaration + query);
@@ -143,7 +143,7 @@ public abstract class MappingProcessor implements Processor {
     }
 
 
-    public String languageEncoding(String code) {
+    String languageEncoding(String code) {
         if (code != null) {
             if (code.length() != 3) {
                 String result = Locale.forLanguageTag(code).getISO3Language();
@@ -153,16 +153,16 @@ public abstract class MappingProcessor implements Processor {
         return code;
     }
 
-    protected Boolean nodeExists(String expression, XmlObject object) {
+    Boolean nodeExists(String expression, XmlObject object) {
         return (select(expression, object) != null);
     }
 
-    protected Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
+    Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
         XmlObject node = select(expression, object);
         return (node != null && node.getDomNode().hasChildNodes());
     }
 
-    protected String dateEncoding(BigInteger year) {
+    String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy");
@@ -171,7 +171,7 @@ public abstract class MappingProcessor implements Processor {
         return dateFormat.format(cal.getTime());
     }
 
-    protected String dateEncoding(noNamespace.Date date) {
+    String dateEncoding(noNamespace.Date date) {
         if (date != null && (date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -195,15 +195,15 @@ public abstract class MappingProcessor implements Processor {
         }
     }
 
-    public String singleline(String s) {
+    String singleline(String s) {
         return (s == null) ? null : singleLineFilter.apply(s);
     }
 
-    public String multiline(String s) {
+    String multiline(String s) {
         return (s == null) ? null : multiLineFilter.apply(s);
     }
 
-    protected String buildTokenFrom(String prefix, String... strings) {
+    String buildTokenFrom(String prefix, String... strings) {
         StringBuilder sb = new StringBuilder();
         for (String s : strings) {
             if (s != null) {
@@ -213,7 +213,7 @@ public abstract class MappingProcessor implements Processor {
         return prefix + String.format("%02X", sb.toString().hashCode());
     }
 
-    protected YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
+    YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
         return (oaiExport) ? YES : NO;
     }
 }

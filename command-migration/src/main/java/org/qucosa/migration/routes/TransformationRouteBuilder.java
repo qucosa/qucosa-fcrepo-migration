@@ -34,7 +34,20 @@ import org.qucosa.migration.processors.CommentedOutFilter;
 import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.FileReaderProcessor;
 import org.qucosa.migration.processors.HttpOperationFailedHelper;
-import org.qucosa.migration.processors.transformations.*;
+import org.qucosa.migration.processors.transformations.AdministrationProcessor;
+import org.qucosa.migration.processors.transformations.CataloguingProcessor;
+import org.qucosa.migration.processors.transformations.DistributionInfoProcessor;
+import org.qucosa.migration.processors.transformations.DocumentTypeProcessor;
+import org.qucosa.migration.processors.transformations.IdentifierProcessor;
+import org.qucosa.migration.processors.transformations.InstitutionInfoProcessor;
+import org.qucosa.migration.processors.transformations.MappingProcessor;
+import org.qucosa.migration.processors.transformations.PersonInfoProcessor;
+import org.qucosa.migration.processors.transformations.PublicationInfoProcessor;
+import org.qucosa.migration.processors.transformations.RelationInfoProcessor;
+import org.qucosa.migration.processors.transformations.RightsProcessor;
+import org.qucosa.migration.processors.transformations.SourcesInfoProcessor;
+import org.qucosa.migration.processors.transformations.StaticInfoProcessor;
+import org.qucosa.migration.processors.transformations.TitleInfoProcessor;
 
 import java.util.concurrent.TimeUnit;
 

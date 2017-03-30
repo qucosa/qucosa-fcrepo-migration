@@ -17,7 +17,11 @@
 
 package org.qucosa.migration.processors.transformations;
 
-import de.slubDresden.*;
+import de.slubDresden.AttachmentType;
+import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import de.slubDresden.RightsType;
+import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlObject;

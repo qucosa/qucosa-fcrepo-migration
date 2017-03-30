@@ -31,19 +31,19 @@ public class SwordDeposit {
         this.collection = collection;
     }
 
-    public String getBody() {
+    String getBody() {
         return body;
     }
 
-    public String getContentType() {
+    String getContentType() {
         return contentType;
     }
 
-    public String getCollection() {
+    String getCollection() {
         return collection;
     }
 
-    public String getSlug() {
+    String getSlug() {
         return slug;
     }
 

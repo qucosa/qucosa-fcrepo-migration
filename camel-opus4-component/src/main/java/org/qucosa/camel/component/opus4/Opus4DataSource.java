@@ -41,12 +41,12 @@ import java.util.List;
 
 public class Opus4DataSource {
 
-    public static final String WEBAPI_DOCUMENT_RESOURCE_PATH = "/document";
-    public static final String WEBAPI_PARAM_QUCOSA_HOST = "qucosa.host";
-    public static final String DB_PARAM_HOST = "qucosa.db.url";
-    public static final String DB_PARAM_USER = "qucosa.db.user";
-    public static final String DB_PARAM_PASSWORD = "qucosa.db.passwd";
-    public static final String DATA_SOURCE_NAME = "opus4DataSource";
+    private static final String WEBAPI_DOCUMENT_RESOURCE_PATH = "/document";
+    static final String WEBAPI_PARAM_QUCOSA_HOST = "qucosa.host";
+    static final String DB_PARAM_HOST = "qucosa.db.url";
+    static final String DB_PARAM_USER = "qucosa.db.user";
+    static final String DB_PARAM_PASSWORD = "qucosa.db.passwd";
+    static final String DATA_SOURCE_NAME = "opus4DataSource";
     private static final Logger log = LoggerFactory.getLogger(Opus4DataSource.class);
     private Connection connection;
     private String dburl;
@@ -55,7 +55,7 @@ public class Opus4DataSource {
     private String password;
     private String user;
 
-    public void configure(Configuration conf) throws ConfigurationException, SQLException {
+    void configure(Configuration conf) throws ConfigurationException, SQLException {
         host = getConfigValueOrThrowException(conf, WEBAPI_PARAM_QUCOSA_HOST);
         dburl = getConfigValueOrThrowException(conf, DB_PARAM_HOST);
         user = getConfigValueOrThrowException(conf, DB_PARAM_USER);
@@ -64,7 +64,7 @@ public class Opus4DataSource {
         httpClient = prepareHttpClient();
     }
 
-    public OpusDocument get(Opus4ResourceID qid) throws Exception {
+    OpusDocument get(Opus4ResourceID qid) throws Exception {
         URIBuilder uriBuilder = new URIBuilder(host + WEBAPI_DOCUMENT_RESOURCE_PATH + "/" + qid.getIdentifier());
         HttpGet request = new HttpGet(uriBuilder.build());
 
@@ -79,7 +79,7 @@ public class Opus4DataSource {
         }
     }
 
-    public Opus4ResourceID resolve(String pattern) throws SQLException {
+    Opus4ResourceID resolve(String pattern) throws SQLException {
         Opus4ResourceID opus4ResourceID = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -97,7 +97,7 @@ public class Opus4DataSource {
         return opus4ResourceID;
     }
 
-    public List<Opus4ResourceID> children(Opus4ResourceID opus4ResourceID) throws SQLException {
+    List<Opus4ResourceID> children(Opus4ResourceID opus4ResourceID) throws SQLException {
         ArrayList<Opus4ResourceID> opus4ResourceIDs = new ArrayList<>();
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -118,7 +118,7 @@ public class Opus4DataSource {
         return opus4ResourceIDs;
     }
 
-    public List<Opus4ResourceID> find(String pattern) throws SQLException {
+    List<Opus4ResourceID> find(String pattern) throws SQLException {
         ArrayList<Opus4ResourceID> names = new ArrayList<>();
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -136,7 +136,7 @@ public class Opus4DataSource {
         return names;
     }
 
-    public void release() {
+    void release() {
         try {
             if (connection != null) {
                 connection.close();

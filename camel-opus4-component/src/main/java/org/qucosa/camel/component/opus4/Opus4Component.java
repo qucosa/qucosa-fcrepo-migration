@@ -37,8 +37,6 @@ public class Opus4Component extends DefaultComponent {
 
     @Override
     protected void doShutdown() throws Exception {
-        ((Opus4DataSource)
-                getCamelContext().getRegistry().lookupByName(Opus4DataSource.DATA_SOURCE_NAME)
-        ).release();
+        ((Opus4DataSource) getCamelContext().getRegistry().lookupByName(Opus4DataSource.DATA_SOURCE_NAME)).release();
     }
 }

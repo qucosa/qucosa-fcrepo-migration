@@ -24,12 +24,9 @@ import de.slubDresden.RightsType;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.OriginInfoDefinition;
-import gov.loc.mods.v3.PhysicalDescriptionDefinition;
 import noNamespace.OpusDocument;
 
 import javax.xml.xpath.XPathExpressionException;
-
-import static gov.loc.mods.v3.DigitalOriginDefinition.BORN_DIGITAL;
 
 public class StaticInfoProcessor extends MappingProcessor {
     @Override
@@ -60,20 +57,20 @@ public class StaticInfoProcessor extends MappingProcessor {
         at.setGiven("yes");
     }
 
-    private void ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
-        PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
-                select("mods:physicalDescription", mods);
-
-        if (pdd == null) {
-            pdd = mods.addNewPhysicalDescription();
-            signalChanges(MODS_CHANGES);
-        }
-
-        if (!nodeExists("mods:digitalOrigin", pdd)) {
-            pdd.addDigitalOrigin(BORN_DIGITAL);
-            signalChanges(MODS_CHANGES);
-        }
-    }
+//    private void ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
+//        PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
+//                select("mods:physicalDescription", mods);
+//
+//        if (pdd == null) {
+//            pdd = mods.addNewPhysicalDescription();
+//            signalChanges(MODS_CHANGES);
+//        }
+//
+//        if (!nodeExists("mods:digitalOrigin", pdd)) {
+//            pdd.addDigitalOrigin(BORN_DIGITAL);
+//            signalChanges(MODS_CHANGES);
+//        }
+//    }
 
     private void ensureEdition(ModsDefinition mods) throws XPathExpressionException {
         OriginInfoDefinition oid = (OriginInfoDefinition)

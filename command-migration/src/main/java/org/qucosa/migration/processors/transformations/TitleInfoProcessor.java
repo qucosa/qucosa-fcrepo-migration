@@ -18,7 +18,11 @@
 package org.qucosa.migration.processors.transformations;
 
 import de.slubDresden.InfoDocument;
-import gov.loc.mods.v3.*;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.ModsDocument;
+import gov.loc.mods.v3.RelatedItemDefinition;
+import gov.loc.mods.v3.StringPlusLanguage;
+import gov.loc.mods.v3.TitleInfoDefinition;
 import gov.loc.mods.v3.TitleInfoDefinition.Type;
 import noNamespace.OpusDocument;
 import noNamespace.Title;

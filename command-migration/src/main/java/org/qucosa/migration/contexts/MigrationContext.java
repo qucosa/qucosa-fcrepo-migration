@@ -33,7 +33,7 @@ public class MigrationContext extends DefaultCamelContext {
         setup(configuration, isStaging, isTransforming);
     }
 
-    protected void setup(Configuration conf, boolean isStaging, boolean isTransforming) throws Exception {
+    private void setup(Configuration conf, boolean isStaging, boolean isTransforming) throws Exception {
         Opus4DataSource opus4DataSource = new Opus4DataSource();
         opus4DataSource.configure(conf);
 

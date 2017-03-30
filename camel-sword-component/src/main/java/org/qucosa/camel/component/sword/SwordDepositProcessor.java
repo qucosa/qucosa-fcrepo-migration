@@ -29,7 +29,7 @@ public class SwordDepositProcessor implements Processor {
 
     private final SwordComponent.DepositMode mode;
 
-    public SwordDepositProcessor(SwordComponent.DepositMode depositMode) {
+    SwordDepositProcessor(SwordComponent.DepositMode depositMode) {
         this.mode = depositMode;
     }
 

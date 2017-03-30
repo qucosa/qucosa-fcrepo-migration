@@ -55,11 +55,10 @@ public class PurgeFedoraObject implements Processor {
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(user, password));
 
-        HttpClient client = HttpClientBuilder.create()
+        return HttpClientBuilder.create()
                 .setConnectionManager(connectionManager)
                 .setDefaultCredentialsProvider(credentialsProvider)
                 .build();
-        return client;
     }
 
 
