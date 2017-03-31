@@ -22,6 +22,8 @@ import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+
 public class DocumentTypeProcessor extends MappingProcessor {
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

@@ -29,6 +29,9 @@ import org.apache.xmlbeans.XmlObject;
 import java.util.ArrayList;
 
 import static de.slubDresden.YesNo.YES;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.selectAll;
+import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
 
 public class RightsProcessor extends MappingProcessor {
 

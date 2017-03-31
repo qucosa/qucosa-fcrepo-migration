@@ -28,6 +28,9 @@ import noNamespace.OpusDocument;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+
 public class StaticInfoProcessor extends MappingProcessor {
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

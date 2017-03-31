@@ -40,6 +40,12 @@ import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
 import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
 import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
 import static gov.loc.mods.v3.NamePartDefinition.Type.TERMS_OF_ADDRESS;
+import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
+import static org.qucosa.migration.mappings.MappingFunctions.NS_RDF;
+import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
+import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class PersonInfoProcessor extends MappingProcessor {
 

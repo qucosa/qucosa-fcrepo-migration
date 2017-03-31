@@ -25,6 +25,9 @@ import gov.loc.mods.v3.RelatedItemDefinition;
 import gov.loc.mods.v3.RelatedItemDefinition.Type;
 import gov.loc.mods.v3.StringPlusLanguage;
 
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+
 abstract class ModsRelatedItemProcessor extends MappingProcessor {
 
     void setSortOrderIfDefined(String partNumber, RelatedItemDefinition rid) {

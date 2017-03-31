@@ -30,6 +30,10 @@ import org.apache.xmlbeans.XmlString;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+
 public class TitleInfoProcessor extends MappingProcessor {
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

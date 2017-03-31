@@ -28,6 +28,10 @@ import org.apache.xmlbeans.XmlObject;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
+import static org.qucosa.migration.mappings.MappingFunctions.selectAll;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+
 public class IdentifierProcessor extends MappingProcessor {
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

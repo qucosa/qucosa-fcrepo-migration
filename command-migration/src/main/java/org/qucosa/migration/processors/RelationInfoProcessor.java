@@ -30,6 +30,8 @@ import org.apache.xmlbeans.XmlObject;
 
 import javax.xml.namespace.QName;
 
+import static org.qucosa.migration.mappings.MappingFunctions.NS_XLINK;
+
 public class RelationInfoProcessor extends ModsRelatedItemProcessor {
 
     private static final String NBN_RESOLVING_URL = "http://nbn-resolving.de/";

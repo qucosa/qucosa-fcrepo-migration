@@ -18,59 +18,17 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
-import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlObject;
-import org.qucosa.migration.stringfilter.StringFilter;
-import org.qucosa.migration.stringfilter.StringFilterChain;
-import org.qucosa.migration.stringfilter.TextInputStringFilters;
 
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SimpleTimeZone;
-import java.util.TimeZone;
-
-import static de.slubDresden.YesNo.NO;
-import static de.slubDresden.YesNo.YES;
 
 public abstract class MappingProcessor implements Processor {
-    static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
-    static final String NS_SLUB = "http://slub-dresden.de/";
-    static final String NS_FOAF = "http://xmlns.com/foaf/0.1/";
-    static final String NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    static final String NS_XLINK = "http://www.w3.org/1999/xlink";
     public static final String MODS_CHANGES = "MODS_CHANGES";
     static final String SLUB_INFO_CHANGES = "SLUB-INFO_CHANGES";
-    static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
-    private static final String xpathNSDeclaration =
-            "declare namespace mods='" + NS_MODS_V3 + "'; " +
-                    "declare namespace slub='" + NS_SLUB + "'; " +
-                    "declare namespace foaf='" + NS_FOAF + "'; " +
-                    "declare namespace xlink='" + NS_XLINK + "'; ";
-    private final StringFilter multiLineFilter = new StringFilterChain(
-            TextInputStringFilters.TRIM_FILTER,
-            TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
-            TextInputStringFilters.NFC_NORMALIZATION_FILTER
-    );
-    private final StringFilter singleLineFilter = new StringFilterChain(
-            TextInputStringFilters.NEW_LINE_FILTER,
-            TextInputStringFilters.TRIM_FILTER,
-            TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
-            TextInputStringFilters.NFC_NORMALIZATION_FILTER
-    );
     private String label;
     private boolean modsChanges;
     private boolean slubChanges;
@@ -123,26 +81,6 @@ public abstract class MappingProcessor implements Processor {
         return this.modsChanges;
     }
 
-    protected XmlObject select(String query, XmlObject xmlObject) {
-        XmlCursor cursor = xmlObject.newCursor();
-        cursor.selectPath(xpathNSDeclaration + query);
-        XmlObject result = cursor.toNextSelection() ? cursor.getObject() : null;
-        cursor.dispose();
-        return result;
-    }
-
-    List<XmlObject> selectAll(String query, XmlObject xmlObject) {
-        List<XmlObject> results = new ArrayList<>();
-        XmlCursor cursor = xmlObject.newCursor();
-        cursor.selectPath(xpathNSDeclaration + query);
-        while (cursor.toNextSelection()) {
-            results.add(cursor.getObject());
-        }
-        cursor.dispose();
-        return results;
-    }
-
-
     String languageEncoding(String code) {
         if (code != null) {
             if (code.length() != 3) {
@@ -153,67 +91,4 @@ public abstract class MappingProcessor implements Processor {
         return code;
     }
 
-    Boolean nodeExists(String expression, XmlObject object) {
-        return (select(expression, object) != null);
-    }
-
-    Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
-        XmlObject node = select(expression, object);
-        return (node != null && node.getDomNode().hasChildNodes());
-    }
-
-    String dateEncoding(BigInteger year) {
-        if ((year == null) || year.equals(BigInteger.ZERO)) return null;
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy");
-        Calendar cal = new GregorianCalendar();
-        cal.set(Calendar.YEAR, year.intValue());
-        return dateFormat.format(cal.getTime());
-    }
-
-    String dateEncoding(noNamespace.Date date) {
-        if (date != null && (date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
-
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-            TimeZone tz;
-            GregorianCalendar cal;
-            if (date.getTimezone() != null) {
-                tz = SimpleTimeZone.getTimeZone(date.getTimezone());
-                cal = new GregorianCalendar(tz);
-            } else {
-                cal = new GregorianCalendar();
-            }
-
-            cal.set(Calendar.YEAR, date.getYear().intValue());
-            cal.set(Calendar.MONTH, date.getMonth().intValue() - 1);
-            cal.set(Calendar.DAY_OF_MONTH, date.getDay().intValue());
-
-            return dateFormat.format(cal.getTime());
-        } else {
-            return null;
-        }
-    }
-
-    String singleline(String s) {
-        return (s == null) ? null : singleLineFilter.apply(s);
-    }
-
-    String multiline(String s) {
-        return (s == null) ? null : multiLineFilter.apply(s);
-    }
-
-    String buildTokenFrom(String prefix, String... strings) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : strings) {
-            if (s != null) {
-                sb.append(s);
-            }
-        }
-        return prefix + String.format("%02X", sb.toString().hashCode());
-    }
-
-    YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
-        return (oaiExport) ? YES : NO;
-    }
 }

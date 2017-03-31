@@ -26,6 +26,10 @@ import noNamespace.Document;
 import noNamespace.Note;
 import noNamespace.OpusDocument;
 
+import static org.qucosa.migration.mappings.MappingFunctions.multiline;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+
 public class AdministrationProcessor extends MappingProcessor {
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {

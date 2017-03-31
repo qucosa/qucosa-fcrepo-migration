@@ -30,6 +30,10 @@ import org.apache.xmlbeans.XmlString;
 
 import static gov.loc.mods.v3.CodeOrText.TEXT;
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
+import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
+import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
+import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class DistributionInfoProcessor extends MappingProcessor {
     @Override

@@ -27,27 +27,32 @@ import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
-import org.qucosa.migration.processors.MappingProcessor;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
+
+import static org.qucosa.migration.mappings.MappingFunctions.NS_FOAF;
+import static org.qucosa.migration.mappings.MappingFunctions.NS_MODS_V3;
+import static org.qucosa.migration.mappings.MappingFunctions.NS_RDF;
+import static org.qucosa.migration.mappings.MappingFunctions.NS_SLUB;
+import static org.qucosa.migration.mappings.MappingFunctions.NS_XLINK;
 
 public class ProcessorTestBase {
 
     static {
         NamespaceContext ctx = new SimpleNamespaceContext(
                 new HashMap() {{
-                    put("mods", MappingProcessor.NS_MODS_V3);
-                    put("slub", MappingProcessor.NS_SLUB);
-                    put("foaf", MappingProcessor.NS_FOAF);
-                    put("rdf", MappingProcessor.NS_RDF);
-                    put("xlink", MappingProcessor.NS_XLINK);
+                    put("mods", NS_MODS_V3);
+                    put("slub", NS_SLUB);
+                    put("foaf", NS_FOAF);
+                    put("rdf", NS_RDF);
+                    put("xlink", NS_XLINK);
                 }});
         XMLUnit.setXpathNamespaceContext(ctx);
     }
 
-    protected InfoDocument infoDocument;
+    InfoDocument infoDocument;
     protected ModsDocument modsDocument;
     protected OpusDocument opusDocument;
 
@@ -67,7 +72,7 @@ public class ProcessorTestBase {
         processor.process(opusDocument, modsDocument, infoDocument);
     }
 
-    protected void addServerDatePublished(int year, int month, int day, int hour, int minute, int second, String timezone) {
+    void addServerDatePublished(int year, int month, int day, int hour, int minute, int second, String timezone) {
         Date sdp = opusDocument.getOpus().getOpusDocument().addNewServerDatePublished();
         sdp.setYear(BigInteger.valueOf(year));
         sdp.setMonth(BigInteger.valueOf(month));
@@ -78,7 +83,7 @@ public class ProcessorTestBase {
         sdp.setTimezone(timezone);
     }
 
-    protected File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
+    File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
         File f = opusDocument.getOpus().getOpusDocument().addNewFile();
         f.setPathName(path);
         f.setOaiExport(oaiExport);
