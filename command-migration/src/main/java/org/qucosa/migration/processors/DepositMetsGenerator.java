@@ -73,7 +73,7 @@ public class DepositMetsGenerator implements Processor {
         xmlOptions = new XmlOptions();
         xmlOptions.setSavePrettyPrint();
         xmlOptions.setSaveAggressiveNamespaces();
-        xmlOptions.setSaveSuggestedPrefixes(new HashMap() {{
+        xmlOptions.setSaveSuggestedPrefixes(new HashMap<String, String>() {{
             put("http://www.loc.gov/METS/", "mets");
             put("http://www.loc.gov/mods/v3", "mods");
         }});
