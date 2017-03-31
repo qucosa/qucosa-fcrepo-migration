@@ -15,25 +15,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.stringfilter;
+package org.qucosa.migration.stringfilters;
 
-import org.junit.Test;
+public interface StringFilter {
 
-import static org.junit.Assert.assertEquals;
-
-public class StringFilterChainTest {
-
-    @Test
-    public void executes_filters_in_order() {
-        final StringFilterChain filterChain = new StringFilterChain(
-                in -> in.replace("a", "b"),
-                in -> in.replace("b", "c"),
-                in -> in.replace("c", "d")
-        );
-
-        final String result = filterChain.apply("a");
-
-        assertEquals("d", result);
-    }
+    String apply(String in);
 
 }

@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.stringfilter;
+package org.qucosa.migration.stringfilters;
 
 import java.util.Collections;
 import java.util.LinkedList;

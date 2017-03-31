@@ -20,9 +20,9 @@ package org.qucosa.migration.mappings;
 import de.slubDresden.YesNo;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
-import org.qucosa.migration.stringfilter.StringFilter;
-import org.qucosa.migration.stringfilter.StringFilterChain;
-import org.qucosa.migration.stringfilter.TextInputStringFilters;
+import org.qucosa.migration.stringfilters.StringFilter;
+import org.qucosa.migration.stringfilters.StringFilterChain;
+import org.qucosa.migration.stringfilters.TextInputStringFilters;
 
 import java.math.BigInteger;
 import java.text.DateFormat;
