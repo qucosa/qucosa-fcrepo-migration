@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors.transformations;
+package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
 import gov.loc.mods.v3.ModsDocument;
@@ -24,14 +24,15 @@ import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
 import org.junit.Test;
+import org.qucosa.migration.processors.MappingProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.qucosa.migration.processors.transformations.MappingProcessor.MODS_CHANGES;
-import static org.qucosa.migration.processors.transformations.MappingProcessor.SLUB_INFO_CHANGES;
+import static org.qucosa.migration.processors.MappingProcessor.MODS_CHANGES;
+import static org.qucosa.migration.processors.MappingProcessor.SLUB_INFO_CHANGES;
 
 public class MappingProcessorTest {
 
