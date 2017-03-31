@@ -85,8 +85,8 @@ public class DepositMetsGenerator implements Processor {
 
         MetsDocument metsDocument = MetsDocument.Factory.newInstance();
         Mets metsRecord = metsDocument.addNewMets();
-        addXsiSchemaLocation(metsRecord, METS_SCHEMA_LOCATION);
-        addXsiSchemaLocation(metsRecord, MODS_SCHEMA_LOCATION);
+        addXsiSchemaLocation(metsRecord, String.format("%s %s",
+                METS_SCHEMA_LOCATION, MODS_SCHEMA_LOCATION));
 
         if (msg.getBody() instanceof Map) {
             Map m = msg.getBody(Map.class);
