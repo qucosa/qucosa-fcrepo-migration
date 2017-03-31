@@ -28,8 +28,8 @@ import org.apache.xmlbeans.XmlObject;
 
 import javax.xml.xpath.XPathExpressionException;
 
-import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
-import static org.qucosa.migration.mappings.MappingFunctions.selectAll;
+import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
+import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class IdentifierProcessor extends MappingProcessor {

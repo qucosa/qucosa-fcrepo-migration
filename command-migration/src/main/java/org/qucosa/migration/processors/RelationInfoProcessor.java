@@ -30,7 +30,7 @@ import org.apache.xmlbeans.XmlObject;
 
 import javax.xml.namespace.QName;
 
-import static org.qucosa.migration.mappings.MappingFunctions.NS_XLINK;
+import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 
 public class RelationInfoProcessor extends ModsRelatedItemProcessor {
 

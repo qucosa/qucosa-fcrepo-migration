@@ -41,9 +41,9 @@ import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
-import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
-import static org.qucosa.migration.mappings.MappingFunctions.select;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
+import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class InstitutionInfoProcessor extends MappingProcessor {
 

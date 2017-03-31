@@ -32,11 +32,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-import static org.qucosa.migration.mappings.MappingFunctions.NS_FOAF;
-import static org.qucosa.migration.mappings.MappingFunctions.NS_MODS_V3;
-import static org.qucosa.migration.mappings.MappingFunctions.NS_RDF;
-import static org.qucosa.migration.mappings.MappingFunctions.NS_SLUB;
-import static org.qucosa.migration.mappings.MappingFunctions.NS_XLINK;
+import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
+import static org.qucosa.migration.mappings.Namespaces.NS_MODS_V3;
+import static org.qucosa.migration.mappings.Namespaces.NS_RDF;
+import static org.qucosa.migration.mappings.Namespaces.NS_SLUB;
+import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 
 public class ProcessorTestBase {
 

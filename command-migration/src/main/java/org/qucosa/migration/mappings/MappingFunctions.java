@@ -18,8 +18,6 @@
 package org.qucosa.migration.mappings;
 
 import de.slubDresden.YesNo;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlObject;
 import org.qucosa.migration.stringfilters.StringFilter;
 import org.qucosa.migration.stringfilters.StringFilterChain;
 import org.qucosa.migration.stringfilters.TextInputStringFilters;
@@ -27,10 +25,8 @@ import org.qucosa.migration.stringfilters.TextInputStringFilters;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -40,16 +36,6 @@ import static de.slubDresden.YesNo.YES;
 public class MappingFunctions {
 
     public static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
-    public static final String NS_RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    public static final String NS_XLINK = "http://www.w3.org/1999/xlink";
-    public static final String NS_FOAF = "http://xmlns.com/foaf/0.1/";
-    public static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
-    public static final String NS_SLUB = "http://slub-dresden.de/";
-    private static final String xpathNSDeclaration =
-            "declare namespace mods='" + NS_MODS_V3 + "'; " +
-                    "declare namespace slub='" + NS_SLUB + "'; " +
-                    "declare namespace foaf='" + NS_FOAF + "'; " +
-                    "declare namespace xlink='" + NS_XLINK + "'; ";
 
     private static final StringFilter multiLineFilter = new StringFilterChain(
             TextInputStringFilters.TRIM_FILTER,
@@ -64,25 +50,6 @@ public class MappingFunctions {
             TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
-    public static List<XmlObject> selectAll(String query, XmlObject xmlObject) {
-        List<XmlObject> results = new ArrayList<>();
-        XmlCursor cursor = xmlObject.newCursor();
-        cursor.selectPath(xpathNSDeclaration + query);
-        while (cursor.toNextSelection()) {
-            results.add(cursor.getObject());
-        }
-        cursor.dispose();
-        return results;
-    }
-
-    public static Boolean nodeExists(String expression, XmlObject object) {
-        return (select(expression, object) != null);
-    }
-
-    public static Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
-        XmlObject node = select(expression, object);
-        return (node != null && node.getDomNode().hasChildNodes());
-    }
 
     public static String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
@@ -137,14 +104,6 @@ public class MappingFunctions {
 
     public static YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
         return (oaiExport) ? YES : NO;
-    }
-
-    public static XmlObject select(String query, XmlObject xmlObject) {
-        XmlCursor cursor = xmlObject.newCursor();
-        cursor.selectPath(xpathNSDeclaration + query);
-        XmlObject result = cursor.toNextSelection() ? cursor.getObject() : null;
-        cursor.dispose();
-        return result;
     }
 
 }

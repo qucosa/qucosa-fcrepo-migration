@@ -28,8 +28,8 @@ import noNamespace.OpusDocument;
 
 import javax.xml.xpath.XPathExpressionException;
 
-import static org.qucosa.migration.mappings.MappingFunctions.nodeExists;
-import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
+import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class StaticInfoProcessor extends MappingProcessor {
     @Override

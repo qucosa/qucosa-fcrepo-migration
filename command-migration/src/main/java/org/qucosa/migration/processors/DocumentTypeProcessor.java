@@ -22,7 +22,7 @@ import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 
-import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class DocumentTypeProcessor extends MappingProcessor {
     @Override

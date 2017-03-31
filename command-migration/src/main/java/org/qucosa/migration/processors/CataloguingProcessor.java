@@ -29,7 +29,7 @@ import noNamespace.Subject;
 import noNamespace.Title;
 
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
-import static org.qucosa.migration.mappings.MappingFunctions.select;
+import static org.qucosa.migration.mappings.XmlFunctions.select;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class CataloguingProcessor extends MappingProcessor {
