@@ -28,29 +28,13 @@ import org.w3c.dom.Document;
 import java.math.BigInteger;
 
 import static gov.loc.mods.v3.NameDefinition.Type.PERSONAL;
-import static gov.loc.mods.v3.NamePartDefinition.Type.*;
+import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
+import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
+import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
 
 public class PersonInfoProcessorTest extends ProcessorTestBase {
 
     final private MappingProcessor processor = new PersonInfoProcessor();
-
-    @Test
-    public void extractsSubmitter() throws Exception {
-        Person submitter = opusDocument.getOpus().getOpusDocument().addNewPersonSubmitter();
-        submitter.setPhone("+49 815 4711");
-        submitter.setEmail("m.musterfrau@example.com");
-        submitter.setFirstName("Maxi");
-        submitter.setLastName("Musterfrau");
-
-        runProcessor(processor);
-
-        XMLAssert.assertXpathExists(
-                "//slub:submitter/foaf:Person[" +
-                        "foaf:name='Maxi Musterfrau' and " +
-                        "foaf:phone='+49 815 4711' and " +
-                        "foaf:mbox='m.musterfrau@example.com']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
-    }
 
     @Test
     public void extractsAdvisor() throws Exception {

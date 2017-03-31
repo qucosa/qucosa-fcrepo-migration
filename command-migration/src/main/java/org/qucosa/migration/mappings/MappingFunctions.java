@@ -106,4 +106,13 @@ public class MappingFunctions {
         return (oaiExport) ? YES : NO;
     }
 
+    static String combineName(String firstName, String lastName) {
+        StringBuilder sb = new StringBuilder();
+        if (firstName != null && !firstName.isEmpty()) {
+            sb.append(firstName).append(' ');
+        }
+        sb.append(lastName);
+        return sb.toString();
+    }
+
 }

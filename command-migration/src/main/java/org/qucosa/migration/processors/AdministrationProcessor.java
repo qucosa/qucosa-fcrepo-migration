@@ -18,49 +18,27 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
-import de.slubDresden.InfoType;
-import de.slubDresden.NoteType;
-import de.slubDresden.ScopeType;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.Document;
-import noNamespace.Note;
 import noNamespace.OpusDocument;
-
-import static org.qucosa.migration.mappings.MappingFunctions.multiline;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
-import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import org.qucosa.migration.mappings.ContactInformationMapping;
 
 public class AdministrationProcessor extends MappingProcessor {
+
+    private final ContactInformationMapping contactInformationMapping = new ContactInformationMapping();
+
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
         final Document opus = opusDocument.getOpus().getOpusDocument();
 
-        mapNotes(infoDocument, opus.getNoteArray());
-    }
-
-    private void mapNotes(InfoDocument infoDocument, Note[] noteArray) {
-        InfoType it = (InfoType) select("slub:info", infoDocument);
-
-        if (it == null) {
-            it = infoDocument.addNewInfo();
+        if (contactInformationMapping.mapPersonSubmitter(opus.getPersonSubmitterArray(), infoDocument.getInfo())) {
             signalChanges(SLUB_INFO_CHANGES);
         }
 
-        for (Note note : noteArray) {
-            final String creator = singleline(note.getCreator());
-            final String scope = singleline(note.getScope());
-            final String message = multiline(note.getMessage());
-
-            NoteType noteElement = (NoteType) select(String.format("slub:note[@from='%s' and @scope='%s' and @message='%s']",
-                    creator, scope, message), it);
-
-            if (noteElement == null) {
-                noteElement = it.addNewNote();
-                noteElement.setFrom(creator);
-                noteElement.setScope(ScopeType.Enum.forString(scope));
-                noteElement.setStringValue(message);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
+        if (contactInformationMapping.mapNotes(opus.getNoteArray(), infoDocument.getInfo())) {
+            signalChanges(SLUB_INFO_CHANGES);
         }
+
     }
+
 }

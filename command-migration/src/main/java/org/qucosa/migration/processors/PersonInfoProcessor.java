@@ -19,8 +19,6 @@ package org.qucosa.migration.processors;
 
 import com.xmlns.foaf.x01.PersonDocument;
 import de.slubDresden.InfoDocument;
-import de.slubDresden.InfoType;
-import de.slubDresden.SubmitterType;
 import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
@@ -53,7 +51,6 @@ public class PersonInfoProcessor extends MappingProcessor {
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
         Document opus = opusDocument.getOpus().getOpusDocument();
         ModsDefinition mods = modsDocument.getMods();
-        InfoType info = infoDocument.getInfo();
 
         mapPersons(mods, opus.getPersonAuthorArray());
         mapPersons(mods, opus.getPersonAdvisorArray());
@@ -62,7 +59,6 @@ public class PersonInfoProcessor extends MappingProcessor {
         mapPersons(mods, opus.getPersonRefereeArray());
         mapPersons(mods, opus.getPersonOtherArray());
         mapPersons(mods, opus.getPersonTranslatorArray());
-        mapPersonSubmitter(opus, info);
     }
 
     private void mapPersons(ModsDefinition mods, Person[] persons) {
@@ -80,7 +76,6 @@ public class PersonInfoProcessor extends MappingProcessor {
             setExtension(person, nd, mods);
         }
     }
-
 
     private void setExtension(Person person, NameDefinition nd, ModsDefinition mods) {
         ExtensionDefinition ext = (ExtensionDefinition)
@@ -268,32 +263,4 @@ public class PersonInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapPersonSubmitter(Document opus, InfoType info) {
-        for (Person submitter : opus.getPersonSubmitterArray()) {
-            final String name = singleline(combineName(submitter.getFirstName(), submitter.getLastName()));
-            final String phone = submitter.getPhone();
-            final String mbox = submitter.getEmail();
-
-            SubmitterType st = (SubmitterType)
-                    select("slub:submitter[foaf:Person/foaf:name='" + name + "']", info);
-
-            if (st == null) {
-                st = info.addNewSubmitter();
-                PersonDocument.Person foafPerson = st.addNewPerson();
-                foafPerson.setName(name);
-                if (phone != null && !phone.isEmpty()) foafPerson.setPhone(phone);
-                if (mbox != null && !mbox.isEmpty()) foafPerson.setMbox(mbox);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-        }
-    }
-
-    private String combineName(String firstName, String lastName) {
-        StringBuilder sb = new StringBuilder();
-        if (firstName != null && !firstName.isEmpty()) {
-            sb.append(firstName).append(' ');
-        }
-        sb.append(lastName);
-        return sb.toString();
-    }
 }
