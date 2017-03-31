@@ -36,7 +36,7 @@ public class FileReaderProcessorTest extends CamelTestSupport {
 
     @Before
     public void setUp() throws Exception {
-        subject = new FileReaderProcessor();
+        subject = new FileReaderProcessor("#");
         file = File.createTempFile(FileReaderProcessorTest.class.getName(), UUID.randomUUID().toString());
         exchange = createExchangeWithBody(file.getAbsolutePath());
     }
@@ -109,6 +109,31 @@ public class FileReaderProcessorTest extends CamelTestSupport {
         assertEquals(2, body.size());
         assertTrue("List should contain " + line1, body.contains(line1));
         assertTrue("List should contain " + line2, body.contains(line2));
+    }
+
+    @Test
+    public void Commented_lines_are_filtered_out() throws Exception {
+        String line1 = "Line 1";
+        String line2 = "#Line 2";
+        String line3 = "Line 2";
+
+        PrintWriter pw = new PrintWriter(file);
+        pw.println();
+        pw.println(line1);
+        pw.println();
+        pw.println(line2);
+        pw.println();
+        pw.println(line3);
+        pw.println();
+        pw.flush();
+
+        subject.process(exchange);
+
+        List<String> body = (List<String>) exchange.getIn().getBody(List.class);
+        assertEquals(2, body.size());
+        assertTrue("List should contain " + line1, body.contains(line1));
+        assertFalse("List should not contain " + line2, body.contains(line2));
+        assertTrue("List should contain " + line3, body.contains(line3));
     }
 
 }

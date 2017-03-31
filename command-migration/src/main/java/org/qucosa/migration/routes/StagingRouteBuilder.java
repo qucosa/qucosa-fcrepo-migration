@@ -24,7 +24,6 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.qucosa.camel.component.opus4.Opus4ResourceID;
 import org.qucosa.camel.component.sword.SwordDeposit;
-import org.qucosa.migration.processors.CommentedOutFilter;
 import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.FileReaderProcessor;
 import org.qucosa.migration.processors.PurgeFedoraObject;
@@ -68,8 +67,7 @@ public class StagingRouteBuilder extends RouteBuilder {
         from("direct:staging:file")
                 .routeId("staging-file")
                 .log("Staging resources listed in ${body}")
-                .process(new FileReaderProcessor())
-                .process(new CommentedOutFilter("#"))
+                .process(new FileReaderProcessor("#"))
                 .log("Found ${body.size} elements")
                 .split(body()).parallelProcessing()
                 .to("direct:staging");

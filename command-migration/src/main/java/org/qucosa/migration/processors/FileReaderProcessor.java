@@ -28,16 +28,20 @@ import java.util.stream.Collectors;
 
 public class FileReaderProcessor implements Processor {
 
+    private final String commentPrefix;
+
+    public FileReaderProcessor(String commentPrefix) {
+        this.commentPrefix = (commentPrefix == null) ? "" : commentPrefix;
+    }
+
     @Override
     public void process(Exchange exchange) throws Exception {
         Message in = exchange.getIn();
         String filename = in.getBody(String.class);
-        List<String> lines =
-                Files.readAllLines(Paths.get(filename))
-                        .stream()
-                        .map(String::trim)
-                        .filter(s -> !s.isEmpty())
-                        .collect(Collectors.toList());
+        List<String> lines = Files.readAllLines(Paths.get(filename)).stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty() && (commentPrefix.isEmpty() || !s.startsWith(commentPrefix)))
+                .collect(Collectors.toList());
         in.setBody(lines);
     }
 
