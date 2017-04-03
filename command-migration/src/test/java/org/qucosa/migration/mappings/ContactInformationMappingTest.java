@@ -19,20 +19,9 @@ package org.qucosa.migration.mappings;
 
 import noNamespace.Note;
 import noNamespace.Person;
-import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLAssert;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.HashMap;
-
-import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
-import static org.qucosa.migration.mappings.Namespaces.NS_MODS_V3;
-import static org.qucosa.migration.mappings.Namespaces.NS_RDF;
-import static org.qucosa.migration.mappings.Namespaces.NS_SLUB;
-import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 
 public class ContactInformationMappingTest extends MappingTestBase {
 
@@ -60,7 +49,7 @@ public class ContactInformationMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void extractsSubmitter() throws Exception {
+    public void Extracts_submitter_information() throws Exception {
         Person submitter = opusDocument.getOpus().getOpusDocument().addNewPersonSubmitter();
         submitter.setPhone("+49 815 4711");
         submitter.setEmail("m.musterfrau@example.com");
@@ -77,18 +66,6 @@ public class ContactInformationMappingTest extends MappingTestBase {
                         "foaf:phone='+49 815 4711' and " +
                         "foaf:mbox='m.musterfrau@example.com']",
                 infoDocument.getInfo().getDomNode().getOwnerDocument());
-    }
-
-    @BeforeClass
-    static public void setupXMLUnitNamespaceContext() {
-        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(
-                new HashMap<String, String>() {{
-                    put("mods", NS_MODS_V3);
-                    put("slub", NS_SLUB);
-                    put("foaf", NS_FOAF);
-                    put("rdf", NS_RDF);
-                    put("xlink", NS_XLINK);
-                }}));
     }
 
 }

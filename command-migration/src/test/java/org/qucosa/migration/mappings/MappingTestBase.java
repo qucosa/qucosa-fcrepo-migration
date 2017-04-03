@@ -18,18 +18,39 @@
 package org.qucosa.migration.mappings;
 
 import de.slubDresden.InfoDocument;
+import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
+import org.custommonkey.xmlunit.SimpleNamespaceContext;
+import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
+
+import java.util.HashMap;
+
+import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
+import static org.qucosa.migration.mappings.Namespaces.NS_MODS_V3;
+import static org.qucosa.migration.mappings.Namespaces.NS_RDF;
+import static org.qucosa.migration.mappings.Namespaces.NS_SLUB;
+import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 
 abstract class MappingTestBase {
 
+    private static final SimpleNamespaceContext simpleNamespaceContext = new SimpleNamespaceContext(
+            new HashMap<String, String>() {{
+                put("mods", NS_MODS_V3);
+                put("slub", NS_SLUB);
+                put("foaf", NS_FOAF);
+                put("rdf", NS_RDF);
+                put("xlink", NS_XLINK);
+            }});
+
+    ModsDocument modsDocument;
     InfoDocument infoDocument;
     OpusDocument opusDocument;
 
     @Before
-    public void setupOpusDocument() {
-        opusDocument = OpusDocument.Factory.newInstance();
-        opusDocument.addNewOpus().addNewOpusDocument();
+    public void setupModsDocument() {
+        modsDocument = ModsDocument.Factory.newInstance();
+        modsDocument.addNewMods();
     }
 
     @Before
@@ -38,4 +59,15 @@ abstract class MappingTestBase {
         infoDocument.addNewInfo();
     }
 
+    @Before
+    public void setupOpusDocument() {
+        opusDocument = OpusDocument.Factory.newInstance();
+        opusDocument.addNewOpus().addNewOpusDocument();
+    }
+
+    @Before
+    public void setupXMLUnitNamespaceContext() {
+        // This could be a @BeforeClass setup, but static functions cannot be called from derived test classes
+        XMLUnit.setXpathNamespaceContext(simpleNamespaceContext);
+    }
 }

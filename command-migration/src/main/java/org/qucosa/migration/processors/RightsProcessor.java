@@ -19,7 +19,6 @@ package org.qucosa.migration.processors;
 
 import de.slubDresden.AttachmentType;
 import de.slubDresden.InfoDocument;
-import de.slubDresden.InfoType;
 import de.slubDresden.RightsType;
 import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDocument;
@@ -29,15 +28,14 @@ import org.apache.xmlbeans.XmlObject;
 import java.util.ArrayList;
 
 import static de.slubDresden.YesNo.YES;
+import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
-import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
 
 public class RightsProcessor extends MappingProcessor {
 
     @Override
     public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        mapVgWortopenKey(opusDocument, infoDocument);
         mapFileAttachments(opusDocument, infoDocument);
     }
 
@@ -100,27 +98,4 @@ public class RightsProcessor extends MappingProcessor {
         }
     }
 
-    private void mapVgWortopenKey(OpusDocument opusDocument, InfoDocument infoDocument) {
-        final String vgwortOpenKey = opusDocument.getOpus().getOpusDocument().getVgWortOpenKey();
-        if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
-            final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
-            InfoType info = infoDocument.getInfo();
-
-            if (info.getVgwortOpenKey() == null
-                    || !info.getVgwortOpenKey().equals(encodedVgWortOpenKey)) {
-                info.setVgwortOpenKey(encodedVgWortOpenKey);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-        }
-    }
-
-    private String vgwortEncoding(String vgWortOpenKey) {
-        if (vgWortOpenKey.startsWith("http")) {
-            return vgWortOpenKey.substring(
-                    vgWortOpenKey.lastIndexOf('/') + 1,
-                    vgWortOpenKey.length());
-        } else {
-            return vgWortOpenKey;
-        }
-    }
 }
