@@ -32,7 +32,6 @@ public class SwordDepositTest {
         SwordDeposit swordDeposit = new SwordDeposit(slug, body, contentType, collection);
 
         final String s = swordDeposit.toString();
-        System.out.println(s);
 
         assertTrue("Should contain SLUG", s.contains(slug));
         assertTrue("Should contain BODY", s.contains(body));
