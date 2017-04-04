@@ -18,13 +18,11 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.AgreementType;
-import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import de.slubDresden.RightsType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.OriginInfoDefinition;
-import noNamespace.OpusDocument;
+import noNamespace.Document;
 
 import javax.xml.xpath.XPathExpressionException;
 
@@ -32,11 +30,9 @@ import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class StaticInfoProcessor extends MappingProcessor {
-    @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final ModsDefinition mods = modsDocument.getMods();
-        final InfoType info = infoDocument.getInfo();
 
+    @Override
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         ensureEdition(mods);
         // TODO Remove mapping of physical description if confirmed
 //        ensurePhysicalDescription(mods);

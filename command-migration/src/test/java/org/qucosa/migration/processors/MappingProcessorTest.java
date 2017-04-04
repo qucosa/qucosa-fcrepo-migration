@@ -18,13 +18,16 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
+import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
+import org.junit.Before;
 import org.junit.Test;
-import org.qucosa.migration.processors.MappingProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,21 +39,35 @@ import static org.qucosa.migration.processors.MappingProcessor.SLUB_INFO_CHANGES
 
 public class MappingProcessorTest {
 
+    private Exchange exchange;
+
+    @Before
+    public void setupExchange() {
+        exchange = new DefaultExchange(new DefaultCamelContext());
+        exchange.getIn().setBody(new HashMap<String, Object>() {{
+            OpusDocument opusDocument = OpusDocument.Factory.newInstance();
+            ModsDocument modsDocument = ModsDocument.Factory.newInstance();
+            InfoDocument infoDocument = InfoDocument.Factory.newInstance();
+
+            opusDocument.addNewOpus().addNewOpusDocument();
+            modsDocument.addNewMods();
+            infoDocument.addNewInfo();
+
+            put("QUCOSA-XML", opusDocument);
+            put("MODS", modsDocument);
+            put("SLUB-INFO", infoDocument);
+        }});
+    }
+
     @Test
     public void setsChangesPropertyToExchangeIfProcessorReportsChanges() throws Exception {
         MappingProcessor mappingProcessor = new MappingProcessor() {
             @Override
-            public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) {
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) {
                 signalChanges(MODS_CHANGES);
                 signalChanges(SLUB_INFO_CHANGES);
             }
         };
-
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setBody(new HashMap<String, Object>() {{
-            put("QUCOSA-XML", null);
-            put("MODS", null);
-        }});
 
         mappingProcessor.process(exchange);
 
@@ -62,16 +79,9 @@ public class MappingProcessorTest {
     public void returnsMapInExchangeBody() throws Exception {
         MappingProcessor mappingProcessor = new MappingProcessor() {
             @Override
-            public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) throws Exception {
             }
         };
-
-        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        exchange.getIn().setBody(new HashMap<String, Object>() {{
-            put("QUCOSA-XML", null);
-            put("MODS", null);
-            put("SLUB-INFO", null);
-        }});
 
         mappingProcessor.process(exchange);
 
@@ -93,7 +103,7 @@ public class MappingProcessorTest {
     public void handles_RuntimeExceptions() throws Exception {
         MappingProcessor processor = new MappingProcessor() {
             @Override
-            public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) throws Exception {
                 throw new RuntimeException();
             }
         };
@@ -103,7 +113,7 @@ public class MappingProcessorTest {
 
     private class LabelTestProcessor extends MappingProcessor {
         @Override
-        public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
+        public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) throws Exception {
         }
     }
 

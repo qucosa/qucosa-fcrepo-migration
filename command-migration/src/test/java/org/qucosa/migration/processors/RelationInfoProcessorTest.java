@@ -36,7 +36,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
                 "@type='series'" +
                 " and @displayLabel='" + label + "'" +
@@ -57,7 +57,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
                 "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
@@ -77,7 +77,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
                 "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
@@ -94,7 +94,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
                 "@type='host'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
@@ -113,7 +113,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:relatedItem[" +
                 "@type='preceding'" +
                 " and @xlink:href='" + link + "' ]", ownerDocument);
@@ -122,7 +122,7 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
     }
 
     private void createReferenceUrn(String urn, String label, String relation, String sortOrder) {
-        Reference refUrl = opusDocument.getOpus().getOpusDocument().addNewReferenceUrn();
+        Reference refUrl = opus.addNewReferenceUrn();
         refUrl.setValue(urn);
         refUrl.setLabel(label);
         refUrl.setRelation(relation);

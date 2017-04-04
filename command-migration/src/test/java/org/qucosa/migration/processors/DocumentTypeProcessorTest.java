@@ -17,8 +17,9 @@
 
 package org.qucosa.migration.processors;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 public class DocumentTypeProcessorTest extends ProcessorTestBase {
 
@@ -27,37 +28,37 @@ public class DocumentTypeProcessorTest extends ProcessorTestBase {
     @Test
     public void extractsDocumentType() throws Exception {
         String type = "diploma_thesis";
-        opusDocument.getOpus().getOpusDocument().setType(type);
+        opus.setType(type);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:documentType[text()='" + type + "']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void updatesExistingDocumentType() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setType("new-type");
-        infoDocument.getInfo().setDocumentType("old-type");
+        opus.setType("new-type");
+        info.setDocumentType("old-type");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:documentType[text()='new-type']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void properlyEncodesJournalDocumentType() throws Exception {
         String type = "journal";
-        opusDocument.getOpus().getOpusDocument().setType(type);
+        opus.setType(type);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:documentType[text()='periodical']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
 

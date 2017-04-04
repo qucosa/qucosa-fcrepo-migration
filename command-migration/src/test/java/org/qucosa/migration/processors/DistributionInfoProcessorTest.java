@@ -17,9 +17,9 @@
 
 package org.qucosa.migration.processors;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.fail;
 
 public class DistributionInfoProcessorTest extends ProcessorTestBase {
@@ -29,27 +29,27 @@ public class DistributionInfoProcessorTest extends ProcessorTestBase {
     @Test
     public void extractsPublisherName() throws Exception {
         final String publisher = "Universitätsbibliothek Leipzig";
-        opusDocument.getOpus().getOpusDocument().setPublisherName(publisher);
+        opus.setPublisherName(publisher);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/" +
                         "mods:publisher[text()='" + publisher + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsPublisherPlace() throws Exception {
         final String place = "Leipzig";
-        opusDocument.getOpus().getOpusDocument().setPublisherPlace(place);
+        opus.setPublisherPlace(place);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/mods:place/" +
                         "mods:placeTerm[@type='text' and text()='" + place + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -58,16 +58,16 @@ public class DistributionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/" +
                         "mods:dateIssued[@encoding='iso8601' and @keyDate='yes' and text()='2009-06-04']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void handlesEmptyFields() {
-        opusDocument.getOpus().getOpusDocument().setPublisherName(null);
-        opusDocument.getOpus().getOpusDocument().setPublisherPlace("");
+        opus.setPublisherName(null);
+        opus.setPublisherPlace("");
         addServerDatePublished(2009, 6, 4, 12, 9, 40, "GMT-2");
 
         try {

@@ -18,12 +18,14 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
 import noNamespace.Date;
+import noNamespace.Document;
 import noNamespace.File;
 import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlException;
-import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
@@ -41,39 +43,29 @@ import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 public class ProcessorTestBase {
 
     static {
-        NamespaceContext ctx = new SimpleNamespaceContext(
-                new HashMap() {{
+        XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(
+                new HashMap<String, String>() {{
                     put("mods", NS_MODS_V3);
                     put("slub", NS_SLUB);
                     put("foaf", NS_FOAF);
                     put("rdf", NS_RDF);
                     put("xlink", NS_XLINK);
-                }});
-        XMLUnit.setXpathNamespaceContext(ctx);
+                }}));
     }
 
-    InfoDocument infoDocument;
-    protected ModsDocument modsDocument;
-    protected OpusDocument opusDocument;
+    protected ModsDefinition mods;
+    protected Document opus;
+    InfoType info;
 
     @Before
     public void setupBasisDatastreams() throws IOException, XmlException {
-        modsDocument = ModsDocument.Factory.newInstance();
-        modsDocument.addNewMods();
-
-        opusDocument = OpusDocument.Factory.newInstance();
-        opusDocument.addNewOpus().addNewOpusDocument();
-
-        infoDocument = InfoDocument.Factory.newInstance();
-        infoDocument.addNewInfo();
-    }
-
-    protected void runProcessor(MappingProcessor processor) throws Exception {
-        processor.process(opusDocument, modsDocument, infoDocument);
+        mods = ModsDocument.Factory.newInstance().addNewMods();
+        opus = OpusDocument.Factory.newInstance().addNewOpus().addNewOpusDocument();
+        info = InfoDocument.Factory.newInstance().addNewInfo();
     }
 
     void addServerDatePublished(int year, int month, int day, int hour, int minute, int second, String timezone) {
-        Date sdp = opusDocument.getOpus().getOpusDocument().addNewServerDatePublished();
+        Date sdp = opus.addNewServerDatePublished();
         sdp.setYear(BigInteger.valueOf(year));
         sdp.setMonth(BigInteger.valueOf(month));
         sdp.setDay(BigInteger.valueOf(day));
@@ -84,10 +76,14 @@ public class ProcessorTestBase {
     }
 
     File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
-        File f = opusDocument.getOpus().getOpusDocument().addNewFile();
+        File f = opus.addNewFile();
         f.setPathName(path);
         f.setOaiExport(oaiExport);
         f.setFrontdoorVisible(frontdoorVisible);
         return f;
+    }
+
+    protected void runProcessor(MappingProcessor processor) throws Exception {
+        processor.process(opus, mods, info);
     }
 }

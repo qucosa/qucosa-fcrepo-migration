@@ -18,16 +18,14 @@
 package org.qucosa.migration.processors;
 
 import com.xmlns.foaf.x01.PersonDocument;
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.NameDefinition;
 import gov.loc.mods.v3.NamePartDefinition;
 import gov.loc.mods.v3.RoleDefinition;
 import gov.loc.mods.v3.RoleTermDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import noNamespace.Person;
 
 import javax.xml.namespace.QName;
@@ -48,10 +46,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 public class PersonInfoProcessor extends MappingProcessor {
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        Document opus = opusDocument.getOpus().getOpusDocument();
-        ModsDefinition mods = modsDocument.getMods();
-
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         mapPersons(mods, opus.getPersonAuthorArray());
         mapPersons(mods, opus.getPersonAdvisorArray());
         mapPersons(mods, opus.getPersonContributorArray());

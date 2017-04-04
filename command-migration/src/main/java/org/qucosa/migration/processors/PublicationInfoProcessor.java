@@ -17,16 +17,14 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.DateDefinition;
 import gov.loc.mods.v3.DateOtherDefinition;
 import gov.loc.mods.v3.LanguageDefinition;
 import gov.loc.mods.v3.LanguageTermDefinition;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.OriginInfoDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;
 
 import javax.xml.xpath.XPathExpressionException;
@@ -41,11 +39,9 @@ import static org.qucosa.migration.mappings.XmlFunctions.nodeExistsAndHasChildNo
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class PublicationInfoProcessor extends MappingProcessor {
-    @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-        final ModsDefinition mods = modsDocument.getMods();
 
+    @Override
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         mapLanguageElement(opus, mods);
         mapOriginInfoElements(opus, mods);
     }

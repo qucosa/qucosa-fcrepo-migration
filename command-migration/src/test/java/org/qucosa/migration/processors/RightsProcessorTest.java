@@ -17,8 +17,10 @@
 
 package org.qucosa.migration.processors;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 public class RightsProcessorTest extends ProcessorTestBase {
 
@@ -31,24 +33,24 @@ public class RightsProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-0' and @hasArchivalValue='yes' and @isDownloadable='no']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
-        XMLAssert.assertXpathExists(
+                info.getDomNode().getOwnerDocument());
+        assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1' and @hasArchivalValue='no' and @isDownloadable='yes']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void holdsNoUnnecessaryAttachmentElements() throws Exception {
         addFile("file1.pdf", true, false);
-        infoDocument.getInfo().addNewRights().addNewAttachment().setRef("ATT-1");
+        info.addNewRights().addNewAttachment().setRef("ATT-1");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathNotExists(
+        assertXpathNotExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
 }

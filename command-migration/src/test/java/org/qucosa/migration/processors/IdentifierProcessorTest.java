@@ -18,8 +18,9 @@
 package org.qucosa.migration.processors;
 
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 public class IdentifierProcessorTest extends ProcessorTestBase {
 
@@ -28,85 +29,85 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
     @Test
     public void extractsIsbn() throws Exception {
         String isbn = "978-3-8439-2186-2";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierIsbn().setValue(isbn);
+        opus.addNewIdentifierIsbn().setValue(isbn);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='isbn' and text()='" + isbn + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsUrn() throws Exception {
         String urn = "urn:nbn:de:bsz:14-ds-1229936868096-20917";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierUrn().setValue(urn);
+        opus.addNewIdentifierUrn().setValue(urn);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='urn' and text()='" + urn + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extracts_Qucosa_Urn() throws Exception {
         String urn = "urn:nbn:de:bsz:14-qucosa-172331";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierUrn().setValue(urn);
+        opus.addNewIdentifierUrn().setValue(urn);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsDoi() throws Exception {
         String doi = "10.3389/fnins.2015.00227";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierDoi().setValue(doi);
+        opus.addNewIdentifierDoi().setValue(doi);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='doi' and text()='" + doi + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsIssn() throws Exception {
         String issn = "1662-453X";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierIssn().setValue(issn);
+        opus.addNewIdentifierIssn().setValue(issn);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='issn' and text()='" + issn + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsPpn() throws Exception {
         String ppn = "303072784";
-        opusDocument.getOpus().getOpusDocument().addNewIdentifierPpn().setValue(ppn);
+        opus.addNewIdentifierPpn().setValue(ppn);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='swb-ppn' and text()='" + ppn + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsOpusId() throws Exception {
         String opusId = "193487";
-        opusDocument.getOpus().getOpusDocument().setDocumentId(opusId);
+        opus.setDocumentId(opusId);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:identifier[@type='opus' and text()='" + opusId + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
 }

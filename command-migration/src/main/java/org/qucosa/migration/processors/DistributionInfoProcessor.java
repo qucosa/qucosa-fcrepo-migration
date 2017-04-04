@@ -17,30 +17,26 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.DateDefinition;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.OriginInfoDefinition;
 import gov.loc.mods.v3.PlaceDefinition;
 import gov.loc.mods.v3.PlaceTermDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;
 
 import static gov.loc.mods.v3.CodeOrText.TEXT;
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
-import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class DistributionInfoProcessor extends MappingProcessor {
-    @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-        final ModsDefinition mods = modsDocument.getMods();
 
+    @Override
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         final Boolean hasPublisherName = nodeExists("PublisherName[text()!='']", opus);
         final Boolean hasPublisherPlace = nodeExists("PublisherPlace[text()!='']", opus);
         final Boolean hasServerDatePublished = nodeExists("ServerDatePublished", opus);
@@ -58,7 +54,6 @@ public class DistributionInfoProcessor extends MappingProcessor {
             if (hasPublisherName) mapPublisherName(opus, oid);
             if (hasPublisherPlace) mapPublisherPlace(opus, oid);
             if (hasServerDatePublished) mapServerDatePublished(opus, oid);
-
         }
     }
 

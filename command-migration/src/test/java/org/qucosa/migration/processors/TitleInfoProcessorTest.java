@@ -17,13 +17,12 @@
 
 package org.qucosa.migration.processors;
 
-import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
 import noNamespace.Title;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
@@ -38,11 +37,10 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleMain(language, value);
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @usage='primary']/mods:title[text()='" + value + "']",
-                outputMods.getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -52,11 +50,10 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleSub(language, value);
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + value + "']",
-                outputMods.getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -66,11 +63,10 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleAlternative(language, value);
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @type='alternative']/mods:title[text()='" + value + "']",
-                outputMods.getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -80,12 +76,11 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleParent(language, value);
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:relatedItem[@type='series']/mods:titleInfo[@lang='" + language + "']/" +
                         "mods:title[text()='" + value + "']",
-                outputMods.getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
 
@@ -95,7 +90,7 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";
         addTitleMain(language, value);
 
-        TitleInfoDefinition titleInfoDefinition = modsDocument.getMods().addNewTitleInfo();
+        TitleInfoDefinition titleInfoDefinition = mods.addNewTitleInfo();
         titleInfoDefinition.setLang(language);
 
         StringPlusLanguage title = titleInfoDefinition.addNewTitle();
@@ -114,10 +109,9 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleSub("eng", "English Sub Title");
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        XMLAssert.assertXpathExists("//mods:titleInfo[@lang='ger']", outputMods.getDomNode().getOwnerDocument());
-        XMLAssert.assertXpathExists("//mods:titleInfo[@lang='eng']", outputMods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:titleInfo[@lang='ger']", mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:titleInfo[@lang='eng']", mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -126,31 +120,30 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         addTitleMain(null, value);
 
         runProcessor(processor);
-        ModsDefinition outputMods = modsDocument.getMods();
 
-        assertNull(outputMods.getTitleInfoArray(0).getTitleArray(0).getLang());
+        assertNull(mods.getTitleInfoArray(0).getTitleArray(0).getLang());
     }
 
     private void addTitleMain(String language, String value) {
-        Title ot = opusDocument.getOpus().getOpusDocument().addNewTitleMain();
+        Title ot = opus.addNewTitleMain();
         ot.setLanguage(language);
         ot.setValue(value);
     }
 
     private void addTitleSub(String language, String value) {
-        Title ot = opusDocument.getOpus().getOpusDocument().addNewTitleSub();
+        Title ot = opus.addNewTitleSub();
         ot.setLanguage(language);
         ot.setValue(value);
     }
 
     private void addTitleAlternative(String language, String value) {
-        Title ot = opusDocument.getOpus().getOpusDocument().addNewTitleAlternative();
+        Title ot = opus.addNewTitleAlternative();
         ot.setLanguage(language);
         ot.setValue(value);
     }
 
     private void addTitleParent(String language, String value) {
-        Title ot = opusDocument.getOpus().getOpusDocument().addNewTitleParent();
+        Title ot = opus.addNewTitleParent();
         ot.setLanguage(language);
         ot.setValue(value);
     }

@@ -19,8 +19,9 @@ package org.qucosa.migration.processors;
 
 import noNamespace.Subject;
 import noNamespace.Title;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 public class CataloguingProcessorTest extends ProcessorTestBase {
 
@@ -29,79 +30,79 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
     @Test
     public void extractsTitleAbstract() throws Exception {
         final String value = "Deutsches Abstract";
-        Title oa = opusDocument.getOpus().getOpusDocument().addNewTitleAbstract();
+        Title oa = opus.addNewTitleAbstract();
         oa.setLanguage("ger");
         oa.setValue(value);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:abstract[@lang='ger' and @type='summary' and text()='" + value + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsTableOfContent() throws Exception {
         final String value = "Inhaltsverzeichnis";
-        opusDocument.getOpus().getOpusDocument().setTableOfContent(value);
+        opus.setTableOfContent(value);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:tableOfContents[text()='" + value + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsSubjectDdc() throws Exception {
-        Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectDdc();
+        Subject os = opus.addNewSubjectDdc();
         os.setType("ddc");
         os.setValue("004");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:classification[@authority='ddc' and text()='004']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsSubjectRvk() throws Exception {
-        Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectRvk();
+        Subject os = opus.addNewSubjectRvk();
         os.setType("rvk");
         os.setValue("ST 270");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:classification[@authority='rvk' and text()='ST 270']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsSubjectSwd() throws Exception {
-        Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectSwd();
+        Subject os = opus.addNewSubjectSwd();
         os.setType("swd");
         os.setValue("XYZ");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:classification[@authority='swd' and text()='XYZ']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsSubjectUncontrolled() throws Exception {
-        Subject os = opusDocument.getOpus().getOpusDocument().addNewSubjectUncontrolled();
+        Subject os = opus.addNewSubjectUncontrolled();
         os.setType("uncontrolled");
         os.setLanguage("ger");
         os.setValue("A, B, C");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 }

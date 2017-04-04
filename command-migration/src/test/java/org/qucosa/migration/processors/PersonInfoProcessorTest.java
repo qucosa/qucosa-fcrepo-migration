@@ -43,7 +43,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -59,7 +59,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -75,7 +75,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -91,7 +91,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -107,7 +107,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -123,7 +123,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -139,7 +139,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
         XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
@@ -154,7 +154,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
         {
-            NameDefinition nd = modsDocument.getMods().addNewName();
+            NameDefinition nd = mods.addNewName();
             nd.setType2(PERSONAL);
             {
                 NamePartDefinition np = nd.addNewNamePart();
@@ -173,7 +173,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
             }
         }
         {
-            NameDefinition nd = modsDocument.getMods().addNewName();
+            NameDefinition nd = mods.addNewName();
             nd.setType2(PERSONAL);
             NamePartDefinition np = nd.addNewNamePart();
             np.setType(FAMILY);
@@ -182,7 +182,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal'" +
                 " and mods:namePart[@type='family' and text()='Mustermann']" +
                 " and mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']]", xml);
@@ -195,7 +195,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:name[@type='personal']" +
                 "/mods:role/mods:roleTerm[" +
                 "@type='code' and @authority='marcrelator'" +
@@ -211,7 +211,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:extension/foaf:Person[@rdf:about=concat('#', //mods:name/@ID)]", xml);
     }
 
@@ -222,7 +222,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
         XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:phone='+49(0)1234567890']", xml);
         XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:mbox='mustermann@musteruni.de']", xml);
         XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:gender='male']", xml);
@@ -233,28 +233,28 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         Person person;
         switch (role) {
             case "advisor":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonAdvisor();
+                person = opus.addNewPersonAdvisor();
                 break;
             case "author":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonAuthor();
+                person = opus.addNewPersonAuthor();
                 break;
             case "contributor":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonContributor();
+                person = opus.addNewPersonContributor();
                 break;
             case "editor":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonEditor();
+                person = opus.addNewPersonEditor();
                 break;
             case "referee":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonEditor();
+                person = opus.addNewPersonEditor();
                 break;
             case "other":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonOther();
+                person = opus.addNewPersonOther();
                 break;
             case "translator":
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonTranslator();
+                person = opus.addNewPersonTranslator();
                 break;
             default:
-                person = opusDocument.getOpus().getOpusDocument().addNewPersonOther();
+                person = opus.addNewPersonOther();
         }
 
         person.setAcademicTitle(academicTitle);
@@ -264,6 +264,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
             date.setMonth(BigInteger.valueOf(monthOfBirth));
             date.setDay(BigInteger.valueOf(dayOfBirth));
         }
+
         person.setGender(gender);
         person.setPhone(phone);
         person.setEmail(email);

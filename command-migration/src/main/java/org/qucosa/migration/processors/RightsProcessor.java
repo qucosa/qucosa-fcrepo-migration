@@ -18,11 +18,11 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.AttachmentType;
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import de.slubDresden.RightsType;
 import de.slubDresden.YesNo;
-import gov.loc.mods.v3.ModsDocument;
-import noNamespace.OpusDocument;
+import gov.loc.mods.v3.ModsDefinition;
+import noNamespace.Document;
 import org.apache.xmlbeans.XmlObject;
 
 import java.util.ArrayList;
@@ -35,14 +35,14 @@ import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
 public class RightsProcessor extends MappingProcessor {
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        mapFileAttachments(opusDocument, infoDocument);
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        mapFileAttachments(opus, info);
     }
 
-    private void mapFileAttachments(OpusDocument opusDocument, InfoDocument infoDocument) {
-        RightsType rights = infoDocument.getInfo().getRights();
+    private void mapFileAttachments(Document opus, InfoType info) {
+        RightsType rights = info.getRights();
         if (rights == null) {
-            rights = infoDocument.getInfo().addNewRights();
+            rights = info.addNewRights();
             signalChanges(SLUB_INFO_CHANGES);
         }
 
@@ -55,7 +55,7 @@ public class RightsProcessor extends MappingProcessor {
         final ArrayList<String> processedAttachmentRefs = new ArrayList<>();
 
         int i = 0;
-        for (noNamespace.File opusFile : opusDocument.getOpus().getOpusDocument().getFileArray()) {
+        for (noNamespace.File opusFile : opus.getFileArray()) {
             final String ref = "ATT-" + i;
             final YesNo.Enum hasArchivalValue = yesNoBooleanMapping(opusFile.getOaiExport());
             final YesNo.Enum isDownloadable = yesNoBooleanMapping(opusFile.getFrontdoorVisible());

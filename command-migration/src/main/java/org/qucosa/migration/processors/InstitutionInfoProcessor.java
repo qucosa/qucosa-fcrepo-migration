@@ -22,13 +22,11 @@ import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.NameDefinition;
 import gov.loc.mods.v3.NamePartDefinition;
 import gov.loc.mods.v3.RoleDefinition;
 import gov.loc.mods.v3.RoleTermDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import noNamespace.Organisation;
 import noNamespace.Organisation.Type;
 
@@ -48,10 +46,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 public class InstitutionInfoProcessor extends MappingProcessor {
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        Document opus = opusDocument.getOpus().getOpusDocument();
-        ModsDefinition mods = modsDocument.getMods();
-
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         for (Organisation org : opus.getOrganisationArray()) {
             final Type.Enum type = org.getType();
             final String place = org.getAddress();

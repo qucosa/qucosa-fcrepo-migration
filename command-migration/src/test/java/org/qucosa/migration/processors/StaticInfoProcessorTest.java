@@ -17,9 +17,10 @@
 
 package org.qucosa.migration.processors;
 
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 
 public class StaticInfoProcessorTest extends ProcessorTestBase {
 
@@ -29,10 +30,8 @@ public class StaticInfoProcessorTest extends ProcessorTestBase {
     public void setsEdition() throws Exception {
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//mods:originInfo[@eventType='distribution']/" +
-                        "mods:edition[text()='[Electronic ed.]']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:originInfo[@eventType='distribution']/mods:edition[text()='[Electronic ed.]']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -40,20 +39,15 @@ public class StaticInfoProcessorTest extends ProcessorTestBase {
     public void setsPhysicalDescription() throws Exception {
         runProcessor(processor);
         // TODO Remove mapping of physical description if confirmed
-        XMLAssert.assertXpathExists(
-                "//mods:physicalDescription/" +
-                        "mods:digitalOrigin[text()='born digital']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:physicalDescription/mods:digitalOrigin[text()='born digital']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void slubAgreementIsSetToYes() throws Exception {
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//slub:rights/" +
-                        "slub:agreement[@given='yes']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:rights/slub:agreement[@given='yes']", info.getDomNode().getOwnerDocument());
     }
 
 }

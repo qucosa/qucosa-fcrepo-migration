@@ -22,6 +22,8 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+
 public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
     final private MappingProcessor processor = new InstitutionInfoProcessor();
@@ -33,8 +35,7 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -44,8 +45,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -56,8 +57,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         runProcessor(processor);
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathNotExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID][2]", xml);
+        XMLAssert.assertXpathNotExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID][2]",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -67,8 +68,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -78,8 +79,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -89,8 +90,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -100,8 +101,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -111,8 +112,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -122,8 +123,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[@place='Chemnitz']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@place='Chemnitz']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -133,11 +134,11 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[text()='TU Chemnitz']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Rektorat']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Abteilung Foo']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Gruppe Baz']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='TU Chemnitz']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Rektorat']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Abteilung Foo']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Gruppe Baz']", xml);
     }
 
     @Test
@@ -148,11 +149,11 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:chair='Professur für Datenbanken']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:chair='Professur für Datenbanken']", xml);
     }
 
     @Test
@@ -163,11 +164,11 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:chair='Professur für Datenbanken']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:chair='Professur für Datenbanken']", xml);
     }
 
     @Test
@@ -177,9 +178,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
     }
 
     @Test
@@ -190,11 +191,10 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:institute='Institut für Systemarchitektur']", xml);
     }
 
     @Test
@@ -204,8 +204,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-other']/mods:namePart[text()='TU Chemnitz']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-other']/mods:namePart[text()='TU Chemnitz']", xml);
     }
 
     @Test
@@ -215,8 +215,8 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='TU Chemnitz']", xml);
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='TU Chemnitz']", xml);
     }
 
     @Test
@@ -227,16 +227,16 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        Document xml = modsDocument.getMods().getDomNode().getOwnerDocument();
+        Document xml = mods.getDomNode().getOwnerDocument();
 
-        XMLAssert.assertXpathExists("//mods:name[@type='corporate']/mods:namePart[.='" + firstLevelName + "']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[.='" + firstLevelName + "']", xml);
         XMLAssert.assertXpathNotExists("//mods:name[@type='other']/mods:role", xml);
     }
 
     private void createOrganisation(
             Organisation.Type.Enum type, String address, String publisher, String firstLevelName,
             String secondLevelName, String thirdLevelName, String fourthLevelName) {
-        Organisation org = opusDocument.getOpus().getOpusDocument().addNewOrganisation();
+        Organisation org = opus.addNewOrganisation();
         org.setType(type);
         org.setAddress(address);
         org.setRole(publisher);
@@ -250,5 +250,4 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         org.setTudFisKeyChair("0");
         org.setFreeSubmission(false);
     }
-
 }

@@ -17,32 +17,21 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
-import gov.loc.mods.v3.ModsDocument;
-import noNamespace.OpusDocument;
-
-import static org.qucosa.migration.mappings.XmlFunctions.select;
+import gov.loc.mods.v3.ModsDefinition;
+import noNamespace.Document;
 
 public class DocumentTypeProcessor extends MappingProcessor {
-    @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
 
-        final String type = opusDocument.getOpus().getOpusDocument().getType();
+    @Override
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        final String type = opus.getType();
 
         if (type != null && !type.isEmpty()) {
-
             final String encodedType = documentTypeEncoding(type);
 
-            InfoType it = (InfoType) select("slub:info", infoDocument);
-
-            if (it == null) {
-                it = infoDocument.addNewInfo();
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-
-            if (it.getDocumentType() == null || !it.getDocumentType().equals(encodedType)) {
-                it.setDocumentType(encodedType);
+            if (info.getDocumentType() == null || !info.getDocumentType().equals(encodedType)) {
+                info.setDocumentType(encodedType);
                 signalChanges(SLUB_INFO_CHANGES);
             }
 

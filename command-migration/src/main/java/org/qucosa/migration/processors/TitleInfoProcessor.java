@@ -17,14 +17,13 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.RelatedItemDefinition;
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
 import gov.loc.mods.v3.TitleInfoDefinition.Type;
-import noNamespace.OpusDocument;
+import noNamespace.Document;
 import noNamespace.Title;
 import org.apache.xmlbeans.XmlString;
 
@@ -35,13 +34,13 @@ import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class TitleInfoProcessor extends MappingProcessor {
+
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        ModsDefinition modsDefinition = modsDocument.getMods();
-        mapTitleMainElements(opusDocument, modsDefinition);
-        mapTitleSubElements(opusDocument, modsDefinition);
-        mapTitleAlternativeElements(opusDocument, modsDefinition);
-        mapTitleParentElements(opusDocument, modsDefinition);
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        mapTitleMainElements(opus, mods);
+        mapTitleSubElements(opus, mods);
+        mapTitleAlternativeElements(opus, mods);
+        mapTitleParentElements(opus, mods);
     }
 
     private TitleInfoDefinition ensureTitleInfoElement(ModsDefinition modsDefinition, String lang) {
@@ -85,13 +84,11 @@ public class TitleInfoProcessor extends MappingProcessor {
         return titleInfoDefinition;
     }
 
-    private void mapTitleAlternativeElements(OpusDocument opusDocument, ModsDefinition modsDefinition)
-            throws XPathExpressionException {
-
-        for (Title ot : opusDocument.getOpus().getOpusDocument().getTitleAlternativeArray()) {
+    private void mapTitleAlternativeElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
+        for (Title ot : opus.getTitleAlternativeArray()) {
             final String encLang = languageEncoding(ot.getLanguage());
 
-            TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang, Type.ALTERNATIVE);
+            TitleInfoDefinition tid = ensureTitleInfoElement(mods, encLang, Type.ALTERNATIVE);
 
             final String value = singleline(ot.getValue());
             if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
@@ -102,25 +99,21 @@ public class TitleInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapTitleParentElements(OpusDocument opusDocument, ModsDefinition modsDefinition)
-            throws XPathExpressionException {
-
-        if (nodeExists("TitleParent", opusDocument.getOpus().getOpusDocument())) {
-
+    private void mapTitleParentElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
+        if (nodeExists("TitleParent", opus)) {
             RelatedItemDefinition relatedItemDefinition =
-                    (RelatedItemDefinition) select("mods:relatedItem[@type='series']", modsDefinition);
+                    (RelatedItemDefinition) select("mods:relatedItem[@type='series']", mods);
 
             if (relatedItemDefinition == null) {
-                relatedItemDefinition = modsDefinition.addNewRelatedItem();
+                relatedItemDefinition = mods.addNewRelatedItem();
                 relatedItemDefinition.setType(RelatedItemDefinition.Type.SERIES);
                 signalChanges(MODS_CHANGES);
             }
 
-            for (Title ot : opusDocument.getOpus().getOpusDocument().getTitleParentArray()) {
+            for (Title ot : opus.getTitleParentArray()) {
                 final String encLang = languageEncoding(ot.getLanguage());
 
                 TitleInfoDefinition tid = ensureTitleInfoElement(relatedItemDefinition, encLang);
-
 
                 final String value = singleline(ot.getValue());
                 if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
@@ -132,13 +125,11 @@ public class TitleInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapTitleSubElements(OpusDocument opusDocument, ModsDefinition modsDefinition)
-            throws XPathExpressionException {
-
-        for (Title ot : opusDocument.getOpus().getOpusDocument().getTitleSubArray()) {
+    private void mapTitleSubElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
+        for (Title ot : opus.getTitleSubArray()) {
             final String encLang = languageEncoding(ot.getLanguage());
 
-            TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
+            TitleInfoDefinition tid = ensureTitleInfoElement(mods, encLang);
 
             final String value = singleline(ot.getValue());
             if (!nodeExists("mods:subTitle[text()='" + value + "']", tid)) {
@@ -149,13 +140,11 @@ public class TitleInfoProcessor extends MappingProcessor {
         }
     }
 
-    private void mapTitleMainElements(OpusDocument opusDocument, ModsDefinition modsDefinition)
-            throws XPathExpressionException {
-
-        for (Title ot : opusDocument.getOpus().getOpusDocument().getTitleMainArray()) {
+    private void mapTitleMainElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
+        for (Title ot : opus.getTitleMainArray()) {
             String encLang = languageEncoding(ot.getLanguage());
 
-            TitleInfoDefinition tid = ensureTitleInfoElement(modsDefinition, encLang);
+            TitleInfoDefinition tid = ensureTitleInfoElement(mods, encLang);
             tid.setUsage(XmlString.Factory.newValue("primary"));
 
             final String value = singleline(ot.getValue());
@@ -166,5 +155,4 @@ public class TitleInfoProcessor extends MappingProcessor {
             }
         }
     }
-
 }

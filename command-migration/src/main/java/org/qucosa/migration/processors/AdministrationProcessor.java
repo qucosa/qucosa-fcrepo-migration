@@ -17,10 +17,9 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
-import gov.loc.mods.v3.ModsDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ModsDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import org.qucosa.migration.mappings.AdministrativeInformationMapping;
 import org.qucosa.migration.mappings.ContactInformationMapping;
 
@@ -30,22 +29,20 @@ public class AdministrationProcessor extends MappingProcessor {
     private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-
-        if (aim.mapCompletedDate(opusDocument.getOpus().getOpusDocument().getCompletedDate(), modsDocument.getMods())) {
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        if (aim.mapCompletedDate(opus.getCompletedDate(), mods)) {
             signalChanges(MODS_CHANGES);
         }
 
-        if (aim.mapDefaultPublisherInfo(opusDocument.getOpus().getOpusDocument(), modsDocument.getMods())) {
+        if (aim.mapDefaultPublisherInfo(opus, mods)) {
             signalChanges(MODS_CHANGES);
         }
 
-        if (cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), infoDocument.getInfo())) {
+        if (cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info)) {
             signalChanges(SLUB_INFO_CHANGES);
         }
 
-        if (cim.mapNotes(opus.getNoteArray(), infoDocument.getInfo())) {
+        if (cim.mapNotes(opus.getNoteArray(), info)) {
             signalChanges(SLUB_INFO_CHANGES);
         }
 

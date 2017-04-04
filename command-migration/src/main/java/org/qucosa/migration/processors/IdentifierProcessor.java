@@ -17,27 +17,23 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.IdentifierDefinition;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import noNamespace.Document;
 import noNamespace.Identifier;
-import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlObject;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
-import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 
 public class IdentifierProcessor extends MappingProcessor {
-    @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-        final ModsDefinition mods = modsDocument.getMods();
 
+    @Override
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         extractOpusId(opus, mods);
 
         String[] ns = {"Isbn", "Urn", "Doi", "Issn", "Ppn"};

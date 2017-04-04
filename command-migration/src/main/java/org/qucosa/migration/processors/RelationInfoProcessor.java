@@ -17,13 +17,11 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.RelatedItemDefinition;
 import gov.loc.mods.v3.RelatedItemDefinition.Type;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import noNamespace.Reference;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
@@ -37,10 +35,7 @@ public class RelationInfoProcessor extends ModsRelatedItemProcessor {
     private static final String NBN_RESOLVING_URL = "http://nbn-resolving.de/";
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-        final ModsDefinition mods = modsDocument.getMods();
-
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         for (Reference r : opus.getReferenceUrnArray()) {
             final String urn = r.getValue();
             final String label = r.getLabel();

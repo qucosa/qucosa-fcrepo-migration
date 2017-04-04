@@ -18,11 +18,13 @@
 package org.qucosa.migration.processors;
 
 import noNamespace.Date;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import java.math.BigInteger;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 
 public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
@@ -31,34 +33,33 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
     @Test
     public void extractsLanguage() throws Exception {
         final String lang = "ger";
-        opusDocument.getOpus().getOpusDocument().addLanguage(lang);
+        opus.addLanguage(lang);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//mods:language/" +
-                        "mods:languageTerm[@authority='iso639-2b' and @type='code' and text()='" + lang + "']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code' and text()='" + lang + "']",
+                mods.getDomNode().getOwnerDocument());
     }
 
 
     @Test
     public void Extracts_comma_separated_language_list() throws Exception {
         final String lang = "ger,eng,chi";
-        opusDocument.getOpus().getOpusDocument().addLanguage(lang);
+        opus.addLanguage(lang);
 
         runProcessor(processor);
 
-        final Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         final String s = "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code'";
-        XMLAssert.assertXpathExists(s + " and text()='ger']", ownerDocument);
-        XMLAssert.assertXpathExists(s + " and text()='eng']", ownerDocument);
-        XMLAssert.assertXpathExists(s + " and text()='chi']", ownerDocument);
+        assertXpathExists(s + " and text()='ger']", ownerDocument);
+        assertXpathExists(s + " and text()='eng']", ownerDocument);
+        assertXpathExists(s + " and text()='chi']", ownerDocument);
     }
 
     @Test
     public void extractsPublishedDate() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
+        Date ocd = opus.addNewPublishedDate();
         ocd.setYear(BigInteger.valueOf(2009));
         ocd.setMonth(BigInteger.valueOf(6));
         ocd.setDay(BigInteger.valueOf(4));
@@ -69,27 +70,27 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//mods:originInfo[@eventType='publication']/" +
-                        "mods:dateOther[@encoding='iso8601' and @type='submission' and text()='2009-06-04']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:originInfo[@eventType='publication']" +
+                        "/mods:dateOther[@encoding='iso8601' and @type='submission' and text()='2009-06-04']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void handlesEmptyPublishedDate() throws Exception {
-        opusDocument.getOpus().getOpusDocument().addNewPublishedDate();
+        opus.addNewPublishedDate();
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathNotExists(
+        assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateOther[@encoding='iso8601' and @type='submission']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsDateAccepted() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewDateAccepted();
+        Date ocd = opus.addNewDateAccepted();
         ocd.setYear(BigInteger.valueOf(2009));
         ocd.setMonth(BigInteger.valueOf(6));
         ocd.setDay(BigInteger.valueOf(20));
@@ -100,61 +101,61 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateOther[@encoding='iso8601' and @type='defense' and text()='2009-06-20']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void handlesEmptyDateAccepted() throws Exception {
-        opusDocument.getOpus().getOpusDocument().addNewDateAccepted();
+        opus.addNewDateAccepted();
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathNotExists(
+        assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateOther[@encoding='iso8601' and @type='defense']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void extractsPublishedYear() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setPublishedYear(BigInteger.valueOf(2009));
+        opus.setPublishedYear(BigInteger.valueOf(2009));
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateIssued[@encoding='iso8601' and text()='2009']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void handlesEmptyPublishedYear() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setPublishedYear(null);
+        opus.setPublishedYear(null);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathNotExists(
+        assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/mods:dateIssued",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void handlesZeroPublishedYear() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setPublishedYear(BigInteger.ZERO);
+        opus.setPublishedYear(BigInteger.ZERO);
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathNotExists(
+        assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/mods:dateIssued",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void usesServerDatePublishedIfNoOtherDateIsPresent() throws Exception {
-        Date ocd = opusDocument.getOpus().getOpusDocument().addNewServerDatePublished();
+        Date ocd = opus.addNewServerDatePublished();
         ocd.setYear(BigInteger.valueOf(2009));
         ocd.setMonth(BigInteger.valueOf(6));
         ocd.setDay(BigInteger.valueOf(20));
@@ -165,23 +166,21 @@ public class PublicationInfoProcessorTest extends ProcessorTestBase {
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//mods:originInfo[@eventType='publication']/" +
-                        "mods:dateIssued[@encoding='iso8601' and text()='2009-06-20']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:originInfo[@eventType='publication']/mods:dateIssued[@encoding='iso8601' and text()='2009-06-20']",
+                mods.getDomNode().getOwnerDocument());
     }
 
 
     @Test
     public void extractsEdition() throws Exception {
-        opusDocument.getOpus().getOpusDocument().setEdition("2nd. Edition");
+        opus.setEdition("2nd. Edition");
 
         runProcessor(processor);
 
-        XMLAssert.assertXpathExists(
-                "//mods:originInfo[@eventType='publication']/" +
-                        "mods:edition[text()='2nd. Edition']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:originInfo[@eventType='publication']/mods:edition[text()='2nd. Edition']",
+                mods.getDomNode().getOwnerDocument());
     }
 
 }

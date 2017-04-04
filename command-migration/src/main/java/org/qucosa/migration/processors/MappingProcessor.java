@@ -18,7 +18,10 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
+import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -41,9 +44,13 @@ public abstract class MappingProcessor implements Processor {
         slubChanges = (boolean) exchange.getProperty(SLUB_INFO_CHANGES, false);
 
         try {
-            process((OpusDocument) m.get("QUCOSA-XML"),
-                    (ModsDocument) m.get("MODS"),
-                    (InfoDocument) m.get("SLUB-INFO"));
+            OpusDocument opusXmlObject = getOpusDocument(m);
+            ModsDocument modsXmlObject = getModsDocument(m);
+            InfoDocument infoXmlObject = getInfoDocument(m);
+
+            process(opusXmlObject.getOpus().getOpusDocument(),
+                    modsXmlObject.getMods(),
+                    infoXmlObject.getInfo());
         } catch (RuntimeException rte) {
             throw new Exception("Processor failed with RuntimeException", rte);
         }
@@ -53,11 +60,52 @@ public abstract class MappingProcessor implements Processor {
         exchange.setProperty(SLUB_INFO_CHANGES, slubChanges);
     }
 
+    private InfoDocument getInfoDocument(Map m) {
+        InfoDocument infoXmlObject = (InfoDocument) m.get("SLUB-INFO");
+        if (infoXmlObject != null) {
+            if (infoXmlObject.getInfo() == null) {
+                throw new IllegalArgumentException("SLUB-INFO XML has no <info> element");
+            }
+        } else {
+            throw new IllegalArgumentException("SLUB-INFO XML is missing");
+        }
+        return infoXmlObject;
+    }
+
+    private ModsDocument getModsDocument(Map m) {
+        ModsDocument modsXmlObject = (ModsDocument) m.get("MODS");
+        if (modsXmlObject != null) {
+            if (modsXmlObject.getMods() == null) {
+                throw new IllegalArgumentException("MODS XML has no <mods> element");
+            }
+        } else {
+            throw new IllegalArgumentException("MODS XML is missing");
+        }
+        return modsXmlObject;
+    }
+
+    private OpusDocument getOpusDocument(Map m) {
+        OpusDocument opusXmlObject;
+        opusXmlObject = (OpusDocument) m.get("QUCOSA-XML");
+        if (opusXmlObject != null) {
+            if (opusXmlObject.getOpus() != null) {
+                if (opusXmlObject.getOpus().getOpusDocument() == null) {
+                    throw new IllegalArgumentException("QUCOSA XML has no <Opus>/<Opus_Document> element");
+                }
+            } else {
+                throw new IllegalArgumentException("QUCOSA XML has no <Opus> element");
+            }
+        } else {
+            throw new IllegalArgumentException("QUCOSA XML is missing");
+        }
+        return opusXmlObject;
+    }
+
 
     public abstract void process(
-            OpusDocument opusDocument,
-            ModsDocument modsDocument,
-            InfoDocument infoDocument) throws Exception;
+            Document inOpusDocument,
+            ModsDefinition outModsDocument,
+            InfoType outInfoDocument) throws Exception;
 
     public String getLabel() {
         if (label == null) {

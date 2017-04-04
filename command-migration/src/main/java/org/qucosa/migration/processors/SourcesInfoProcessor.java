@@ -17,21 +17,16 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.ModsDocument;
 import gov.loc.mods.v3.RelatedItemDefinition;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import noNamespace.Reference;
 
 public class SourcesInfoProcessor extends ModsRelatedItemProcessor {
 
     @Override
-    public void process(OpusDocument opusDocument, ModsDocument modsDocument, InfoDocument infoDocument) throws Exception {
-        final Document opus = opusDocument.getOpus().getOpusDocument();
-        final ModsDefinition mods = modsDocument.getMods();
-
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         mapReferenceElements(mods, opus.getReferenceUrlArray(), "uri");
         mapReferenceElements(mods, opus.getReferenceIsbnArray(), "isbn");
         mapReferenceElements(mods, opus.getReferenceIssnArray(), "issn");
