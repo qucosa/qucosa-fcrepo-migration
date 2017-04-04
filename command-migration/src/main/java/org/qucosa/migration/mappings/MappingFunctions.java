@@ -27,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -115,4 +116,13 @@ public class MappingFunctions {
         return sb.toString();
     }
 
+    public static String languageEncoding(String code) {
+        if (code != null) {
+            if (code.length() != 3) {
+                String result = Locale.forLanguageTag(code).getISO3Language();
+                if (result == null || result.isEmpty()) return null;
+            }
+        }
+        return code;
+    }
 }

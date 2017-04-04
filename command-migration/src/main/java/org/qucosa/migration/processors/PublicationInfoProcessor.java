@@ -34,6 +34,7 @@ import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
 import static gov.loc.mods.v3.LanguageTermDefinition.Authority.ISO_639_2_B;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
+import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExistsAndHasChildNodes;
 import static org.qucosa.migration.mappings.XmlFunctions.select;

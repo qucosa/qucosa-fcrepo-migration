@@ -15,17 +15,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
 import noNamespace.Subject;
 import noNamespace.Title;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertTrue;
 
-public class CataloguingProcessorTest extends ProcessorTestBase {
+public class ContentualMappingTest extends MappingTestBase {
 
-    final private MappingProcessor processor = new CataloguingProcessor();
+    private ContentualMapping contentualMapping;
+
+    @Before
+    public void setup() {
+        contentualMapping = new ContentualMapping();
+    }
 
     @Test
     public void extractsTitleAbstract() throws Exception {
@@ -34,22 +41,11 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         oa.setLanguage("ger");
         oa.setValue(value);
 
-        runProcessor(processor);
+        boolean result = contentualMapping.mapTitleAbstract(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:abstract[@lang='ger' and @type='summary' and text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
-    public void extractsTableOfContent() throws Exception {
-        final String value = "Inhaltsverzeichnis";
-        opus.setTableOfContent(value);
-
-        runProcessor(processor);
-
-        assertXpathExists(
-                "//mods:tableOfContents[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -59,8 +55,9 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         os.setType("ddc");
         os.setValue("004");
 
-        runProcessor(processor);
+        boolean result = contentualMapping.mapSubject("ddc", opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:classification[@authority='ddc' and text()='004']",
                 mods.getDomNode().getOwnerDocument());
@@ -72,8 +69,9 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         os.setType("rvk");
         os.setValue("ST 270");
 
-        runProcessor(processor);
+        boolean result = contentualMapping.mapSubject("rvk", opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:classification[@authority='rvk' and text()='ST 270']",
                 mods.getDomNode().getOwnerDocument());
@@ -85,8 +83,9 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         os.setType("swd");
         os.setValue("XYZ");
 
-        runProcessor(processor);
+        boolean result = contentualMapping.mapSubject("swd", opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:classification[@authority='swd' and text()='XYZ']",
                 mods.getDomNode().getOwnerDocument());
@@ -99,10 +98,25 @@ public class CataloguingProcessorTest extends ProcessorTestBase {
         os.setLanguage("ger");
         os.setValue("A, B, C");
 
-        runProcessor(processor);
+        boolean result = contentualMapping.mapSubject("uncontrolled", opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
                 mods.getDomNode().getOwnerDocument());
     }
+
+    @Test
+    public void extractsTableOfContent() throws Exception {
+        final String value = "Inhaltsverzeichnis";
+        opus.setTableOfContent(value);
+
+        boolean result = contentualMapping.mapTableOfContent(opus, mods);
+
+        assertTrue("Mapper should signal successful change", result);
+        assertXpathExists(
+                "//mods:tableOfContents[text()='" + value + "']",
+                mods.getDomNode().getOwnerDocument());
+    }
+
 }

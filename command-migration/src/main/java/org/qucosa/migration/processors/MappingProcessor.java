@@ -26,7 +26,6 @@ import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-import java.util.Locale;
 import java.util.Map;
 
 public abstract class MappingProcessor implements Processor {
@@ -127,16 +126,6 @@ public abstract class MappingProcessor implements Processor {
 
     Boolean hasChanges() {
         return this.modsChanges;
-    }
-
-    String languageEncoding(String code) {
-        if (code != null) {
-            if (code.length() != 3) {
-                String result = Locale.forLanguageTag(code).getISO3Language();
-                if (result == null || result.isEmpty()) return null;
-            }
-        }
-        return code;
     }
 
 }

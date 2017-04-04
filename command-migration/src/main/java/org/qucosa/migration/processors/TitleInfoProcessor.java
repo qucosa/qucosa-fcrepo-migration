@@ -29,6 +29,7 @@ import org.apache.xmlbeans.XmlString;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
