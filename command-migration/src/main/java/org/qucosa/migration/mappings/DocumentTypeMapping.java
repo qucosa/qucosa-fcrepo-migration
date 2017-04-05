@@ -15,20 +15,26 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
 import de.slubDresden.InfoType;
-import gov.loc.mods.v3.ModsDefinition;
 import noNamespace.Document;
-import org.qucosa.migration.mappings.DocumentTypeMapping;
 
-public class DocumentTypeProcessor extends MappingProcessor {
+import static org.qucosa.migration.mappings.MappingFunctions.documentTypeEncoding;
 
-    private final DocumentTypeMapping dm = new DocumentTypeMapping();
+public class DocumentTypeMapping {
 
-    @Override
-    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        if (dm.mapDocumentType(opus, info)) signalChanges(SLUB_INFO_CHANGES);
+    public boolean mapDocumentType(Document opus, InfoType info) {
+        boolean change = false;
+        final String type = opus.getType();
+        if (type != null && !type.isEmpty()) {
+            final String encodedType = documentTypeEncoding(type);
+            if (info.getDocumentType() == null || !info.getDocumentType().equals(encodedType)) {
+                info.setDocumentType(encodedType);
+                change = true;
+            }
+        }
+        return change;
     }
 
 }

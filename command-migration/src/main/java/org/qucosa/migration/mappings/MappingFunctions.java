@@ -27,6 +27,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
@@ -51,6 +52,28 @@ public class MappingFunctions {
             TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
+    private static final HashMap<String, String> typeMapping = new HashMap<String, String>() {{
+        put("article", "article");
+        put("bachelor_thesis", "bachelor_thesis");
+        put("book", "monograph");
+        put("composition", "musical_notation");
+        put("diploma_thesis", "diploma_thesis");
+        put("doctoral_thesis", "doctoral_thesis");
+        put("habilitation_thesis", "habilitation_thesis");
+        put("in_book", "contained_work");
+        put("in_proceeding", "in_proceeding");
+        put("issue", "issue");
+        put("journal", "periodical");
+        put("lecture", "lecture");
+        put("magister_thesis", "magister_thesis");
+        put("master_thesis", "master_thesis");
+        put("paper", "paper");
+        put("preprint", "preprint");
+        put("proceeding", "proceeding");
+        put("report", "report");
+        put("research_paper", "research_paper");
+        put("study", "study");
+    }};
 
     public static String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
@@ -125,4 +148,9 @@ public class MappingFunctions {
         }
         return code;
     }
+
+    public static String documentTypeEncoding(String type) {
+        return typeMapping.get(type);
+    }
+
 }
