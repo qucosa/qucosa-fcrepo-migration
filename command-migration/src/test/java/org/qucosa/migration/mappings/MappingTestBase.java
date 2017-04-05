@@ -18,7 +18,10 @@
 package org.qucosa.migration.mappings;
 
 import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
+import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -43,26 +46,23 @@ abstract class MappingTestBase {
                 put("xlink", NS_XLINK);
             }});
 
-    ModsDocument modsDocument;
-    InfoDocument infoDocument;
-    OpusDocument opusDocument;
+    ModsDefinition mods;
+    InfoType info;
+    Document opus;
 
     @Before
     public void setupModsDocument() {
-        modsDocument = ModsDocument.Factory.newInstance();
-        modsDocument.addNewMods();
+        mods = ModsDocument.Factory.newInstance().addNewMods();
     }
 
     @Before
     public void setupSlubInfoDocument() {
-        infoDocument = InfoDocument.Factory.newInstance();
-        infoDocument.addNewInfo();
+        info = InfoDocument.Factory.newInstance().addNewInfo();
     }
 
     @Before
     public void setupOpusDocument() {
-        opusDocument = OpusDocument.Factory.newInstance();
-        opusDocument.addNewOpus().addNewOpusDocument();
+        opus = OpusDocument.Factory.newInstance().addNewOpus().addNewOpusDocument();
     }
 
     @Before

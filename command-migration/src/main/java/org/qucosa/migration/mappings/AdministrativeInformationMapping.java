@@ -18,7 +18,6 @@
 package org.qucosa.migration.mappings;
 
 import de.slubDresden.CorporationType;
-import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.DateDefinition;
 import gov.loc.mods.v3.ExtensionDefinition;
@@ -28,7 +27,6 @@ import gov.loc.mods.v3.NameDefinition;
 import gov.loc.mods.v3.OriginInfoDefinition;
 import noNamespace.Date;
 import noNamespace.Document;
-import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlString;
 
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
@@ -169,13 +167,12 @@ public class AdministrativeInformationMapping {
         return change.signaled();
     }
 
-    public boolean mapVgWortopenKey(OpusDocument opusDocument, InfoDocument infoDocument) {
+    public boolean mapVgWortopenKey(Document opus, InfoType info) {
         boolean change = false;
-        String vgwortOpenKey = opusDocument.getOpus().getOpusDocument().getVgWortOpenKey();
+        String vgwortOpenKey = opus.getVgWortOpenKey();
 
         if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
             final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
-            InfoType info = infoDocument.getInfo();
 
             if (info.getVgwortOpenKey() == null
                     || !info.getVgwortOpenKey().equals(encodedVgWortOpenKey)) {

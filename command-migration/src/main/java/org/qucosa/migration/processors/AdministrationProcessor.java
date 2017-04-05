@@ -46,6 +46,9 @@ public class AdministrationProcessor extends MappingProcessor {
             signalChanges(SLUB_INFO_CHANGES);
         }
 
+        if (aim.mapVgWortopenKey(opus, info)) {
+            signalChanges(SLUB_INFO_CHANGES);
+        }
     }
 
 }

@@ -17,8 +17,6 @@
 
 package org.qucosa.migration.mappings;
 
-import noNamespace.Document;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,25 +42,24 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         date.setMonth(BigInteger.valueOf(1));
         date.setDay(BigInteger.valueOf(31));
 
-        boolean result = aim.mapCompletedDate(date, modsDocument.getMods());
+        boolean result = aim.mapCompletedDate(date, mods);
 
         assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/" +
                         "mods:dateIssued[@encoding='iso8601' and @keyDate='yes' and text()='2013-01-31']",
-                modsDocument.getMods().getDomNode().getOwnerDocument());
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void Maps_publisher_infos_to_MODS_name_element() throws Exception {
-        Document doc = opusDocument.getOpus().getOpusDocument();
-        doc.setPublisherName("Saechsische Landesbibliothek- Staats- und Universitaetsbibliothek Dresden");
-        doc.setPublisherPlace("Dresden");
-        doc.setPublisherAddress("Zellescher Weg 18, 01069 Dresden, Germany");
+        opus.setPublisherName("Saechsische Landesbibliothek- Staats- und Universitaetsbibliothek Dresden");
+        opus.setPublisherPlace("Dresden");
+        opus.setPublisherAddress("Zellescher Weg 18, 01069 Dresden, Germany");
 
-        boolean result = aim.mapDefaultPublisherInfo(doc, modsDocument.getMods());
+        boolean result = aim.mapDefaultPublisherInfo(opus, mods);
 
-        org.w3c.dom.Document ownerDocument = modsDocument.getMods().getDomNode().getOwnerDocument();
+        org.w3c.dom.Document ownerDocument = mods.getDomNode().getOwnerDocument();
 
         assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']", ownerDocument);
@@ -70,36 +67,36 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
                 "mods:nameIdentifier[@type='gnd' and text()='" + SLUB_GND_IDENTIFIER + "']", ownerDocument);
         assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID]", ownerDocument);
         assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID" +
-                " and @place='" + doc.getPublisherPlace() + "'" +
-                " and @address='" + doc.getPublisherAddress() + "']", ownerDocument);
+                " and @place='" + opus.getPublisherPlace() + "'" +
+                " and @address='" + opus.getPublisherAddress() + "']", ownerDocument);
         assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID]" +
-                "/slub:university[text()='" + doc.getPublisherName() + "']", ownerDocument);
+                "/slub:university[text()='" + opus.getPublisherName() + "']", ownerDocument);
     }
 
     @Test
     public void Extracts_VgWortOpenKey() throws Exception {
         String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
-        opusDocument.getOpus().getOpusDocument().setVgWortOpenKey(vgWortOpenKey);
+        opus.setVgWortOpenKey(vgWortOpenKey);
 
-        boolean result = aim.mapVgWortopenKey(opusDocument, infoDocument);
+        boolean result = aim.mapVgWortopenKey(opus, info);
 
         assertTrue("Mapper should signal successful change", result);
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void Filters_Url_Prefixes_from_VgWortOpenKey() throws Exception {
         String prefix = "http://vg04.met.vgwort.de/";
         String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
-        opusDocument.getOpus().getOpusDocument().setVgWortOpenKey(prefix + vgWortOpenKey);
+        opus.setVgWortOpenKey(prefix + vgWortOpenKey);
 
-        aim.mapVgWortopenKey(opusDocument, infoDocument);
+        aim.mapVgWortopenKey(opus, info);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
 }

@@ -34,38 +34,34 @@ public class ContactInformationMappingTest extends MappingTestBase {
 
     @Test
     public void Maps_note_element() throws Exception {
-        Note note = opusDocument.getOpus().getOpusDocument().addNewNote();
+        Note note = opus.addNewNote();
         note.setCreator("me");
         note.setScope("private");
         note.setMessage("The Message");
 
-        contactInformationMapping.mapNotes(
-                opusDocument.getOpus().getOpusDocument().getNoteArray(),
-                infoDocument.getInfo());
+        contactInformationMapping.mapNotes(opus.getNoteArray(), info);
 
         XMLAssert.assertXpathExists(
                 "//slub:note[@from='me' and @scope='private' and text()='The Message']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void Extracts_submitter_information() throws Exception {
-        Person submitter = opusDocument.getOpus().getOpusDocument().addNewPersonSubmitter();
+        Person submitter = opus.addNewPersonSubmitter();
         submitter.setPhone("+49 815 4711");
         submitter.setEmail("m.musterfrau@example.com");
         submitter.setFirstName("Maxi");
         submitter.setLastName("Musterfrau");
 
-        contactInformationMapping.mapPersonSubmitter(
-                opusDocument.getOpus().getOpusDocument().getPersonSubmitterArray(),
-                infoDocument.getInfo());
+        contactInformationMapping.mapPersonSubmitter(opus.getPersonSubmitterArray(), info);
 
         XMLAssert.assertXpathExists(
                 "//slub:submitter/foaf:Person[" +
                         "foaf:name='Maxi Musterfrau' and " +
                         "foaf:phone='+49 815 4711' and " +
                         "foaf:mbox='m.musterfrau@example.com']",
-                infoDocument.getInfo().getDomNode().getOwnerDocument());
+                info.getDomNode().getOwnerDocument());
     }
 
 }
