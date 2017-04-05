@@ -30,13 +30,12 @@ import org.apache.camel.model.RouteDefinition;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.qucosa.camel.component.sword.SwordDeposit;
-import org.qucosa.migration.processors.DepositMetsGenerator;
-import org.qucosa.migration.processors.FileReaderProcessor;
-import org.qucosa.migration.processors.HttpOperationFailedHelper;
 import org.qucosa.migration.processors.AdministrationProcessor;
 import org.qucosa.migration.processors.CataloguingProcessor;
-import org.qucosa.migration.processors.DistributionInfoProcessor;
+import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.DocumentTypeProcessor;
+import org.qucosa.migration.processors.FileReaderProcessor;
+import org.qucosa.migration.processors.HttpOperationFailedHelper;
 import org.qucosa.migration.processors.IdentifierProcessor;
 import org.qucosa.migration.processors.InstitutionInfoProcessor;
 import org.qucosa.migration.processors.MappingProcessor;
@@ -188,7 +187,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
         Class[] pipeline = {
                 AdministrationProcessor.class,
                 CataloguingProcessor.class,
-                DistributionInfoProcessor.class,
                 DocumentTypeProcessor.class,
                 IdentifierProcessor.class,
                 InstitutionInfoProcessor.class,
