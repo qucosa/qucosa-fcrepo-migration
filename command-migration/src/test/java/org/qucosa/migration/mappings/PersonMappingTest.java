@@ -15,13 +15,13 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
 import gov.loc.mods.v3.NameDefinition;
 import gov.loc.mods.v3.NamePartDefinition;
 import noNamespace.Date;
 import noNamespace.Person;
-import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
@@ -31,25 +31,33 @@ import static gov.loc.mods.v3.NameDefinition.Type.PERSONAL;
 import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
 import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
 import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertTrue;
 
-public class PersonInfoProcessorTest extends ProcessorTestBase {
+public class PersonMappingTest extends MappingTestBase {
 
-    final private MappingProcessor processor = new PersonInfoProcessor();
+    private PersonMapping personMapping;
+
+    @Before
+    public void setup() {
+        personMapping = new PersonMapping();
+    }
 
     @Test
     public void extractsAdvisor() throws Exception {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "advisor", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAdvisorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='ths']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='ths']", xml);
     }
 
     @Test
@@ -57,15 +65,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='aut']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='aut']", xml);
     }
 
     @Test
@@ -73,15 +82,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "contributor", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonContributorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='ctb']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='ctb']", xml);
     }
 
     @Test
@@ -89,15 +99,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "editor", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonEditorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", xml);
     }
 
     @Test
@@ -105,15 +116,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "referee", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonRefereeArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='rev']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='rev']", xml);
     }
 
     @Test
@@ -121,15 +133,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "other", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonOtherArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='oth']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='oth']", xml);
     }
 
     @Test
@@ -137,15 +150,16 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "translator", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonTranslatorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        XMLAssert.assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='trl']", xml);
+        assertXpathExists("//mods:name[@type='personal']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
+        assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='trl']", xml);
     }
 
     @Test
@@ -180,10 +194,11 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
             np.setStringValue("Schneider");
         }
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal'" +
+        assertXpathExists("//mods:name[@type='personal'" +
                 " and mods:namePart[@type='family' and text()='Mustermann']" +
                 " and mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']]", xml);
     }
@@ -193,10 +208,11 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:name[@type='personal']" +
+        assertXpathExists("//mods:name[@type='personal']" +
                 "/mods:role/mods:roleTerm[" +
                 "@type='code' and @authority='marcrelator'" +
                 " and @authorityURI='http://id.loc.gov/vocabulary/relators'" +
@@ -209,10 +225,11 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[@rdf:about=concat('#', //mods:name/@ID)]", xml);
+        assertXpathExists("//mods:extension/foaf:Person[@rdf:about=concat('#', //mods:name/@ID)]", xml);
     }
 
     @Test
@@ -220,12 +237,13 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        runProcessor(processor);
+        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:phone='+49(0)1234567890']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:mbox='mustermann@musteruni.de']", xml);
-        XMLAssert.assertXpathExists("//mods:extension/foaf:Person[foaf:gender='male']", xml);
+        assertXpathExists("//mods:extension/foaf:Person[foaf:phone='+49(0)1234567890']", xml);
+        assertXpathExists("//mods:extension/foaf:Person[foaf:mbox='mustermann@musteruni.de']", xml);
+        assertXpathExists("//mods:extension/foaf:Person[foaf:gender='male']", xml);
     }
 
     private void createPerson(String academicTitle, String gender, String phone, String email, String firstName,
@@ -245,7 +263,7 @@ public class PersonInfoProcessorTest extends ProcessorTestBase {
                 person = opus.addNewPersonEditor();
                 break;
             case "referee":
-                person = opus.addNewPersonEditor();
+                person = opus.addNewPersonReferee();
                 break;
             case "other":
                 person = opus.addNewPersonOther();
