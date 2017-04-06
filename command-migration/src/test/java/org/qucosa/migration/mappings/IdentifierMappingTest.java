@@ -15,24 +15,31 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
-
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertTrue;
 
-public class IdentifierProcessorTest extends ProcessorTestBase {
+public class IdentifierMappingTest extends MappingTestBase {
 
-    private MappingProcessor processor = new IdentifierProcessor();
+    private IdentifierMapping identifierMapping;
+
+    @Before
+    public void setup() {
+        identifierMapping = new IdentifierMapping();
+    }
 
     @Test
     public void extractsIsbn() throws Exception {
         String isbn = "978-3-8439-2186-2";
         opus.addNewIdentifierIsbn().setValue(isbn);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:identifier[@type='isbn' and text()='" + isbn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -43,10 +50,11 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         String urn = "urn:nbn:de:bsz:14-ds-1229936868096-20917";
         opus.addNewIdentifierUrn().setValue(urn);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
-                "//mods:identifier[@type='urn' and text()='" + urn + "']",
+                "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -55,8 +63,9 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         String urn = "urn:nbn:de:bsz:14-qucosa-172331";
         opus.addNewIdentifierUrn().setValue(urn);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -67,10 +76,11 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         String doi = "10.3389/fnins.2015.00227";
         opus.addNewIdentifierDoi().setValue(doi);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
-                "//mods:identifier[@type='doi' and text()='" + doi + "']",
+                "//mods:relatedItem[@type='otherVersion']/mods:identifier[@type='doi' and text()='" + doi + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -79,8 +89,9 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         String issn = "1662-453X";
         opus.addNewIdentifierIssn().setValue(issn);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:identifier[@type='issn' and text()='" + issn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -91,22 +102,11 @@ public class IdentifierProcessorTest extends ProcessorTestBase {
         String ppn = "303072784";
         opus.addNewIdentifierPpn().setValue(ppn);
 
-        runProcessor(processor);
+        boolean result = identifierMapping.mapIdentifiers(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:identifier[@type='swb-ppn' and text()='" + ppn + "']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
-    public void extractsOpusId() throws Exception {
-        String opusId = "193487";
-        opus.setDocumentId(opusId);
-
-        runProcessor(processor);
-
-        assertXpathExists(
-                "//mods:identifier[@type='opus' and text()='" + opusId + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 

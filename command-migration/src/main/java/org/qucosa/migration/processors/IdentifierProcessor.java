@@ -18,61 +18,17 @@
 package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoType;
-import gov.loc.mods.v3.IdentifierDefinition;
 import gov.loc.mods.v3.ModsDefinition;
 import noNamespace.Document;
-import noNamespace.Identifier;
-import org.apache.xmlbeans.XmlObject;
-
-import javax.xml.xpath.XPathExpressionException;
-
-import static org.qucosa.migration.mappings.MappingFunctions.singleline;
-import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
-import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
+import org.qucosa.migration.mappings.IdentifierMapping;
 
 public class IdentifierProcessor extends MappingProcessor {
 
+    private final IdentifierMapping im = new IdentifierMapping();
+
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        extractOpusId(opus, mods);
-
-        String[] ns = {"Isbn", "Urn", "Doi", "Issn", "Ppn"};
-        for (String n : ns) map(n, opus, mods);
+        if (im.mapIdentifiers(opus, mods)) signalChanges(MODS_CHANGES);
     }
 
-    private void extractOpusId(Document opus, ModsDefinition mods) {
-        String opusId = opus.getDocumentId();
-        ensureIdentifierElement("opus", opusId, mods);
-    }
-
-    private void map(String type, Document opusDocument, ModsDefinition mods) throws XPathExpressionException {
-        for (XmlObject xmlObject : selectAll("Identifier" + type, opusDocument)) {
-            Identifier oid = (Identifier) xmlObject;
-            final String oidValue = oid.getValue();
-            final String mappedType = determineTypeName(type, oidValue);
-            ensureIdentifierElement(mappedType, oidValue, mods);
-        }
-    }
-
-    private String determineTypeName(String type, String oidValue) {
-        if (oidValue.contains("qucosa")) {
-            return "qucosa:" + type;
-        } else if ("ppn".equalsIgnoreCase(type)) {
-            return "swb-ppn";
-        } else {
-            return type;
-        }
-    }
-
-    private void ensureIdentifierElement(String type, String id, ModsDefinition mods) {
-        final String mid = singleline(id);
-        if (mid != null && !nodeExists(
-                String.format("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), mid),
-                mods)) {
-            IdentifierDefinition identifierDefinition = mods.addNewIdentifier();
-            identifierDefinition.setType(type.toLowerCase());
-            identifierDefinition.setStringValue(mid);
-            signalChanges(MODS_CHANGES);
-        }
-    }
 }
