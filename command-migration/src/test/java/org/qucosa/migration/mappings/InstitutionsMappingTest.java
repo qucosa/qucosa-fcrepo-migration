@@ -15,26 +15,34 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
 import noNamespace.Organisation;
-import org.custommonkey.xmlunit.XMLAssert;
+import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertTrue;
 
-public class InstitutionInfoProcessorTest extends ProcessorTestBase {
+public class InstitutionsMappingTest extends MappingTestBase {
 
-    final private MappingProcessor processor = new InstitutionInfoProcessor();
+    private InstitutionsMapping institutionsMapping;
+
+    @Before
+    public void setup() {
+        institutionsMapping = new InstitutionsMapping();
+    }
 
     @Test
     public void extractsRole() throws Exception {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", mods.getDomNode().getOwnerDocument());
     }
 
@@ -43,8 +51,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -54,10 +63,11 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
+        result |= institutionsMapping.mapOrgansiations(opus, mods);
 
-        XMLAssert.assertXpathNotExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID][2]",
+        assertTrue("Mapper should signal successful change", result);
+        assertXpathNotExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID][2]",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -66,8 +76,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -77,8 +88,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.UNIVERSITY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -88,8 +100,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.CHAIR,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -99,8 +112,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.FACULTY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -110,8 +124,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.INSTITUTE,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -121,8 +136,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@place='Chemnitz']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -132,8 +148,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name/mods:namePart[text()='TU Chemnitz']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Rektorat']", xml);
@@ -147,8 +164,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", "Professur für Datenbanken");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
@@ -162,8 +180,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", "Professur für Datenbanken");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
@@ -176,8 +195,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.FACULTY,
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik", null, null);
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
@@ -189,8 +209,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", null);
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:faculty='Fakultät Informatik']", xml);
@@ -202,8 +223,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-other']/mods:namePart[text()='TU Chemnitz']", xml);
     }
@@ -213,8 +235,9 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.UNIVERSITY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='TU Chemnitz']", xml);
     }
@@ -225,12 +248,12 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         createOrganisation(Organisation.Type.OTHER,
                 "Leipzig", null, firstLevelName, null, null, null);
 
-        runProcessor(processor);
+        boolean result = institutionsMapping.mapOrgansiations(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         Document xml = mods.getDomNode().getOwnerDocument();
-
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[.='" + firstLevelName + "']", xml);
-        XMLAssert.assertXpathNotExists("//mods:name[@type='other']/mods:role", xml);
+        assertXpathNotExists("//mods:name[@type='other']/mods:role", xml);
     }
 
     private void createOrganisation(
@@ -250,4 +273,5 @@ public class InstitutionInfoProcessorTest extends ProcessorTestBase {
         org.setTudFisKeyChair("0");
         org.setFreeSubmission(false);
     }
+
 }

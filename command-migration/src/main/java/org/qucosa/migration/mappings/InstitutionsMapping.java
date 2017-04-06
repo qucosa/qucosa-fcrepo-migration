@@ -1,0 +1,246 @@
+/*
+ * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.qucosa.migration.mappings;
+
+import de.slubDresden.CorporationType;
+import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
+import gov.loc.mods.v3.ExtensionDefinition;
+import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.NameDefinition;
+import gov.loc.mods.v3.NamePartDefinition;
+import gov.loc.mods.v3.RoleDefinition;
+import gov.loc.mods.v3.RoleTermDefinition;
+import noNamespace.Document;
+import noNamespace.Organisation;
+
+import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import static gov.loc.mods.v3.CodeOrText.CODE;
+import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
+import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
+import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
+import static org.qucosa.migration.mappings.XmlFunctions.select;
+
+public class InstitutionsMapping {
+
+    private final ThreadLocal<ChangeSignal> change = ThreadLocal.withInitial(() -> new ChangeSignal());
+
+    public boolean mapOrgansiations(Document opus, ModsDefinition mods) throws Exception {
+        change.get().reset();
+        for (Organisation org : opus.getOrganisationArray()) {
+            final Organisation.Type.Enum type = org.getType();
+            final String place = org.getAddress();
+            final String role = marcrelatorEncoding(org.getRole());
+
+            final ArrayList<String> nameArray = buildNameArray(org);
+            final String significantName = singleline(nameArray.get(0));
+
+            if (significantName != null) {
+                nameArray.remove(0);
+                final String token = buildTokenFrom("CORP_", significantName);
+
+                NameDefinition nd = getNameDefinition(mods, token);
+                setNamePart(significantName, nd);
+
+                // FIXME Bad mapping hack to make up for inaptness of TYPO3 mapping configuration
+                addMappingHack(nd, type);
+
+                RoleDefinition rd = getRoleDefinition(nd);
+                setRoleTerm(role, rd);
+
+                if (!nameArray.isEmpty()) {
+                    ExtensionDefinition ed = getExtensionDefinition(mods);
+                    InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed);
+                    if (id != null) {
+                        ed.set(id);
+                    }
+                }
+            }
+        }
+        return change.get().signaled();
+    }
+
+    private InfoDocument getSlubInfoExtension(Organisation.Type.Enum type, String place, ArrayList<String> names, String token, ExtensionDefinition ed) throws Exception {
+        InfoDocument id = null;
+        InfoType it = (InfoType) select("slub:info", ed);
+        if (it == null) {
+            id = InfoDocument.Factory.newInstance();
+            it = id.addNewInfo();
+            change.get().signal();
+        }
+
+        CorporationType ct = (CorporationType) select("slub:corporation[@ref='" + token + "']", it);
+        if (ct == null) {
+            ct = it.addNewCorporation();
+            ct.setRef(token);
+            change.get().signal();
+        }
+
+        final String mappedType = (Organisation.Type.OTHER.equals(type)) ? type.toString() : Organisation.Type.UNIVERSITY.toString();
+        if (ct.getType() == null || !ct.getType().equals(mappedType)) {
+            ct.setType(mappedType);
+            change.get().signal();
+        }
+
+        if (ct.getPlace() == null || !ct.getPlace().equals(place)) {
+            ct.setPlace(place);
+            change.get().signal();
+        }
+
+        final LinkedList<String> otherHierarchy = new LinkedList<String>() {{
+            add("section");
+            add("section");
+            add("section");
+        }};
+
+        final LinkedList<String> universityHierarchy = new LinkedList<String>() {{
+            add("faculty");
+            add("institute");
+            add("chair");
+        }};
+
+        Iterator<String> hi = (Organisation.Type.OTHER.equals(type) ? otherHierarchy : universityHierarchy).listIterator();
+        for (String name : names) {
+            String hierarchyLevel = (hi.hasNext()) ? hi.next() : null;
+            if (hierarchyLevel != null) {
+                createOrganizationType(ct, hierarchyLevel, name);
+                change.get().signal();
+            }
+        }
+
+        return id;
+    }
+
+    private void createOrganizationType(CorporationType ct, String hierarchy, String name) throws XPathExpressionException {
+        final String mappedName = singleline(name);
+        switch (hierarchy) {
+            case "institution":
+                if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) ct.addInstitution(mappedName);
+                break;
+            case "section":
+                if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) ct.addSection(mappedName);
+                break;
+            case "university":
+                if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) ct.addUniversity(mappedName);
+                break;
+            case "faculty":
+                if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) ct.addFaculty(mappedName);
+                break;
+            case "institute":
+                if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) ct.addInstitute(mappedName);
+                break;
+            case "chair":
+                if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) ct.addChair(mappedName);
+                break;
+        }
+    }
+
+    private ExtensionDefinition getExtensionDefinition(ModsDefinition mods) {
+        ExtensionDefinition ed = (ExtensionDefinition) select("mods:extension", mods);
+        if (ed == null) {
+            ed = mods.addNewExtension();
+            change.get().signal();
+        }
+        return ed;
+    }
+
+    private void setRoleTerm(String role, RoleDefinition rd) {
+        RoleTermDefinition rtd = (RoleTermDefinition) select("mods:roleTerm[text()='" + role + "']", rd);
+        if (rtd == null) {
+            rtd = rd.addNewRoleTerm();
+            rtd.setType(CODE);
+            rtd.setAuthority("marcrelator");
+            rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
+            rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + role);
+            rtd.setStringValue(role);
+            change.get().signal();
+        }
+    }
+
+    private RoleDefinition getRoleDefinition(NameDefinition nd) {
+        RoleDefinition rd = (RoleDefinition) select("mods:role", nd);
+        if (rd == null) {
+            rd = nd.addNewRole();
+            change.get().signal();
+        }
+        return rd;
+    }
+
+    private void setNamePart(String significantName, NameDefinition nd) {
+        NamePartDefinition npd = (NamePartDefinition) select("mods:namePart[text()='" + significantName + "']", nd);
+        if (npd == null) {
+            npd = nd.addNewNamePart();
+            npd.setStringValue(significantName);
+            change.get().signal();
+        }
+    }
+
+    private NameDefinition getNameDefinition(ModsDefinition mods, String token) {
+        NameDefinition nd = (NameDefinition) select("mods:name[@ID='" + token + "' and @type='corporate']", mods);
+        if (nd == null) {
+            nd = mods.addNewName();
+            nd.setID(token);
+            nd.setType2(CORPORATE);
+            change.get().signal();
+        }
+        return nd;
+    }
+
+    private void addMappingHack(NameDefinition nd, Organisation.Type.Enum type) {
+        String mappingHack = "";
+        if (Organisation.Type.OTHER.equals(type)) {
+            mappingHack = "mapping-hack-other";
+        } else if (Organisation.Type.UNIVERSITY.equals(type)) {
+            mappingHack = "mapping-hack-university";
+        }
+        if (!mappingHack.equals(nd.getDisplayLabel())) {
+            nd.setDisplayLabel(mappingHack);
+            change.get().signal();
+        }
+    }
+
+    private ArrayList<String> buildNameArray(Organisation org) {
+        ArrayList<String> names = new ArrayList<>();
+        addIfNotEmpty(org.getFirstLevelName(), names);
+        addIfNotEmpty(org.getSecondLevelName(), names);
+        addIfNotEmpty(org.getThirdLevelName(), names);
+        addIfNotEmpty(org.getFourthLevelName(), names);
+        return names;
+    }
+
+    private void addIfNotEmpty(String s, ArrayList<String> ss) {
+        if (s != null && !s.isEmpty()) ss.add(s);
+    }
+
+    private String marcrelatorEncoding(String role) {
+        if ("publisher".equals(role)) {
+            return "pbl";
+        } else if ("contributor".equals(role)) {
+            return "ctb";
+        } else {
+            return null;
+        }
+    }
+
+}

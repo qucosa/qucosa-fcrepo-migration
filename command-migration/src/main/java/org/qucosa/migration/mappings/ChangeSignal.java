@@ -27,4 +27,8 @@ class ChangeSignal {
     void signal() {
         signal = true;
     }
+
+    void reset() {
+        signal = false;
+    }
 }
