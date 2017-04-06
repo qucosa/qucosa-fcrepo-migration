@@ -21,9 +21,7 @@ import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
-import noNamespace.Date;
 import noNamespace.Document;
-import noNamespace.File;
 import noNamespace.OpusDocument;
 import org.apache.xmlbeans.XmlException;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -31,7 +29,6 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Before;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.HashMap;
 
 import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
@@ -64,26 +61,7 @@ public class ProcessorTestBase {
         info = InfoDocument.Factory.newInstance().addNewInfo();
     }
 
-    void addServerDatePublished(int year, int month, int day, int hour, int minute, int second, String timezone) {
-        Date sdp = opus.addNewServerDatePublished();
-        sdp.setYear(BigInteger.valueOf(year));
-        sdp.setMonth(BigInteger.valueOf(month));
-        sdp.setDay(BigInteger.valueOf(day));
-        sdp.setHour(BigInteger.valueOf(hour));
-        sdp.setMinute(BigInteger.valueOf(minute));
-        sdp.setSecond(BigInteger.valueOf(second));
-        sdp.setTimezone(timezone);
-    }
-
-    File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
-        File f = opus.addNewFile();
-        f.setPathName(path);
-        f.setOaiExport(oaiExport);
-        f.setFrontdoorVisible(frontdoorVisible);
-        return f;
-    }
-
-    protected void runProcessor(MappingProcessor processor) throws Exception {
+    void runProcessor(MappingProcessor processor) throws Exception {
         processor.process(opus, mods, info);
     }
 }

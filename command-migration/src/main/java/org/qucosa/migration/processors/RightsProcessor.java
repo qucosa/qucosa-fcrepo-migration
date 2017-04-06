@@ -17,85 +17,18 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.AttachmentType;
 import de.slubDresden.InfoType;
-import de.slubDresden.RightsType;
-import de.slubDresden.YesNo;
 import gov.loc.mods.v3.ModsDefinition;
 import noNamespace.Document;
-import org.apache.xmlbeans.XmlObject;
-
-import java.util.ArrayList;
-
-import static de.slubDresden.YesNo.YES;
-import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
-import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
+import org.qucosa.migration.mappings.RightsMapping;
 
 public class RightsProcessor extends MappingProcessor {
 
+    private final RightsMapping rm = new RightsMapping();
+
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        mapFileAttachments(opus, info);
-    }
-
-    private void mapFileAttachments(Document opus, InfoType info) {
-        RightsType rights = info.getRights();
-        if (rights == null) {
-            rights = info.addNewRights();
-            signalChanges(SLUB_INFO_CHANGES);
-        }
-
-        final ArrayList<String> existingAttachmentRefs = new ArrayList<>();
-        for (XmlObject o : selectAll("slub:attachment", rights)) {
-            final AttachmentType eat = (AttachmentType) o;
-            existingAttachmentRefs.add(eat.getRef());
-        }
-
-        final ArrayList<String> processedAttachmentRefs = new ArrayList<>();
-
-        int i = 0;
-        for (noNamespace.File opusFile : opus.getFileArray()) {
-            final String ref = "ATT-" + i;
-            final YesNo.Enum hasArchivalValue = yesNoBooleanMapping(opusFile.getOaiExport());
-            final YesNo.Enum isDownloadable = yesNoBooleanMapping(opusFile.getFrontdoorVisible());
-            final YesNo.Enum isRedistributable = YES;
-
-            final String query = String.format("slub:attachment[@ref='%s']", ref);
-            AttachmentType at = (AttachmentType) select(query, rights);
-            if (at == null) {
-                at = rights.addNewAttachment();
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-
-            processedAttachmentRefs.add(ref);
-
-            if (at.getRef() == null || !at.getRef().equals(ref)) {
-                at.setRef(ref);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-            if (at.getHasArchivalValue() == null || !at.getHasArchivalValue().equals(hasArchivalValue)) {
-                at.setHasArchivalValue(hasArchivalValue);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-            if (at.getIsDownloadable() == null || !at.getIsDownloadable().equals(isDownloadable)) {
-                at.setIsDownloadable(isDownloadable);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-            if (at.getIsRedistributable() == null || !at.getIsRedistributable().equals(isRedistributable)) {
-                at.setIsRedistributable(isRedistributable);
-                signalChanges(SLUB_INFO_CHANGES);
-            }
-
-            i++;
-        }
-
-        existingAttachmentRefs.removeAll(processedAttachmentRefs);
-        for (int j = 0; j < rights.getAttachmentArray().length; j++) {
-            if (existingAttachmentRefs.contains(rights.getAttachmentArray(j).getRef())) {
-                rights.removeAttachment(j);
-            }
-        }
+        if (rm.mapFileAttachments(opus, info)) signalChanges(SLUB_INFO_CHANGES);
     }
 
 }

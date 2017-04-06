@@ -15,24 +15,33 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
+import noNamespace.File;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertTrue;
 
-public class RightsProcessorTest extends ProcessorTestBase {
+public class RightsMappingTest extends MappingTestBase {
 
-    final private MappingProcessor processor = new RightsProcessor();
+    private RightsMapping rightsMapping;
+
+    @Before
+    public void setup() {
+        rightsMapping = new RightsMapping();
+    }
 
     @Test
     public void hasSlubAttachmentElementForEachFile() throws Exception {
         addFile("file1.pdf", true, false);
         addFile("file2.pdf", false, true);
 
-        runProcessor(processor);
+        boolean result = rightsMapping.mapFileAttachments(opus, info);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-0' and @hasArchivalValue='yes' and @isDownloadable='no']",
                 info.getDomNode().getOwnerDocument());
@@ -46,11 +55,20 @@ public class RightsProcessorTest extends ProcessorTestBase {
         addFile("file1.pdf", true, false);
         info.addNewRights().addNewAttachment().setRef("ATT-1");
 
-        runProcessor(processor);
+        boolean result = rightsMapping.mapFileAttachments(opus, info);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathNotExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1']",
                 info.getDomNode().getOwnerDocument());
+    }
+
+    private File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
+        File f = opus.addNewFile();
+        f.setPathName(path);
+        f.setOaiExport(oaiExport);
+        f.setFrontdoorVisible(frontdoorVisible);
+        return f;
     }
 
 }
