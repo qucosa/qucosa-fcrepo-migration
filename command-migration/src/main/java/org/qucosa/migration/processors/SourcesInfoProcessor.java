@@ -20,11 +20,15 @@ package org.qucosa.migration.processors;
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
 import noNamespace.Document;
+import org.qucosa.migration.mappings.SourceMapping;
 
 public class SourcesInfoProcessor extends MappingProcessor {
 
+    private final SourceMapping sourceMapping = new SourceMapping();
+
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        if (sourceMapping.mapSource(opus, mods)) signalChanges(MODS_CHANGES);
     }
 
 }
