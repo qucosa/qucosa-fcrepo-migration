@@ -17,8 +17,10 @@
 
 package org.qucosa.migration.mappings;
 
+import de.slubDresden.AgreementType;
 import de.slubDresden.CorporationType;
 import de.slubDresden.InfoType;
+import de.slubDresden.RightsType;
 import gov.loc.mods.v3.DateDefinition;
 import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.IdentifierDefinition;
@@ -204,5 +206,30 @@ public class AdministrativeInformationMapping {
         }
         return oid;
     }
+
+
+    public boolean ensureRightsAgreement(InfoType info) {
+        boolean change = false;
+        RightsType rt = (RightsType) select("slub:rights", info);
+        if (rt == null) {
+            rt = info.addNewRights();
+            change = true;
+        }
+
+        AgreementType at = (AgreementType)
+                select("slub:agreement", rt);
+        if (at == null) {
+            at = rt.addNewAgreement();
+            change = true;
+        }
+
+        if (!at.isSetGiven() || !at.getGiven().equals("yes")) {
+            at.setGiven("yes");
+            change = true;
+        }
+
+        return change;
+    }
+
 
 }

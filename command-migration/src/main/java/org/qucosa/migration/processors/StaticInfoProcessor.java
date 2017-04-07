@@ -17,59 +17,45 @@
 
 package org.qucosa.migration.processors;
 
-import de.slubDresden.AgreementType;
 import de.slubDresden.InfoType;
-import de.slubDresden.RightsType;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.OriginInfoDefinition;
+import gov.loc.mods.v3.PhysicalDescriptionDefinition;
 import noNamespace.Document;
+import org.qucosa.migration.mappings.AdministrativeInformationMapping;
 
 import javax.xml.xpath.XPathExpressionException;
 
+import static gov.loc.mods.v3.DigitalOriginDefinition.BORN_DIGITAL;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class StaticInfoProcessor extends MappingProcessor {
 
+    private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
+
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
         ensureEdition(mods);
-        // TODO Remove mapping of physical description if confirmed
-//        ensurePhysicalDescription(mods);
-        ensureRightsAgreement(info);
+        ensurePhysicalDescription(mods);
+
+        if (aim.ensureRightsAgreement(info)) signalChanges(SLUB_INFO_CHANGES);
     }
 
-    private void ensureRightsAgreement(InfoType info) {
-        RightsType rt = (RightsType) select("slub:rights", info);
-        if (rt == null) {
-            rt = info.addNewRights();
-            signalChanges(SLUB_INFO_CHANGES);
+    private void ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
+        PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
+                select("mods:physicalDescription", mods);
+
+        if (pdd == null) {
+            pdd = mods.addNewPhysicalDescription();
+            signalChanges(MODS_CHANGES);
         }
 
-        AgreementType at = (AgreementType)
-                select("slub:agreement", rt);
-        if (at == null) {
-            at = rt.addNewAgreement();
-            signalChanges(SLUB_INFO_CHANGES);
+        if (!nodeExists("mods:digitalOrigin", pdd)) {
+            pdd.addDigitalOrigin(BORN_DIGITAL);
+            signalChanges(MODS_CHANGES);
         }
-
-        at.setGiven("yes");
     }
-
-//    private void ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
-//        PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
-//                select("mods:physicalDescription", mods);
-//
-//        if (pdd == null) {
-//            pdd = mods.addNewPhysicalDescription();
-//            signalChanges(MODS_CHANGES);
-//        }
-//
-//        if (!nodeExists("mods:digitalOrigin", pdd)) {
-//            pdd.addDigitalOrigin(BORN_DIGITAL);
-//            signalChanges(MODS_CHANGES);
-//        }
-//    }
 
     private void ensureEdition(ModsDefinition mods) throws XPathExpressionException {
         OriginInfoDefinition oid = (OriginInfoDefinition)

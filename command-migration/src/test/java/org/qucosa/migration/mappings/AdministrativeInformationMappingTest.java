@@ -99,4 +99,10 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
                 info.getDomNode().getOwnerDocument());
     }
 
+    @Test
+    public void slubAgreementIsSetToYes() throws Exception {
+        aim.ensureRightsAgreement(info);
+        assertXpathExists("//slub:rights/slub:agreement[@given='yes']", info.getDomNode().getOwnerDocument());
+    }
+
 }
