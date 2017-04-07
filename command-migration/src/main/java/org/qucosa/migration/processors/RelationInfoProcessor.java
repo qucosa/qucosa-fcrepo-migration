@@ -48,6 +48,23 @@ public class RelationInfoProcessor extends ModsRelatedItemProcessor {
             setIdentifierIfNotFound(urn, rid, "urn");
             setSortOrderIfDefined(partnum, rid);
         }
+
+        mapReferenceElements(mods, opus.getReferenceUrlArray(), "uri");
+        mapReferenceElements(mods, opus.getReferenceIsbnArray(), "isbn");
+        mapReferenceElements(mods, opus.getReferenceIssnArray(), "issn");
+    }
+
+    private void mapReferenceElements(ModsDefinition mods, Reference[] references, String type) {
+        for (Reference r : references) {
+            final String uri = r.getValue();
+            final String label = r.getLabel();
+            final String partnum = r.getSortOrder();
+
+            RelatedItemDefinition rid = getRelatedItemDefinition(mods, label, RelatedItemDefinition.Type.ORIGINAL);
+            setLabelIfdefined(label, rid);
+            setIdentifierIfNotFound(uri, rid, type);
+            setSortOrderIfDefined(partnum, rid);
+        }
     }
 
     private void setHrefIfDefined(String urn, RelatedItemDefinition rid) {
@@ -65,6 +82,7 @@ public class RelationInfoProcessor extends ModsRelatedItemProcessor {
         }
     }
 
+
     private Type.Enum determineItemType(String relation) {
         switch (relation) {
             case "issue":
@@ -79,5 +97,6 @@ public class RelationInfoProcessor extends ModsRelatedItemProcessor {
                 return Type.REFERENCES;
         }
     }
+
 
 }

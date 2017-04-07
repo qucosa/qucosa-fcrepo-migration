@@ -22,6 +22,8 @@ import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+
 public class RelationInfoProcessorTest extends ProcessorTestBase {
 
     final private MappingProcessor processor = new RelationInfoProcessor();
@@ -119,6 +121,50 @@ public class RelationInfoProcessorTest extends ProcessorTestBase {
                 " and @xlink:href='" + link + "' ]", ownerDocument);
         XMLAssert.assertXpathExists("//mods:relatedItem/mods:identifier[@type='urn'" +
                 " and text()='" + urn + "']", ownerDocument);
+    }
+
+    @Test
+    public void extractsReferenceUrl() throws Exception {
+        final String value = "http://dx.doi.org/10.13141/jve.vol5.no1.pp1-7";
+        final String label = "Der Artikel ist zuerst in der Open Access-Zeitschrift \"Journal of Vietnamese Environment\" erschienen.";
+        Reference refUrl = opus.addNewReferenceUrl();
+        refUrl.setValue(value);
+        refUrl.setLabel(label);
+
+        runProcessor(processor);
+
+        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:relatedItem[@type='original' and @displayLabel='" + label + "']", ownerDocument);
+        assertXpathExists("//mods:relatedItem/mods:identifier[@type='uri' and text()='" + value + "']", ownerDocument);
+        assertXpathExists("//mods:relatedItem/mods:identifier[@type='uri' and text()='" + value + "']", ownerDocument);
+    }
+
+    @Test
+    public void extractsReferenceIsbn() throws Exception {
+        final String value = "978-989-95079-6-8";
+        Reference refUrl = opus.addNewReferenceIsbn();
+        refUrl.setValue(value);
+
+        runProcessor(processor);
+
+        final Document document = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:relatedItem[@type='original']", document);
+        assertXpathExists("//mods:relatedItem/mods:identifier[@type='isbn' and text()='" + value + "']", document);
+    }
+
+    @Test
+    public void extractsReferenceIssn() throws Exception {
+        final String value = "0340-2444";
+        final String label = "Some label";
+        Reference refUrl = opus.addNewReferenceIssn();
+        refUrl.setValue(value);
+        refUrl.setLabel(label);
+
+        runProcessor(processor);
+
+        final Document document = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:relatedItem[@type='original' and @displayLabel='" + label + "']", document);
+        assertXpathExists("//mods:relatedItem/mods:identifier[@type='issn' and text()='" + value + "']", document);
     }
 
     private void createReferenceUrn(String urn, String label, String relation, String sortOrder) {

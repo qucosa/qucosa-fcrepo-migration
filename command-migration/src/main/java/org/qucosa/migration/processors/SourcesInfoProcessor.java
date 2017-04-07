@@ -19,30 +19,12 @@ package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.RelatedItemDefinition;
 import noNamespace.Document;
-import noNamespace.Reference;
 
-public class SourcesInfoProcessor extends ModsRelatedItemProcessor {
+public class SourcesInfoProcessor extends MappingProcessor {
 
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        mapReferenceElements(mods, opus.getReferenceUrlArray(), "uri");
-        mapReferenceElements(mods, opus.getReferenceIsbnArray(), "isbn");
-        mapReferenceElements(mods, opus.getReferenceIssnArray(), "issn");
-    }
-
-    private void mapReferenceElements(ModsDefinition mods, Reference[] references, String type) {
-        for (Reference r : references) {
-            final String uri = r.getValue();
-            final String label = r.getLabel();
-            final String partnum = r.getSortOrder();
-
-            RelatedItemDefinition rid = getRelatedItemDefinition(mods, label, RelatedItemDefinition.Type.ORIGINAL);
-            setLabelIfdefined(label, rid);
-            setIdentifierIfNotFound(uri, rid, type);
-            setSortOrderIfDefined(partnum, rid);
-        }
     }
 
 }
