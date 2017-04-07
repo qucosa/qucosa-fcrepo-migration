@@ -19,57 +19,20 @@ package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.OriginInfoDefinition;
-import gov.loc.mods.v3.PhysicalDescriptionDefinition;
 import noNamespace.Document;
 import org.qucosa.migration.mappings.AdministrativeInformationMapping;
-
-import javax.xml.xpath.XPathExpressionException;
-
-import static gov.loc.mods.v3.DigitalOriginDefinition.BORN_DIGITAL;
-import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
+import org.qucosa.migration.mappings.TechnicalInformationMapping;
 
 public class StaticInfoProcessor extends MappingProcessor {
 
+    private final TechnicalInformationMapping tim = new TechnicalInformationMapping();
     private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
 
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        ensureEdition(mods);
-        ensurePhysicalDescription(mods);
-
+        if (tim.ensureEdition(mods)) signalChanges(MODS_CHANGES);
+        if (tim.ensurePhysicalDescription(mods)) signalChanges(MODS_CHANGES);
         if (aim.ensureRightsAgreement(info)) signalChanges(SLUB_INFO_CHANGES);
     }
 
-    private void ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
-        PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
-                select("mods:physicalDescription", mods);
-
-        if (pdd == null) {
-            pdd = mods.addNewPhysicalDescription();
-            signalChanges(MODS_CHANGES);
-        }
-
-        if (!nodeExists("mods:digitalOrigin", pdd)) {
-            pdd.addDigitalOrigin(BORN_DIGITAL);
-            signalChanges(MODS_CHANGES);
-        }
-    }
-
-    private void ensureEdition(ModsDefinition mods) throws XPathExpressionException {
-        OriginInfoDefinition oid = (OriginInfoDefinition)
-                select("mods:originInfo[@eventType='distribution']", mods);
-
-        if (oid == null) {
-            oid = mods.addNewOriginInfo();
-            oid.setEventType("distribution");
-            signalChanges(MODS_CHANGES);
-        }
-
-        if (!nodeExists("mods:edition[text()='[Electronic ed.]']", oid)) {
-            oid.addNewEdition().setStringValue("[Electronic ed.]");
-            signalChanges(MODS_CHANGES);
-        }
-    }
 }

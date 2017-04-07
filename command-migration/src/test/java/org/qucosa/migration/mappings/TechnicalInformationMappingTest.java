@@ -15,21 +15,28 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertTrue;
 
-public class StaticInfoProcessorTest extends ProcessorTestBase {
+public class TechnicalInformationMappingTest extends MappingTestBase {
 
-    private MappingProcessor processor = new StaticInfoProcessor();
+    private TechnicalInformationMapping technicalInformationMapping;
+
+    @Before
+    public void setup() {
+        technicalInformationMapping = new TechnicalInformationMapping();
+    }
 
     @Test
     public void setsEdition() throws Exception {
-        runProcessor(processor);
-
+        boolean result = technicalInformationMapping.ensureEdition(mods);
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:originInfo[@eventType='distribution']/mods:edition[text()='[Electronic ed.]']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -37,8 +44,8 @@ public class StaticInfoProcessorTest extends ProcessorTestBase {
     @Test
     @Ignore
     public void setsPhysicalDescription() throws Exception {
-        runProcessor(processor);
-        // TODO Remove mapping of physical description if confirmed
+        boolean result = technicalInformationMapping.ensurePhysicalDescription(mods);
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists("//mods:physicalDescription/mods:digitalOrigin[text()='born digital']",
                 mods.getDomNode().getOwnerDocument());
     }
