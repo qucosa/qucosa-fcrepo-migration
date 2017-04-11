@@ -37,6 +37,7 @@ public class Main {
         System.setProperty("sword.slugheader", String.valueOf(options.useSlugHeader()));
         System.setProperty("sword.purge", String.valueOf(options.purgeBeforeDeposit()));
         System.setProperty("sword.collection", String.valueOf(options.getCollection()));
+        System.setProperty("transformation.discardExisting", String.valueOf(options.discardExistingDatastreams()));
 
         if (options.getOwnerId() != null) {
             System.setProperty("sword.ownerID", options.getOwnerId());

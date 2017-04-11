@@ -65,9 +65,17 @@ public class CommandLineOptions {
     private String ownerId = null;
 
     @Option(
-            name = "--purge",
-            aliases = "-p",
-            usage = "Try to purge object before doing deposit"
+            name = "--discard-existing-datastreams",
+            aliases = "-d",
+            usage = "Don't load existing datastreams for update",
+            forbids = "--purge-before-deposit"
+    )
+    private Boolean discardExistingDatastreams = false;
+    @Option(
+            name = "--purge-before-deposit",
+            aliases = "-po",
+            usage = "Try to purge object before doing deposit",
+            forbids = "--discard-existing-datastreams"
     )
     private Boolean purgeBeforeDeposit = false;
 
@@ -110,7 +118,7 @@ public class CommandLineOptions {
     )
     private Boolean useSlugHeader = false;
 
-    public CommandLineOptions(String[] args) {
+    CommandLineOptions(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
@@ -122,11 +130,15 @@ public class CommandLineOptions {
 
     }
 
-    public String getPidFile() {
+    Boolean discardExistingDatastreams() {
+        return discardExistingDatastreams;
+    }
+
+    String getPidFile() {
         return pidFile;
     }
 
-    public Boolean isNoop() {
+    Boolean isNoop() {
         return noop;
     }
 
@@ -134,35 +146,35 @@ public class CommandLineOptions {
         return mappings;
     }
 
-    public String getStageResource() {
+    String getStageResource() {
         return stageResource;
     }
 
-    public String getTransformResource() {
+    String getTransformResource() {
         return transformResource;
     }
 
-    public Boolean isStageTransform() {
+    Boolean isStageTransform() {
         return stageTransform;
     }
 
-    public String getOwnerId() {
+    String getOwnerId() {
         return ownerId;
     }
 
-    public String getCollection() {
+    String getCollection() {
         return collection;
     }
 
-    public Boolean purgeBeforeDeposit() {
+    Boolean purgeBeforeDeposit() {
         return purgeBeforeDeposit;
     }
 
-    public String getIdFile() {
+    String getIdFile() {
         return idFile;
     }
 
-    public Boolean useSlugHeader() {
+    Boolean useSlugHeader() {
         return useSlugHeader;
     }
 }

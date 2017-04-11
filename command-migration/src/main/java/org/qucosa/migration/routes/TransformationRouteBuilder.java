@@ -24,6 +24,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.component.http.BasicAuthenticationHttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
 import org.apache.camel.http.common.HttpOperationFailedException;
@@ -50,6 +51,7 @@ import org.qucosa.migration.processors.TitleInfoProcessor;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.apache.camel.builder.PredicateBuilder.not;
 import static org.qucosa.migration.processors.aggregate.HashMapAggregationStrategy.aggregateHashBy;
 
 public class TransformationRouteBuilder extends RouteBuilder {
@@ -76,6 +78,8 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 getConfigValueOrThrowException("sword.user"),
                 getConfigValueOrThrowException("sword.password"));
 
+        ValueBuilder discardExistingDatastreams =
+                constant(configuration.getBoolean("transformation.discardExisting"));
 
         from("direct:transform:file")
                 .routeId("transform-file")
@@ -112,46 +116,47 @@ public class TransformationRouteBuilder extends RouteBuilder {
         final ModsDocument modsDocumentTemplate = ModsDocument.Factory.newInstance();
         modsDocumentTemplate.addNewMods();
 
+        final InfoDocument infoDocumentTemplate = InfoDocument.Factory.newInstance();
+        infoDocumentTemplate.addNewInfo();
+
+        from("direct:ds:template")
+                .choice()
+                .when(simple("${header.DSID} == 'MODS'")).setBody(constant(modsDocumentTemplate))
+                .when(simple("${header.DSID} == 'SLUB-INFO'")).setBody(constant(infoDocumentTemplate));
+
         from("direct:ds:mods")
                 .routeId("get-mods")
-
                 .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("MODS"))
-                .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-                .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
-                .setBody(constant(""))
-
-                .doTry()
-                    .to(fedoraUri)
-                .doCatch(HttpOperationFailedException.class)
-                    .onWhen(simple("${exception.statusCode} == 404")).setBody(constant(modsDocumentTemplate))
+                .choice()
+                    .when(discardExistingDatastreams).to("direct:ds:template")
+                    .otherwise().to("direct:tryget:datastream")
                 .end()
-
                 .convertBodyTo(String.class)
                 .bean(ModsDocument.Factory.class, "parse(${body})");
-
-        final InfoDocument infoDocumentTemplate = InfoDocument.Factory.newInstance();
-        infoDocumentTemplate.addNewInfo();
 
         from("direct:ds:slubxml")
                 .routeId("get-slubxml")
                 .threads()
-
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("SLUB-INFO"))
+                .choice()
+                    .when(discardExistingDatastreams).to("direct:ds:template")
+                    .otherwise().to("direct:tryget:datastream")
+                .end()
+                .convertBodyTo(String.class)
+                .bean(InfoDocument.Factory.class, "parse(${body})");
+
+        from("direct:tryget:datastream")
+                .doTry()
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
-
-                .doTry()
-                    .to(fedoraUri)
+                .to(fedoraUri)
                 .doCatch(HttpOperationFailedException.class)
-                    .onWhen(simple("${exception.statusCode} == 404")).setBody(constant(infoDocumentTemplate))
-                .end()
-
-                .convertBodyTo(String.class)
-                .bean(InfoDocument.Factory.class, "parse(${body})");
+                .onWhen(simple("${exception.statusCode} == 404"))
+                .to("direct:ds:template");
 
         from("direct:ds:update")
                 .routeId("update")
