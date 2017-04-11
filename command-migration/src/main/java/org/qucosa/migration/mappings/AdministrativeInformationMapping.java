@@ -19,6 +19,7 @@ package org.qucosa.migration.mappings;
 
 import de.slubDresden.AgreementType;
 import de.slubDresden.CorporationType;
+import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import de.slubDresden.RightsType;
 import gov.loc.mods.v3.DateDefinition;
@@ -113,17 +114,19 @@ public class AdministrativeInformationMapping {
             }
 
             // ensure mods:extension/slub:info
-            boolean embedExtensionAfterwards = false;
+            boolean embedNewInfoExtensionAfterwards = false;
+            // This variable is needed for adding a created slub:info element later
+            InfoDocument infoDocument = InfoDocument.Factory.newInstance();
             InfoType info = (InfoType) select("slub:info", extension);
             if (info == null) {
-                info = InfoType.Factory.newInstance();
-                embedExtensionAfterwards = true;
+                info = infoDocument.addNewInfo();
+                embedNewInfoExtensionAfterwards = true;
                 change.signal();
             }
 
             // ensure mods:extension/slub:info/slub:corporation
             CorporationType corporation = (CorporationType)
-                    select("slub:corporation[@slub:ref='" + nd.getID() + "']", info);
+                    select("slub:corporation[@ref='" + nd.getID() + "']", info);
             if (corporation == null) {
                 corporation = info.addNewCorporation();
                 corporation.setRef(nd.getID());
@@ -162,8 +165,9 @@ public class AdministrativeInformationMapping {
                 change.signal();
             }
 
-            if (embedExtensionAfterwards) extension.set(info);
-
+            if (embedNewInfoExtensionAfterwards) {
+                extension.set(infoDocument);
+            }
         }
 
         return change.signaled();

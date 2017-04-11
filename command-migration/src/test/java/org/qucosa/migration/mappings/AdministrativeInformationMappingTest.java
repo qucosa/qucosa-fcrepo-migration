@@ -17,11 +17,16 @@
 
 package org.qucosa.migration.mappings;
 
+import de.slubDresden.InfoDocument;
+import gov.loc.mods.v3.ExtensionDefinition;
+import gov.loc.mods.v3.NameDefinition;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import java.math.BigInteger;
 
+import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
 import static org.qucosa.migration.mappings.AdministrativeInformationMapping.SLUB_GND_IDENTIFIER;
@@ -65,12 +70,36 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']", ownerDocument);
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']/" +
                 "mods:nameIdentifier[@type='gnd' and text()='" + SLUB_GND_IDENTIFIER + "']", ownerDocument);
-        assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID]", ownerDocument);
-        assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID" +
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]", ownerDocument);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID" +
                 " and @place='" + opus.getPublisherPlace() + "'" +
                 " and @address='" + opus.getPublisherAddress() + "']", ownerDocument);
-        assertXpathExists("//mods:extension/slub:corporation[@ref=//mods:name/@ID]" +
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]" +
                 "/slub:university[text()='" + opus.getPublisherName() + "']", ownerDocument);
+    }
+
+    @Test
+    public void Adds_missing_publisher_infos_to_existing_extension_preserving_existing_elements() throws Exception {
+        opus.setPublisherName("Saechsische Landesbibliothek- Staats- und Universitaetsbibliothek Dresden");
+        opus.setPublisherPlace("Dresden");
+        opus.setPublisherAddress("Zellescher Weg 18, 01069 Dresden, Germany");
+
+        NameDefinition name = mods.addNewName();
+        name.setType2(CORPORATE);
+        name.setID("SOMEID");
+        name.setDisplayLabel("mapping-hack-default-publisher");
+
+        ExtensionDefinition ext = mods.addNewExtension();
+        InfoDocument infoDocument = InfoDocument.Factory.newInstance();
+        infoDocument.addNewInfo().addNewCorporation().addNewUniversity().setStringValue("Foo University");
+        ext.set(infoDocument);
+
+        boolean result = aim.mapDefaultPublisherInfo(opus, mods);
+
+        assertTrue("Mapper should signal successful change", result);
+        Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:university='Foo University']", ownerDocument);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]", ownerDocument);
     }
 
     @Test

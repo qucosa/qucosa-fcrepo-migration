@@ -28,7 +28,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 public class SourceMapping {
 
     public boolean mapSource(Document opus, ModsDefinition mods) {
-        boolean change = true;
+        boolean change = false;
         String reference = opus.getSource();
         if (reference != null && !reference.isEmpty()) {
             RelatedItemDefinition ri = (RelatedItemDefinition)

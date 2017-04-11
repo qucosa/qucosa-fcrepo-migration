@@ -74,6 +74,7 @@ public class InstitutionsMapping {
                     InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed);
                     if (id != null) {
                         ed.set(id);
+                        change.get().signal();
                     }
                 }
             }
@@ -125,7 +126,6 @@ public class InstitutionsMapping {
             String hierarchyLevel = (hi.hasNext()) ? hi.next() : null;
             if (hierarchyLevel != null) {
                 createOrganizationType(ct, hierarchyLevel, name);
-                change.get().signal();
             }
         }
 
@@ -136,22 +136,40 @@ public class InstitutionsMapping {
         final String mappedName = singleline(name);
         switch (hierarchy) {
             case "institution":
-                if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) ct.addInstitution(mappedName);
+                if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) {
+                    ct.addInstitution(mappedName);
+                    change.get().signal();
+                }
                 break;
             case "section":
-                if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) ct.addSection(mappedName);
+                if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) {
+                    ct.addSection(mappedName);
+                    change.get().signal();
+                }
                 break;
             case "university":
-                if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) ct.addUniversity(mappedName);
+                if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) {
+                    ct.addUniversity(mappedName);
+                    change.get().signal();
+                }
                 break;
             case "faculty":
-                if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) ct.addFaculty(mappedName);
+                if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) {
+                    ct.addFaculty(mappedName);
+                    change.get().signal();
+                }
                 break;
             case "institute":
-                if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) ct.addInstitute(mappedName);
+                if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) {
+                    ct.addInstitute(mappedName);
+                    change.get().signal();
+                }
                 break;
             case "chair":
-                if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) ct.addChair(mappedName);
+                if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) {
+                    ct.addChair(mappedName);
+                    change.get().signal();
+                }
                 break;
         }
     }
