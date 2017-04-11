@@ -115,19 +115,19 @@ public class TransformationRouteBuilder extends RouteBuilder {
         from("direct:ds:mods")
                 .routeId("get-mods")
 
-                .onException(HttpOperationFailedException.class)
-                .onWhen(method(HttpOperationFailedHelper.class, "isNotFound"))
-                .setBody(constant(modsDocumentTemplate))
-                .continued(true)
-                .end()
-
                 .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("MODS"))
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
-                .to(fedoraUri)
+
+                .doTry()
+                    .to(fedoraUri)
+                .doCatch(HttpOperationFailedException.class)
+                    .onWhen(simple("${exception.statusCode} == 404")).setBody(constant(modsDocumentTemplate))
+                .end()
+
                 .convertBodyTo(String.class)
                 .bean(ModsDocument.Factory.class, "parse(${body})");
 
@@ -136,20 +136,20 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
         from("direct:ds:slubxml")
                 .routeId("get-slubxml")
-
-                .onException(HttpOperationFailedException.class)
-                .onWhen(method(HttpOperationFailedHelper.class, "isNotFound"))
-                .setBody(constant(infoDocumentTemplate))
-                .continued(true)
-                .end()
-
                 .threads()
+
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("SLUB-INFO"))
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
-                .to(fedoraUri)
+
+                .doTry()
+                    .to(fedoraUri)
+                .doCatch(HttpOperationFailedException.class)
+                    .onWhen(simple("${exception.statusCode} == 404")).setBody(constant(infoDocumentTemplate))
+                .end()
+
                 .convertBodyTo(String.class)
                 .bean(InfoDocument.Factory.class, "parse(${body})");
 
