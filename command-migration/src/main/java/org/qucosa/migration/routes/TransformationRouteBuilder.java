@@ -22,6 +22,7 @@ import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http.BasicAuthenticationHttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
@@ -155,11 +156,16 @@ public class TransformationRouteBuilder extends RouteBuilder {
         from("direct:ds:update")
                 .routeId("update")
                 .bean(DepositMetsGenerator.class)
-                .setHeader("Qucosa-File-Url", constant(configuration.getString("qucosa.file.url")))
-                .setHeader("Collection", constant(configuration.getString("sword.collection")))
-                .setHeader("Content-Type", constant("application/vnd.qucosa.mets+xml"))
-                .convertBodyTo(SwordDeposit.class)
-                .to("direct:sword:update");
+                .choice()
+                    .when(body().isNotNull())
+                        .setHeader("Qucosa-File-Url", constant(configuration.getString("qucosa.file.url")))
+                        .setHeader("Collection", constant(configuration.getString("sword.collection")))
+                        .setHeader("Content-Type", constant("application/vnd.qucosa.mets+xml"))
+                        .convertBodyTo(SwordDeposit.class)
+                        .to("direct:sword:update")
+                    .otherwise()
+                        .stop()
+                .end();
 
         from("direct:sword:update")
                 .routeId("sword-update")
