@@ -15,29 +15,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.processors;
+package org.qucosa.migration.mappings;
 
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
 import noNamespace.Title;
+import org.apache.xmlbeans.XmlString;
+import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-public class TitleInfoProcessorTest extends ProcessorTestBase {
+public class TitleMappingTest extends MappingTestBase {
 
-    private MappingProcessor processor = new TitleInfoProcessor();
+    private TitleMapping titleMapping;
+
+    @Before
+    public void setup() {
+        titleMapping = new TitleMapping();
+    }
 
     @Test
     public void extractsTitleMain() throws Exception {
+        opus.addLanguage("ger");
         final String language = "ger";
         final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";
         addTitleMain(language, value);
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleMainElements(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @usage='primary']/mods:title[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -49,8 +59,9 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         final String value = "The Incredibly Strange Creatures Who Stopped Living and Became Mixed-Up Zombies";
         addTitleSub(language, value);
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleSubElements(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -62,8 +73,9 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         final String value = "Schülerecho";
         addTitleAlternative(language, value);
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleAlternativeElements(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @type='alternative']/mods:title[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -75,8 +87,9 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         final String value = "Forschungsberichte des Instituts für Wirtschaftsinformatik";
         addTitleParent(language, value);
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleParentElements(opus, mods);
 
+        assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
                 "//mods:relatedItem[@type='series']/mods:titleInfo[@lang='" + language + "']/" +
                         "mods:title[text()='" + value + "']",
@@ -89,39 +102,34 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         final String language = "ger";
         final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";
         addTitleMain(language, value);
+        opus.addLanguage(language);
 
         TitleInfoDefinition titleInfoDefinition = mods.addNewTitleInfo();
         titleInfoDefinition.setLang(language);
+        titleInfoDefinition.setUsage(XmlString.Factory.newValue("primary"));
 
         StringPlusLanguage title = titleInfoDefinition.addNewTitle();
         title.setStringValue(value);
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleMainElements(opus, mods);
 
-        assertFalse(processor.hasChanges());
+        assertFalse(result);
     }
 
     @Test
-    public void oneTitleInfoPerLanguage() throws Exception {
+    public void Assumes_main_title_with_other_than_document_language_is_translated_title() throws Exception {
+        opus.addLanguage("ger");
         addTitleMain("ger", "Deutscher Titel");
         addTitleMain("eng", "English Title");
-        addTitleSub("ger", "Deutscher Untertitel");
-        addTitleSub("eng", "English Sub Title");
+        addTitleMain("ice", "íslenska titill");
 
-        runProcessor(processor);
+        boolean result = titleMapping.mapTitleMainElements(opus, mods);
 
-        assertXpathExists("//mods:titleInfo[@lang='ger']", mods.getDomNode().getOwnerDocument());
-        assertXpathExists("//mods:titleInfo[@lang='eng']", mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
-    public void noLanguageAttributeIfNoLanguageSpecified() throws Exception {
-        final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";
-        addTitleMain(null, value);
-
-        runProcessor(processor);
-
-        assertNull(mods.getTitleInfoArray(0).getTitleArray(0).getLang());
+        assertTrue("Mapper should signal successful change", result);
+        Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:titleInfo[@lang='ger' and not(@type) and mods:title='Deutscher Titel']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='ice' and @type='translated' and mods:title='íslenska titill']", ownerDocument);
     }
 
     private void addTitleMain(String language, String value) {
@@ -147,4 +155,5 @@ public class TitleInfoProcessorTest extends ProcessorTestBase {
         ot.setLanguage(language);
         ot.setValue(value);
     }
+
 }

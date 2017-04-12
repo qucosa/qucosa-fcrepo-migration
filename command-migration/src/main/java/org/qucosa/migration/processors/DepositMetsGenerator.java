@@ -45,6 +45,7 @@ import org.apache.camel.Processor;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.apache.xmlbeans.XmlString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -223,6 +224,7 @@ public class DepositMetsGenerator implements Processor {
 
         final TitleInfoDefinition titleInfo = modsRecord.addNewTitleInfo();
         titleInfo.setLang(lang);
+        titleInfo.setUsage(XmlString.Factory.newValue("primary"));
         StringPlusLanguage mt = titleInfo.addNewTitle();
         mt.setStringValue(title);
 

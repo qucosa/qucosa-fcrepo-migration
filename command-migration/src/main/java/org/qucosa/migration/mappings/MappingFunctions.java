@@ -75,7 +75,7 @@ public class MappingFunctions {
         put("study", "study");
     }};
 
-    public static String dateEncoding(BigInteger year) {
+    static String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy");
@@ -84,7 +84,7 @@ public class MappingFunctions {
         return dateFormat.format(cal.getTime());
     }
 
-    public static String dateEncoding(noNamespace.Date date) {
+    static String dateEncoding(noNamespace.Date date) {
         if (date != null && (date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -112,11 +112,11 @@ public class MappingFunctions {
         return (s == null) ? null : singleLineFilter.apply(s);
     }
 
-    public static String multiline(String s) {
+    static String multiline(String s) {
         return (s == null) ? null : multiLineFilter.apply(s);
     }
 
-    public static String buildTokenFrom(String prefix, String... strings) {
+    static String buildTokenFrom(String prefix, String... strings) {
         StringBuilder sb = new StringBuilder();
         for (String s : strings) {
             if (s != null) {
@@ -126,7 +126,7 @@ public class MappingFunctions {
         return prefix + String.format("%02X", sb.toString().hashCode());
     }
 
-    public static YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
+    static YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
         return (oaiExport) ? YES : NO;
     }
 
@@ -139,7 +139,7 @@ public class MappingFunctions {
         return sb.toString();
     }
 
-    public static String languageEncoding(String code) {
+    static String languageEncoding(String code) {
         if (code != null) {
             if (code.length() != 3) {
                 String result = Locale.forLanguageTag(code).getISO3Language();
@@ -149,7 +149,14 @@ public class MappingFunctions {
         return code;
     }
 
-    public static String documentTypeEncoding(String type) {
+    static Object firstOf(Object[] array) {
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        return array[0];
+    }
+
+    static String documentTypeEncoding(String type) {
         return typeMapping.get(type);
     }
 
