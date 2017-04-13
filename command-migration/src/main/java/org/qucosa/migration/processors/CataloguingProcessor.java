@@ -34,6 +34,7 @@ public class CataloguingProcessor extends MappingProcessor {
         if (cm.mapSubject("swd", opus, mods)) signalChanges(MODS_CHANGES);
         if (cm.mapSubject("uncontrolled", opus, mods)) signalChanges(MODS_CHANGES);
         if (cm.mapTableOfContent(opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapIssue(opus, mods)) signalChanges(MODS_CHANGES);
     }
 
 }

@@ -119,4 +119,17 @@ public class ContentualMappingTest extends MappingTestBase {
                 mods.getDomNode().getOwnerDocument());
     }
 
+    @Test
+    public void Maps_issue_to_mods_part() throws Exception {
+        String issue = "Jg. 25.2014, H. 11";
+        opus.setIssue(issue);
+
+        boolean result = contentualMapping.mapIssue(opus, mods);
+
+        assertTrue("Mapper should signal successful change", result);
+        assertXpathExists(
+                "//mods:part[@type='issue']/mods:detail/mods:number[text()='" + issue + "']",
+                mods.getDomNode().getOwnerDocument());
+    }
+
 }

@@ -19,7 +19,10 @@ package org.qucosa.migration.mappings;
 
 import gov.loc.mods.v3.AbstractDefinition;
 import gov.loc.mods.v3.ClassificationDefinition;
+import gov.loc.mods.v3.DetailDefinition;
 import gov.loc.mods.v3.ModsDefinition;
+import gov.loc.mods.v3.PartDefinition;
+import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TableOfContentsDefinition;
 import noNamespace.Document;
 import noNamespace.Subject;
@@ -115,4 +118,34 @@ public class ContentualMapping {
         return change;
     }
 
+    public boolean mapIssue(Document opus, ModsDefinition mods) {
+        boolean change = false;
+        String issue = opus.getIssue();
+        if (issue != null && !issue.isEmpty()) {
+            PartDefinition partDefinition = (PartDefinition) select("mods:part[@type='issue']", mods);
+            if (partDefinition == null) {
+                partDefinition = mods.addNewPart();
+                partDefinition.setType("issue");
+                change = true;
+            }
+
+            DetailDefinition detailDefinition = (DetailDefinition) select("mods:detail", partDefinition);
+            if (detailDefinition == null) {
+                detailDefinition = partDefinition.addNewDetail();
+                change = true;
+            }
+
+            StringPlusLanguage number = (StringPlusLanguage) select("mods:number", detailDefinition);
+            if (number == null) {
+                number = detailDefinition.addNewNumber();
+                change = true;
+            }
+
+            if (!issue.equals(number.getStringValue())) {
+                number.setStringValue(issue);
+                change = true;
+            }
+        }
+        return change;
+    }
 }
