@@ -37,7 +37,7 @@ import static de.slubDresden.YesNo.YES;
 
 public class MappingFunctions {
 
-    public static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
+    static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
 
     private static final StringFilter multiLineFilter = new StringFilterChain(
             TextInputStringFilters.TRIM_FILTER,

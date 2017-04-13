@@ -64,23 +64,22 @@ public class PersonMapping {
     }
 
     private void setExtension(Person person, NameDefinition nd, ModsDefinition mods) {
-        ExtensionDefinition ext = (ExtensionDefinition)
-                select("mods:extension", mods);
-        final String phone = person.getPhone();
-        final String mbox = person.getEmail();
-        final String gender = genderMapping(person.getGender());
+        final String phone = emptyIfNull(person.getPhone());
+        final String mbox = emptyIfNull(person.getEmail());
+        final String gender = emptyIfNull(genderMapping(person.getGender()));
 
-        if (phone == null || mbox == null || gender == null) {
+        if (phone.isEmpty() && mbox.isEmpty() && gender.isEmpty()) {
             return;
         }
 
+        ExtensionDefinition ext = (ExtensionDefinition) select("mods:extension", mods);
         if (ext == null) {
             ext = mods.addNewExtension();
             change.get().signal();
         }
 
         PersonDocument.Person foafPerson = (PersonDocument.Person)
-                select("foaf:Person[@about='#" + nd.getID() + "']", mods);
+                select("foaf:Person[@about='" + nd.getID() + "']", mods);
 
         boolean _importPd = false;
         PersonDocument pd = PersonDocument.Factory.newInstance();
@@ -88,7 +87,7 @@ public class PersonMapping {
         if (foafPerson == null) {
             foafPerson = pd.addNewPerson();
             foafPerson.newCursor().setAttributeText(
-                    new QName(NS_RDF, "about"), "#" + nd.getID());
+                    new QName(NS_RDF, "about"), nd.getID());
             _importPd = true;
             change.get().signal();
         }
@@ -109,7 +108,7 @@ public class PersonMapping {
             }
         }
 
-        if (!gender.isEmpty()) {
+        if (gender != null) {
             if (foafPerson.getGender() == null
                     || !foafPerson.getGender().equals(gender)) {
                 foafPerson.setGender(gender);
@@ -122,7 +121,12 @@ public class PersonMapping {
         }
     }
 
+    private String emptyIfNull(String s) {
+        return (s == null) ? "" : s;
+    }
+
     private String genderMapping(String gender) {
+        if (gender == null) return null;
         switch (gender) {
             case "m":
                 return "male";
@@ -231,7 +235,7 @@ public class PersonMapping {
     private String marcrelatorEncoding(String role) {
         switch (role) {
             case "advisor":
-                return "ths";
+                return "dgs";
             case "author":
                 return "aut";
             case "contributor":

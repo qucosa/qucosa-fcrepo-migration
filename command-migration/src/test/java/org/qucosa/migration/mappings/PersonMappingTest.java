@@ -32,6 +32,7 @@ import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
 import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
 import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
 
 public class PersonMappingTest extends MappingTestBase {
@@ -57,7 +58,7 @@ public class PersonMappingTest extends MappingTestBase {
         assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", xml);
-        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='ths']", xml);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='dgs']", xml);
     }
 
     @Test
@@ -228,8 +229,19 @@ public class PersonMappingTest extends MappingTestBase {
         boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
 
         assertTrue("Mapper should signal successful change", result);
-        Document xml = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:extension/foaf:Person[@rdf:about=concat('#', //mods:name/@ID)]", xml);
+        assertXpathExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]",
+                mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void Skip_extension_when_no_FOAF_information_available() throws Exception {
+        createPerson("Prof. Dr.", null, null, null, "Hans", "Mustermann", "author", 1965, 11, 5);
+
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+
+        assertXpathNotExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]",
+                mods.getDomNode().getOwnerDocument());
+
     }
 
     @Test
