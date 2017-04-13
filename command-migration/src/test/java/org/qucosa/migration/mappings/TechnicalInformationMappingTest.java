@@ -18,7 +18,6 @@
 package org.qucosa.migration.mappings;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
@@ -42,7 +41,6 @@ public class TechnicalInformationMappingTest extends MappingTestBase {
     }
 
     @Test
-    @Ignore
     public void setsPhysicalDescription() throws Exception {
         boolean result = technicalInformationMapping.ensurePhysicalDescription(mods);
         assertTrue("Mapper should signal successful change", result);

@@ -36,16 +36,16 @@ public class XmlFunctions {
                     "declare namespace foaf='" + NS_FOAF + "'; " +
                     "declare namespace xlink='" + NS_XLINK + "'; ";
 
-    public static Boolean nodeExists(String expression, XmlObject object) {
+    static Boolean nodeExists(String expression, XmlObject object) {
         return (XmlFunctions.select(expression, object) != null);
     }
 
-    public static Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
+    static Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
         XmlObject node = XmlFunctions.select(expression, object);
         return (node != null && node.getDomNode().hasChildNodes());
     }
 
-    public static List<XmlObject> selectAll(String query, XmlObject xmlObject) {
+    static List<XmlObject> selectAll(String query, XmlObject xmlObject) {
         List<XmlObject> results = new ArrayList<>();
         XmlCursor cursor = xmlObject.newCursor();
         cursor.selectPath(xpathNSDeclaration + query);

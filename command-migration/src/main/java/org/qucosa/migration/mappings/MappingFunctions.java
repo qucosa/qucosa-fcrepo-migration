@@ -108,7 +108,7 @@ public class MappingFunctions {
         }
     }
 
-    public static String singleline(String s) {
+    static String singleline(String s) {
         return (s == null) ? null : singleLineFilter.apply(s);
     }
 
@@ -160,4 +160,23 @@ public class MappingFunctions {
         return typeMapping.get(type);
     }
 
+    static String volume(String t) {
+        if (t != null && !t.isEmpty()) {
+            int i = t.lastIndexOf(';') + 1;
+            if (i > 0) return t.substring(i).trim();
+        }
+        return null;
+    }
+
+    static String volumeTitle(String t) {
+        if (t != null && !t.isEmpty()) {
+            int i = t.lastIndexOf(';') - 1;
+            if (i > 0) {
+                return t.substring(0, i).trim();
+            } else {
+                return t.trim();
+            }
+        }
+        return null;
+    }
 }

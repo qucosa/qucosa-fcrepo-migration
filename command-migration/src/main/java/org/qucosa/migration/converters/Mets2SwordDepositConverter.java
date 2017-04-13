@@ -34,7 +34,6 @@ public class Mets2SwordDepositConverter {
                 metsDocument.xmlText(),
                 (String) msg.getHeader("Content-Type"),
                 (String) msg.getHeader("Collection"));
-
     }
 
 }

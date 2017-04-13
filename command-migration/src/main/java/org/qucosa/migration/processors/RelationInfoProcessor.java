@@ -19,84 +19,20 @@ package org.qucosa.migration.processors;
 
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.RelatedItemDefinition;
-import gov.loc.mods.v3.RelatedItemDefinition.Type;
 import noNamespace.Document;
-import noNamespace.Reference;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlObject;
+import org.qucosa.migration.mappings.ReferencesMapping;
 
-import javax.xml.namespace.QName;
+public class RelationInfoProcessor extends MappingProcessor {
 
-import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
-
-public class RelationInfoProcessor extends ModsRelatedItemProcessor {
-
-    private static final String NBN_RESOLVING_URL = "http://nbn-resolving.de/";
+    private final ReferencesMapping rm = new ReferencesMapping();
 
     @Override
     public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        for (Reference r : opus.getReferenceUrnArray()) {
-            final String urn = r.getValue();
-            final String label = r.getLabel();
-            final String partnum = r.getSortOrder();
-            final Type.Enum itemType = determineItemType(r.getRelation());
-
-            RelatedItemDefinition rid = getRelatedItemDefinition(mods, label, itemType);
-            setLabelIfdefined(label, rid);
-            setHrefIfDefined(urn, rid);
-            setIdentifierIfNotFound(urn, rid, "urn");
-            setSortOrderIfDefined(partnum, rid);
-        }
-
-        mapReferenceElements(mods, opus.getReferenceUrlArray(), "uri");
-        mapReferenceElements(mods, opus.getReferenceIsbnArray(), "isbn");
-        mapReferenceElements(mods, opus.getReferenceIssnArray(), "issn");
+        if (rm.mapSeriesReference(opus, mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapHostAndPredecessorReferences(opus, mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods)) signalChanges(MODS_CHANGES);
     }
-
-    private void mapReferenceElements(ModsDefinition mods, Reference[] references, String type) {
-        for (Reference r : references) {
-            final String uri = r.getValue();
-            final String label = r.getLabel();
-            final String partnum = r.getSortOrder();
-
-            RelatedItemDefinition rid = getRelatedItemDefinition(mods, label, RelatedItemDefinition.Type.ORIGINAL);
-            setLabelIfdefined(label, rid);
-            setIdentifierIfNotFound(uri, rid, type);
-            setSortOrderIfDefined(partnum, rid);
-        }
-    }
-
-    private void setHrefIfDefined(String urn, RelatedItemDefinition rid) {
-        if (urn != null) {
-            final QName qName = new QName(NS_XLINK, "href");
-            XmlObject href = rid.selectAttribute(qName);
-            if (href == null
-                    || href.getDomNode().getNodeValue() == null
-                    || !href.getDomNode().getNodeValue().equals(urn)) {
-                XmlCursor cursor = rid.newCursor();
-                cursor.setAttributeText(qName, NBN_RESOLVING_URL + urn);
-                cursor.dispose();
-                signalChanges(MODS_CHANGES);
-            }
-        }
-    }
-
-
-    private Type.Enum determineItemType(String relation) {
-        switch (relation) {
-            case "issue":
-            case "journal":
-            case "proceeding":
-                return Type.HOST;
-            case "series":
-                return Type.SERIES;
-            case "predecessor":
-                return Type.PRECEDING;
-            default:
-                return Type.REFERENCES;
-        }
-    }
-
 
 }

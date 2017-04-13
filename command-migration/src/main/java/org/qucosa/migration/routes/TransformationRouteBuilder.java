@@ -22,7 +22,6 @@ import gov.loc.mods.v3.ModsDocument;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.component.http.BasicAuthenticationHttpClientConfigurer;
@@ -37,7 +36,6 @@ import org.qucosa.migration.processors.CataloguingProcessor;
 import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.DocumentTypeProcessor;
 import org.qucosa.migration.processors.FileReaderProcessor;
-import org.qucosa.migration.processors.HttpOperationFailedHelper;
 import org.qucosa.migration.processors.IdentifierProcessor;
 import org.qucosa.migration.processors.InstitutionInfoProcessor;
 import org.qucosa.migration.processors.MappingProcessor;
@@ -51,7 +49,6 @@ import org.qucosa.migration.processors.TitleInfoProcessor;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.camel.builder.PredicateBuilder.not;
 import static org.qucosa.migration.processors.aggregate.HashMapAggregationStrategy.aggregateHashBy;
 
 public class TransformationRouteBuilder extends RouteBuilder {
