@@ -46,7 +46,7 @@ public class Opus4DataSource {
     static final String DB_PARAM_HOST = "qucosa.db.url";
     static final String DB_PARAM_USER = "qucosa.db.user";
     static final String DB_PARAM_PASSWORD = "qucosa.db.passwd";
-    static final String DATA_SOURCE_NAME = "opus4DataSource";
+    public static final String DATA_SOURCE_NAME = "opus4DataSource";
     private static final Logger log = LoggerFactory.getLogger(Opus4DataSource.class);
     private Connection connection;
     private String dburl;
@@ -55,7 +55,7 @@ public class Opus4DataSource {
     private String password;
     private String user;
 
-    void configure(Configuration conf) throws ConfigurationException, SQLException {
+    public void configure(Configuration conf) throws ConfigurationException, SQLException {
         host = getConfigValueOrThrowException(conf, WEBAPI_PARAM_QUCOSA_HOST);
         dburl = getConfigValueOrThrowException(conf, DB_PARAM_HOST);
         user = getConfigValueOrThrowException(conf, DB_PARAM_USER);

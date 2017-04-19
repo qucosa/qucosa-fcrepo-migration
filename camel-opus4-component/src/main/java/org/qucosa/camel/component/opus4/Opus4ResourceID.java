@@ -37,7 +37,7 @@ public class Opus4ResourceID {
         return (namespace.isEmpty()) ? identifier : NS_OPUS_DOCUMENT + "/" + identifier;
     }
 
-    String getIdentifier() {
+    public String getIdentifier() {
         return identifier;
     }
 

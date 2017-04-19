@@ -41,7 +41,7 @@ import static org.apache.commons.io.IOUtils.toInputStream;
 
 public class SwordConnection {
 
-    static final String DATA_SOURCE_NAME = "swordConnection";
+    public static final String DATA_SOURCE_NAME = "swordConnection";
     private static final Logger log = LoggerFactory.getLogger(SwordConnection.class);
     private HttpClient httpClient;
     private String password;

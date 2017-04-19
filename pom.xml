@@ -77,13 +77,13 @@
 
             <dependency>
                 <groupId>de.qucosa</groupId>
-                <artifactId>opus4-component</artifactId>
+                <artifactId>camel-opus4-component</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>de.qucosa</groupId>
-                <artifactId>sword-component</artifactId>
+                <artifactId>camel-sword-component</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

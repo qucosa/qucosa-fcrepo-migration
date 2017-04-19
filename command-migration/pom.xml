@@ -89,12 +89,12 @@
 
         <dependency>
             <groupId>de.qucosa</groupId>
-            <artifactId>opus4-component</artifactId>
+            <artifactId>camel-opus4-component</artifactId>
         </dependency>
 
         <dependency>
             <groupId>de.qucosa</groupId>
-            <artifactId>sword-component</artifactId>
+            <artifactId>camel-sword-component</artifactId>
         </dependency>
 
         <!-- Test dependencies -->
