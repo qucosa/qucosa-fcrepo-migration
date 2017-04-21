@@ -41,7 +41,7 @@ public class Opus4ResourceID {
         return identifier;
     }
 
-    boolean isDocumentId() {
+    public boolean isDocumentId() {
         return (!namespace.isEmpty());
     }
 
