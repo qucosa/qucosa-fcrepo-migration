@@ -113,8 +113,7 @@ public class CommandLineOptions {
 
     @Option(
             name = "--use-slug",
-            usage = "Given this option, the generated Fedora ID will reflect the original Opus ID",
-            depends = "--stage-resource"
+            usage = "Given this option, the generated Fedora ID will reflect the original Opus ID"
     )
     private Boolean useSlugHeader = false;
 
