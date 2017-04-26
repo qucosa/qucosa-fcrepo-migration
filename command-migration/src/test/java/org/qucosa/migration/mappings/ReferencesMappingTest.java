@@ -64,7 +64,8 @@ public class ReferencesMappingTest extends MappingTestBase {
         boolean result = referencesMapping.mapSeriesReference(opus, mods);
 
         assertTrue("Mapper should signal successful change", result);
-        assertXpathExists("/mods:mods/mods:part[@order='" + order + "']",mods.getDomNode().getOwnerDocument());
+        assertXpathExists("/mods:mods/mods:part[@order='" + order + "' and @type='volume']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     @Test
@@ -79,7 +80,7 @@ public class ReferencesMappingTest extends MappingTestBase {
         boolean result = referencesMapping.mapSeriesReference(opus, mods);
 
         assertTrue("Mapper should signal successful change", result);
-        assertXpathExists("/mods:mods/mods:part/mods:detail/mods:number[text()='" + volumeInfo + "']",
+        assertXpathExists("/mods:mods/mods:part[@type='volume']/mods:detail/mods:number[text()='" + volumeInfo + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -115,7 +116,7 @@ public class ReferencesMappingTest extends MappingTestBase {
         assertXpathExists("//mods:relatedItem[@type='series']/mods:titleInfo/mods:title[text()='" + volumeTitle + "']",
                 ownerDocument);
         assertXpathNotExists("//mods:relatedItem/mods:identifier", ownerDocument);
-        assertXpathExists("/mods:mods/mods:part/mods:detail/mods:number[text()='" + volumeInfo + "']",
+        assertXpathExists("/mods:mods/mods:part[@type='volume']/mods:detail/mods:number[text()='" + volumeInfo + "']",
                 ownerDocument);
     }
 

@@ -79,9 +79,10 @@ public class ReferencesMapping {
             change.get().signal();
         }
 
-        PartDefinition pd = (PartDefinition) select("mods:part", mods);
+        PartDefinition pd = (PartDefinition) select("mods:part[@type='volume']", mods);
         if (pd == null) {
             pd = mods.addNewPart();
+            pd.setType("volume");
             change.get().signal();
         }
 
