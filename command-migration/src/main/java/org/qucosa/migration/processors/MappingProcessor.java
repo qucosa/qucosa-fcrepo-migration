@@ -25,15 +25,43 @@ import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.qucosa.migration.mappings.AdministrativeInformationMapping;
+import org.qucosa.migration.mappings.ContactInformationMapping;
+import org.qucosa.migration.mappings.ContentualMapping;
+import org.qucosa.migration.mappings.DocumentTypeMapping;
+import org.qucosa.migration.mappings.IdentifierMapping;
+import org.qucosa.migration.mappings.InstitutionsMapping;
+import org.qucosa.migration.mappings.PersonMapping;
+import org.qucosa.migration.mappings.PublicationInfoMapping;
+import org.qucosa.migration.mappings.ReferencesMapping;
+import org.qucosa.migration.mappings.RightsMapping;
+import org.qucosa.migration.mappings.SourceMapping;
+import org.qucosa.migration.mappings.TechnicalInformationMapping;
+import org.qucosa.migration.mappings.TitleMapping;
 
 import java.util.Map;
 
-public abstract class MappingProcessor implements Processor {
-    public static final String MODS_CHANGES = "MODS_CHANGES";
+public class MappingProcessor implements Processor {
+
+    static final String MODS_CHANGES = "MODS_CHANGES";
     static final String SLUB_INFO_CHANGES = "SLUB-INFO_CHANGES";
-    private String label;
+
     private boolean modsChanges;
     private boolean slubChanges;
+
+    private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
+    private final ContactInformationMapping cim = new ContactInformationMapping();
+    private final ContentualMapping cm = new ContentualMapping();
+    private final DocumentTypeMapping dm = new DocumentTypeMapping();
+    private final IdentifierMapping im = new IdentifierMapping();
+    private final InstitutionsMapping institutionsMapping = new InstitutionsMapping();
+    private final PersonMapping pm = new PersonMapping();
+    private final PublicationInfoMapping publicationInfoMapping = new PublicationInfoMapping();
+    private final RightsMapping rightsMapping = new RightsMapping();
+    private final ReferencesMapping rm = new ReferencesMapping();
+    private final SourceMapping sourceMapping = new SourceMapping();
+    private final TechnicalInformationMapping tim = new TechnicalInformationMapping();
+    private final TitleMapping tm = new TitleMapping();
 
     @Override
     public void process(Exchange exchange) throws Exception {
@@ -100,32 +128,53 @@ public abstract class MappingProcessor implements Processor {
         return opusXmlObject;
     }
 
-
-    public abstract void process(
-            Document inOpusDocument,
-            ModsDefinition outModsDocument,
-            InfoType outInfoDocument) throws Exception;
-
-    public String getLabel() {
-        if (label == null) {
-            String classname = this.getClass().getSimpleName();
-            if (classname.endsWith("Processor")) {
-                label = classname.substring(0, classname.length() - 9).toLowerCase();
-            }
-        }
-        return label;
+    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
+        if (aim.mapCompletedDate(opus.getCompletedDate(), mods)) signalChanges(MODS_CHANGES);
+        if (aim.mapDefaultPublisherInfo(opus, mods)) signalChanges(MODS_CHANGES);
+        if (cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info)) signalChanges(SLUB_INFO_CHANGES);
+        if (cim.mapNotes(opus.getNoteArray(), info)) signalChanges(SLUB_INFO_CHANGES);
+        if (aim.mapVgWortopenKey(opus, info)) signalChanges(SLUB_INFO_CHANGES);
+        if (cm.mapTitleAbstract(opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapSubject("ddc", opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapSubject("rvk", opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapSubject("swd", opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapSubject("uncontrolled", opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapTableOfContent(opus, mods)) signalChanges(MODS_CHANGES);
+        if (cm.mapIssue(opus, mods)) signalChanges(MODS_CHANGES);
+        if (dm.mapDocumentType(opus, info)) signalChanges(SLUB_INFO_CHANGES);
+        if (im.mapIdentifiers(opus, mods)) signalChanges(MODS_CHANGES);
+        if (institutionsMapping.mapOrgansiations(opus, mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonAuthorArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonAdvisorArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonContributorArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonEditorArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonRefereeArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonOtherArray(), mods)) signalChanges(MODS_CHANGES);
+        if (pm.mapPersons(opus.getPersonTranslatorArray(), mods)) signalChanges(MODS_CHANGES);
+        if (publicationInfoMapping.mapLanguageElement(opus, mods)) signalChanges(MODS_CHANGES);
+        if (publicationInfoMapping.mapOriginInfoElements(opus, mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapSeriesReference(opus, mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapHostAndPredecessorReferences(opus, mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods)) signalChanges(MODS_CHANGES);
+        if (rm.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods)) signalChanges(MODS_CHANGES);
+        if (rightsMapping.mapFileAttachments(opus, info)) signalChanges(SLUB_INFO_CHANGES);
+        if (sourceMapping.mapSource(opus, mods)) signalChanges(MODS_CHANGES);
+        if (tim.ensureEdition(mods)) signalChanges(MODS_CHANGES);
+        if (tim.ensurePhysicalDescription(mods)) signalChanges(MODS_CHANGES);
+        if (aim.ensureRightsAgreement(info)) signalChanges(SLUB_INFO_CHANGES);
+        if (tm.mapTitleMainElements(opus, mods)) signalChanges(MODS_CHANGES);
+        if (tm.mapTitleSubElements(opus, mods)) signalChanges(MODS_CHANGES);
+        if (tm.mapTitleAlternativeElements(opus, mods)) signalChanges(MODS_CHANGES);
+        if (tm.mapTitleParentElements(opus, mods)) signalChanges(MODS_CHANGES);
     }
 
-    public void signalChanges(String dsid) {
+    void signalChanges(String dsid) {
         if (dsid.equals(MODS_CHANGES)) {
             this.modsChanges = true;
         } else if (dsid.equals(SLUB_INFO_CHANGES)) {
             this.slubChanges = true;
         }
-    }
-
-    Boolean hasChanges() {
-        return this.modsChanges;
     }
 
 }

@@ -27,25 +27,12 @@ import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.component.http.BasicAuthenticationHttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
 import org.apache.camel.http.common.HttpOperationFailedException;
-import org.apache.camel.model.RouteDefinition;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.qucosa.camel.component.sword.SwordDeposit;
-import org.qucosa.migration.processors.AdministrationProcessor;
-import org.qucosa.migration.processors.CataloguingProcessor;
 import org.qucosa.migration.processors.DepositMetsGenerator;
-import org.qucosa.migration.processors.DocumentTypeProcessor;
 import org.qucosa.migration.processors.FileReaderProcessor;
-import org.qucosa.migration.processors.IdentifierProcessor;
-import org.qucosa.migration.processors.InstitutionInfoProcessor;
 import org.qucosa.migration.processors.MappingProcessor;
-import org.qucosa.migration.processors.PersonInfoProcessor;
-import org.qucosa.migration.processors.PublicationInfoProcessor;
-import org.qucosa.migration.processors.RelationInfoProcessor;
-import org.qucosa.migration.processors.RightsProcessor;
-import org.qucosa.migration.processors.SourcesInfoProcessor;
-import org.qucosa.migration.processors.StaticInfoProcessor;
-import org.qucosa.migration.processors.TitleInfoProcessor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -61,8 +48,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        configureTransformationPipeline();
-
         final String fedoraUri = getConfigValueOrThrowException("fedora.url");
 
         configureHttpBasicAuth(
@@ -93,7 +78,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .stopOnException()
                 .to("direct:ds:qucosaxml", "direct:ds:mods", "direct:ds:slubxml")
                 .end()
-                .routingSlip(header("transformations")).ignoreInvalidEndpoints()
+                .process(new MappingProcessor())
                 .to("direct:ds:update");
 
         final String datastreamPath = "/objects/${header[PID]}/datastreams/${header[DSID]}";
@@ -189,38 +174,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
         HttpEndpoint httpEndpoint = (HttpEndpoint) getContext().getEndpoint(uri);
         httpEndpoint.setHttpClientConfigurer(
                 new BasicAuthenticationHttpClientConfigurer(false, user, password));
-    }
-
-    private void configureTransformationPipeline() throws IllegalAccessException, InstantiationException {
-        Class[] pipeline = {
-                AdministrationProcessor.class,
-                CataloguingProcessor.class,
-                DocumentTypeProcessor.class,
-                IdentifierProcessor.class,
-                InstitutionInfoProcessor.class,
-                PersonInfoProcessor.class,
-                PublicationInfoProcessor.class,
-                RelationInfoProcessor.class,
-                RightsProcessor.class,
-                SourcesInfoProcessor.class,
-                StaticInfoProcessor.class,
-                TitleInfoProcessor.class
-        };
-
-        RouteDefinition all = from("direct:transform:all")
-                .routeId("all-transformations")
-                .log("Defaulting to perform all available transformations");
-
-        for (Class c : pipeline) {
-            MappingProcessor mp = (MappingProcessor) c.newInstance();
-            String uri = "direct:transform:" + mp.getLabel();
-
-            all.to(uri);
-            from(uri)
-                    .routeId("transform-" + mp.getLabel())
-                    .log(LoggingLevel.DEBUG, "Processing...")
-                    .process(mp);
-        }
     }
 
     private String getConfigValueOrThrowException(String key) throws ConfigurationException {
