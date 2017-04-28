@@ -24,7 +24,7 @@ import org.kohsuke.args4j.Option;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 
-public class CommandLineOptions {
+class CommandLineOptions {
 
     @Option(
             name = "--collection",
@@ -41,13 +41,6 @@ public class CommandLineOptions {
             forbids = "--stage-resource"
     )
     private String idFile = "";
-
-    @Option(
-            name = "--mappings",
-            aliases = "-m",
-            usage = "Comma separated list of mappings to apply when transforming a staged resource."
-    )
-    private String[] mappings = {};
 
     @Option(
             name = "--noop",
@@ -139,10 +132,6 @@ public class CommandLineOptions {
 
     Boolean isNoop() {
         return noop;
-    }
-
-    public String[] getMappings() {
-        return mappings;
     }
 
     String getStageResource() {

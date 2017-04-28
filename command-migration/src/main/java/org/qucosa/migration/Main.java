@@ -49,12 +49,10 @@ public class Main {
             Boolean hasStagingResourceFile = (!options.getIdFile().isEmpty());
             Boolean hasTransformResource = (options.getTransformResource() != null);
             Boolean hasTransformResourceFile = (!options.getPidFile().isEmpty());
-            Boolean hasExplicitMappings = options.getMappings().length > 0;
             Boolean isStageTransform = options.isStageTransform();
 
             Boolean isTransforming = hasTransformResource
                     || hasTransformResourceFile
-                    || hasExplicitMappings
                     || isStageTransform;
 
             Boolean isStaging = hasStagingResource || hasStagingResourceFile;
