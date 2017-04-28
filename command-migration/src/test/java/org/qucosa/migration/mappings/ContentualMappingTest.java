@@ -87,7 +87,7 @@ public class ContentualMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signal successful change", result);
         assertXpathExists(
-                "//mods:classification[@authority='swd' and text()='XYZ']",
+                "//mods:classification[@authority='sswd' and text()='XYZ']",
                 mods.getDomNode().getOwnerDocument());
     }
 

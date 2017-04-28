@@ -70,6 +70,7 @@ public class ContentualMapping {
                 break;
             case "swd":
                 subjects = opus.getSubjectSwdArray();
+                mappedType = "sswd";
                 break;
             case "uncontrolled":
                 subjects = opus.getSubjectUncontrolledArray();
