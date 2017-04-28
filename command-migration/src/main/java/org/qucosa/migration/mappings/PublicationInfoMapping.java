@@ -45,29 +45,24 @@ public class PublicationInfoMapping {
     public boolean mapOriginInfoElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
         change.get().reset();
 
-        OriginInfoDefinition oid = (OriginInfoDefinition)
-                select("mods:originInfo[@eventType='publication']", mods);
-
-        if (oid == null) {
-            oid = mods.addNewOriginInfo();
-            oid.setEventType("publication");
-            change.get().signal();
-        }
-
         final Boolean hasPublishedDate = nodeExistsAndHasChildNodes("PublishedDate", opus);
         final Boolean hasPublishedYear = nodeExistsAndHasChildNodes("PublishedYear", opus);
         final Boolean hasDateAccepted = nodeExistsAndHasChildNodes("DateAccepted", opus);
         final Boolean hasEdition = nodeExistsAndHasChildNodes("Edition", opus);
 
         if (hasPublishedDate || hasPublishedYear || hasDateAccepted || hasEdition) {
+            OriginInfoDefinition oid = (OriginInfoDefinition) select("mods:originInfo[@eventType='publication']", mods);
+            if (oid == null) {
+                oid = mods.addNewOriginInfo();
+                oid.setEventType("publication");
+                change.get().signal();
+            }
             if (hasPublishedDate) mapPublishedDate(opus, oid);
             if (hasPublishedYear) mapPublishedYear(opus, oid);
             if (hasDateAccepted) mapDateAccepted(opus, oid);
             if (hasEdition) mapEdition(opus, oid);
-        } else {
-            // Fallback to ServerDatePublished
-            mapServerDatePublished(opus, oid);
         }
+
         return change.get().signaled();
     }
 
@@ -160,26 +155,6 @@ public class PublicationInfoMapping {
 
             if (!dateIssuedDefinition.getStringValue().equals(mappedPublishedYear)) {
                 dateIssuedDefinition.setStringValue(mappedPublishedYear);
-                change.get().signal();
-            }
-        }
-    }
-
-    private void mapServerDatePublished(Document opus, OriginInfoDefinition oid) {
-        final String mappedServerDatePublished = dateEncoding(opus.getServerDatePublished());
-
-        if (mappedServerDatePublished != null) {
-            DateDefinition dateIssuedDefinition = (DateDefinition)
-                    select("mods:dateIssued[@encoding='iso8601']", oid);
-
-            if (dateIssuedDefinition == null) {
-                dateIssuedDefinition = oid.addNewDateIssued();
-                dateIssuedDefinition.setEncoding(ISO_8601);
-                change.get().signal();
-            }
-
-            if (!dateIssuedDefinition.getStringValue().equals(mappedServerDatePublished)) {
-                dateIssuedDefinition.setStringValue(mappedServerDatePublished);
                 change.get().signal();
             }
         }

@@ -81,19 +81,6 @@ public class PublicationInfoMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void handlesEmptyPublishedDate() throws Exception {
-        opus.addNewPublishedDate();
-
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
-
-        assertTrue("Mapper should signal successful change", result);
-        assertXpathNotExists(
-                "//mods:originInfo[@eventType='publication']/" +
-                        "mods:dateOther[@encoding='iso8601' and @type='submission']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
     public void extractsDateAccepted() throws Exception {
         Date ocd = opus.addNewDateAccepted();
         ocd.setYear(BigInteger.valueOf(2009));
@@ -114,19 +101,6 @@ public class PublicationInfoMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void handlesEmptyDateAccepted() throws Exception {
-        opus.addNewDateAccepted();
-
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
-
-        assertTrue("Mapper should signal successful change", result);
-        assertXpathNotExists(
-                "//mods:originInfo[@eventType='publication']/" +
-                        "mods:dateOther[@encoding='iso8601' and @type='defense']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
     public void extractsPublishedYear() throws Exception {
         opus.setPublishedYear(BigInteger.valueOf(2009));
 
@@ -136,18 +110,6 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateIssued[@encoding='iso8601' and text()='2009']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-    @Test
-    public void handlesEmptyPublishedYear() throws Exception {
-        opus.setPublishedYear(null);
-
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
-
-        assertTrue("Mapper should signal successful change", result);
-        assertXpathNotExists(
-                "//mods:originInfo[@eventType='publication']/mods:dateIssued",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -162,26 +124,6 @@ public class PublicationInfoMappingTest extends MappingTestBase {
                 "//mods:originInfo[@eventType='publication']/mods:dateIssued",
                 mods.getDomNode().getOwnerDocument());
     }
-
-    @Test
-    public void usesServerDatePublishedIfNoOtherDateIsPresent() throws Exception {
-        Date ocd = opus.addNewServerDatePublished();
-        ocd.setYear(BigInteger.valueOf(2009));
-        ocd.setMonth(BigInteger.valueOf(6));
-        ocd.setDay(BigInteger.valueOf(20));
-        ocd.setHour(BigInteger.valueOf(0));
-        ocd.setMinute(BigInteger.valueOf(0));
-        ocd.setSecond(BigInteger.valueOf(0));
-        ocd.setTimezone("GMT-1");
-
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
-
-        assertTrue("Mapper should signal successful change", result);
-        assertXpathExists(
-                "//mods:originInfo[@eventType='publication']/mods:dateIssued[@encoding='iso8601' and text()='2009-06-20']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
 
     @Test
     public void extractsEdition() throws Exception {
