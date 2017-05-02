@@ -34,6 +34,8 @@ import org.apache.xmlbeans.XmlString;
 
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
+import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
@@ -42,12 +44,10 @@ public class AdministrativeInformationMapping {
 
     static final String SLUB_GND_IDENTIFIER = "4519974-7";
 
-    public boolean mapCompletedDate(Date completedDate, ModsDefinition mods) {
-        ChangeSignal change = new ChangeSignal();
-
+    public void mapCompletedDate(Date completedDate, ModsDefinition mods, ChangeLog changeLog) {
         final String mappedDateEncoding = dateEncoding(completedDate);
 
-        OriginInfoDefinition oid = getOriginInfoDistribution(mods, change);
+        OriginInfoDefinition oid = getOriginInfoDistribution(mods, changeLog);
 
         DateDefinition dateIssued = (DateDefinition)
                 select(String.format("mods:dateIssued[@encoding='%s' and @keyDate='%s']",
@@ -56,20 +56,16 @@ public class AdministrativeInformationMapping {
             dateIssued = oid.addNewDateIssued();
             dateIssued.setEncoding(ISO_8601);
             dateIssued.setKeyDate(XmlString.Factory.newValue("yes"));
-            change.signal();
+            changeLog.log(MODS);
         }
 
         if (!dateIssued.getStringValue().equals(mappedDateEncoding)) {
             dateIssued.setStringValue(mappedDateEncoding);
-            change.signal();
+            changeLog.log(MODS);
         }
-
-        return change.signaled();
     }
 
-    public boolean mapDefaultPublisherInfo(Document opus, ModsDefinition mods) {
-        ChangeSignal change = new ChangeSignal();
-
+    public void mapDefaultPublisherInfo(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         String publisherName = opus.getPublisherName();
         if (publisherName != null && !publisherName.isEmpty()) {
             NameDefinition nd = (NameDefinition)
@@ -81,14 +77,14 @@ public class AdministrativeInformationMapping {
                 nd.setType("corporate");
                 nd.setType2(CORPORATE);
                 nd.setDisplayLabel("mapping-hack-default-publisher");
-                change.signal();
+                changeLog.log(MODS);
             }
 
             // ensure mods:name/@ID if not set
             if (nd.getID() == null || nd.getID().isEmpty()) {
                 String ID = buildTokenFrom("CORP_", publisherName);
                 nd.setID(ID);
-                change.signal();
+                changeLog.log(MODS);
             }
 
             // add mods:name/mods:nameIdentifier[@type='gnd'] if publisher is SLUB
@@ -102,7 +98,7 @@ public class AdministrativeInformationMapping {
                     nid = nd.addNewNameIdentifier();
                     nid.setType("gnd");
                     nid.setStringValue(SLUB_GND_IDENTIFIER);
-                    change.signal();
+                    changeLog.log(MODS);
                 }
             }
 
@@ -110,7 +106,7 @@ public class AdministrativeInformationMapping {
             ExtensionDefinition extension = (ExtensionDefinition) select("mods:extension", mods);
             if (extension == null) {
                 extension = mods.addNewExtension();
-                change.signal();
+                changeLog.log(MODS);
             }
 
             // ensure mods:extension/slub:info
@@ -121,7 +117,7 @@ public class AdministrativeInformationMapping {
             if (info == null) {
                 info = infoDocument.addNewInfo();
                 embedNewInfoExtensionAfterwards = true;
-                change.signal();
+                changeLog.log(MODS);
             }
 
             // ensure mods:extension/slub:info/slub:corporation
@@ -130,7 +126,7 @@ public class AdministrativeInformationMapping {
             if (corporation == null) {
                 corporation = info.addNewCorporation();
                 corporation.setRef(nd.getID());
-                change.signal();
+                changeLog.log(MODS);
             }
 
             // set mods:extension/slub:info/slub:corporation/@place
@@ -140,7 +136,7 @@ public class AdministrativeInformationMapping {
                 if (!publisherPlace.isEmpty()) {
                     if (!publisherPlace.equals(corporation.getPlace())) {
                         corporation.setPlace(publisherPlace);
-                        change.signal();
+                        changeLog.log(MODS);
                     }
                 }
             }
@@ -152,7 +148,7 @@ public class AdministrativeInformationMapping {
                 if (!publisherAddress.isEmpty()) {
                     if (!publisherAddress.equals(corporation.getAddress())) {
                         corporation.setAddress(publisherAddress);
-                        change.signal();
+                        changeLog.log(MODS);
                     }
                 }
             }
@@ -162,19 +158,16 @@ public class AdministrativeInformationMapping {
             if (university == null) {
                 university = corporation.addNewUniversity();
                 university.setStringValue(publisherName);
-                change.signal();
+                changeLog.log(MODS);
             }
 
             if (embedNewInfoExtensionAfterwards) {
                 extension.set(infoDocument);
             }
         }
-
-        return change.signaled();
     }
 
-    public boolean mapVgWortopenKey(Document opus, InfoType info) {
-        boolean change = false;
+    public void mapVgWortopenKey(Document opus, InfoType info, ChangeLog changeLog) {
         String vgwortOpenKey = opus.getVgWortOpenKey();
 
         if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
@@ -183,11 +176,9 @@ public class AdministrativeInformationMapping {
             if (info.getVgwortOpenKey() == null
                     || !info.getVgwortOpenKey().equals(encodedVgWortOpenKey)) {
                 info.setVgwortOpenKey(encodedVgWortOpenKey);
-                change = true;
+                changeLog.log(SLUB_INFO);
             }
         }
-
-        return change;
     }
 
     private String vgwortEncoding(String vgWortOpenKey) {
@@ -200,39 +191,36 @@ public class AdministrativeInformationMapping {
         }
     }
 
-    private OriginInfoDefinition getOriginInfoDistribution(ModsDefinition mods, ChangeSignal change) {
+    private OriginInfoDefinition getOriginInfoDistribution(ModsDefinition mods, ChangeLog changeLog) {
         OriginInfoDefinition oid = (OriginInfoDefinition)
                 select("mods:originInfo[@eventType='distribution']", mods);
         if (oid == null) {
             oid = mods.addNewOriginInfo();
             oid.setEventType("distribution");
-            change.signal();
+            changeLog.log(MODS);
         }
         return oid;
     }
 
 
-    public boolean ensureRightsAgreement(InfoType info) {
-        boolean change = false;
+    public void ensureRightsAgreement(InfoType info, ChangeLog changeLog) {
         RightsType rt = (RightsType) select("slub:rights", info);
         if (rt == null) {
             rt = info.addNewRights();
-            change = true;
+            changeLog.log(SLUB_INFO);
         }
 
         AgreementType at = (AgreementType)
                 select("slub:agreement", rt);
         if (at == null) {
             at = rt.addNewAgreement();
-            change = true;
+            changeLog.log(SLUB_INFO);
         }
 
         if (!at.isSetGiven() || !at.getGiven().equals("yes")) {
             at.setGiven("yes");
-            change = true;
+            changeLog.log(SLUB_INFO);
         }
-
-        return change;
     }
 
 

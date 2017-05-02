@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.SERIES;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.volume;
 import static org.qucosa.migration.mappings.MappingFunctions.volumeTitle;
@@ -43,11 +44,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class ReferencesMapping {
 
-    private final ThreadLocal<ChangeSignal> change = ThreadLocal.withInitial(ChangeSignal::new);
-
-    public boolean mapSeriesReference(Document opus, ModsDefinition mods) {
-        change.get().reset();
-
+    public void mapSeriesReference(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         // gathering data
         Title firstTitleParent = (Title) firstOf(opus.getTitleParentArray());
 
@@ -68,7 +65,7 @@ public class ReferencesMapping {
 
         // stop here, if there is no information to map
         if (volumeTitle == null && referenceUrn == null) {
-            return change.get().signaled();
+            changeLog.log(MODS);
         }
 
         // constructing relatedItem
@@ -76,26 +73,23 @@ public class ReferencesMapping {
         if (rid == null) {
             rid = mods.addNewRelatedItem();
             rid.setType(SERIES);
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         PartDefinition pd = (PartDefinition) select("mods:part[@type='volume']", mods);
         if (pd == null) {
             pd = mods.addNewPart();
             pd.setType("volume");
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
-        mapIdentifier(referenceUrn, rid, "urn");
-        mapSortOrderToPartOrder(referenceSortOrder, pd);
-        mapVolume(volume, pd);
-        mapVolumeTitle(volumeTitle, rid);
-
-        return change.get().signaled();
+        mapIdentifier(referenceUrn, rid, "urn", changeLog);
+        mapSortOrderToPartOrder(referenceSortOrder, pd, changeLog);
+        mapVolume(volume, pd, changeLog);
+        mapVolumeTitle(volumeTitle, rid, changeLog);
     }
 
-    public boolean mapExternalReferenceElements(Reference[] references, String type, ModsDefinition mods) {
-        change.get().reset();
+    public void mapExternalReferenceElements(Reference[] references, String type, ModsDefinition mods, ChangeLog changeLog) {
         for (Reference r : references) {
             final String url = r.getValue();
             if (type.equals("url") && (url == null || url.isEmpty())) {
@@ -131,32 +125,30 @@ public class ReferencesMapping {
             if (rid == null) {
                 rid = mods.addNewRelatedItem();
                 rid.setType(OTHER_VERSION);
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if ("url".equals(type)) {
-                locationElement(url, rid);
+                locationElement(url, rid, changeLog);
             } else {
-                mapIdentifier(url, rid, type);
+                mapIdentifier(url, rid, type, changeLog);
             }
 
             if (label != null && !label.isEmpty()) {
-                noteElement(label, rid);
+                noteElement(label, rid, changeLog);
             }
 
             PartDefinition pd = (PartDefinition) select("mods:part", rid);
             if (pd == null) {
                 pd = rid.addNewPart();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
-            mapSortOrderToPartOrder(r.getSortOrder(), pd);
+            mapSortOrderToPartOrder(r.getSortOrder(), pd, changeLog);
         }
-        return change.get().signaled();
     }
 
-    public boolean mapHostAndPredecessorReferences(Document opus, ModsDefinition mods) {
-        change.get().reset();
+    public void mapHostAndPredecessorReferences(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         for (Reference r : opus.getReferenceUrnArray()) {
 
             // constructing mods:relatedItem
@@ -166,11 +158,11 @@ public class ReferencesMapping {
             if (rd == null) {
                 rd = mods.addNewRelatedItem();
                 rd.setType(RelatedItemDefinition.Type.Enum.forString(relatedItemType));
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             String urn = r.getValue();
-            if (urn == null || urn.isEmpty()) return change.get().signaled();
+            if (urn == null || urn.isEmpty()) return;
 
             // constructing mods:identifier
 
@@ -180,7 +172,7 @@ public class ReferencesMapping {
                 id = rd.addNewIdentifier();
                 id.setType("urn");
                 id.setStringValue(urn);
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             // constructing mods:part
@@ -199,12 +191,12 @@ public class ReferencesMapping {
                 if (pd == null) {
                     pd = mods.addNewPart();
                     if (hasIssue) pd.setType("issue");
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
 
                 if (hasOrder && !order.equals(pd.getOrder())) {
                     pd.setOrder(order);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
 
                 // consructing mods:detail/mods:number
@@ -213,105 +205,104 @@ public class ReferencesMapping {
                     DetailDefinition dd = (DetailDefinition) firstOf(pd.getDetailArray());
                     if (dd == null) {
                         dd = pd.addNewDetail();
-                        change.get().signal();
+                        changeLog.log(MODS);
                     }
 
                     StringPlusLanguage number = (StringPlusLanguage) firstOf(dd.getNumberArray());
                     if (number == null) {
                         number = dd.addNewNumber();
-                        change.get().signal();
+                        changeLog.log(MODS);
                     }
 
                     if (!issue.equals(number.getStringValue())) {
                         number.setStringValue(issue);
-                        change.get().signal();
+                        changeLog.log(MODS);
                     }
                 }
             }
         }
-        return change.get().signaled();
     }
 
-    private void noteElement(String label, RelatedItemDefinition rid) {
+    private void noteElement(String label, RelatedItemDefinition rid, ChangeLog changeLog) {
         NoteDefinition nd = (NoteDefinition) firstOf(rid.getNoteArray());
         if (nd == null) {
             nd = rid.addNewNote();
-            change.get().signal();
+            changeLog.log(MODS);
         }
         if (!label.equals(nd.getStringValue())) {
             nd.setStringValue(label);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 
-    private void locationElement(String url, RelatedItemDefinition rid) {
+    private void locationElement(String url, RelatedItemDefinition rid, ChangeLog changeLog) {
         LocationDefinition ld = (LocationDefinition) select("mods:location[mods:url]", rid);
         if (ld == null) {
             ld = rid.addNewLocation();
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         UrlDefinition ud = (UrlDefinition) firstOf(ld.getUrlArray());
         if (ud == null) {
             ud = ld.addNewUrl();
-            change.get().signal();
+            changeLog.log(MODS);
         }
         if (!url.equals(ud.getStringValue())) {
             ud.setStringValue(url);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 
-    private void mapVolumeTitle(String volumeTitle, RelatedItemDefinition rid) {
+    private void mapVolumeTitle(String volumeTitle, RelatedItemDefinition rid, ChangeLog changeLog) {
         if (volumeTitle != null && !volumeTitle.isEmpty()) {
             TitleInfoDefinition tid = (TitleInfoDefinition) select("mods:title", rid);
             if (tid == null) {
                 tid = rid.addNewTitleInfo();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             StringPlusLanguage title = (StringPlusLanguage) select("mods:title", tid);
             if (title == null) {
                 title = tid.addNewTitle();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if (!volumeTitle.equals(title.getStringValue())) {
                 title.setStringValue(volumeTitle);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void mapVolume(String volume, PartDefinition pd) {
+    private void mapVolume(String volume, PartDefinition pd, ChangeLog changeLog) {
         if (volume != null && !volume.isEmpty()) {
             DetailDefinition dd = (DetailDefinition) select("mods:detail", pd);
             if (dd == null) {
                 dd = pd.addNewDetail();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             StringPlusLanguage spl = (StringPlusLanguage) select("mods:number", dd);
             if (spl == null) {
                 spl = dd.addNewNumber();
                 spl.setStringValue(volume);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void mapSortOrderToPartOrder(String orderString, PartDefinition pd) {
+    private void mapSortOrderToPartOrder(String orderString, PartDefinition pd, ChangeLog changeLog) {
         try {
             BigInteger order = new BigInteger(orderString);
             if (!order.equals(pd.getOrder())) {
                 pd.setOrder(order);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         } catch (NullPointerException | NumberFormatException ignored) {
         }
     }
 
-    private void mapIdentifier(String uri, RelatedItemDefinition rid, final String type) {
+    private void mapIdentifier(String uri, RelatedItemDefinition rid, final String type, ChangeLog changeLog) {
         if (uri != null && !uri.isEmpty()) {
             IdentifierDefinition id = (IdentifierDefinition)
                     select("mods:identifier[@type='" + type + "' and text()='" + uri + "']", rid);
@@ -319,7 +310,7 @@ public class ReferencesMapping {
                 id = rid.addNewIdentifier();
                 id.setType(type);
                 id.setStringValue(uri);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }

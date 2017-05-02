@@ -36,6 +36,7 @@ import java.util.LinkedList;
 
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
@@ -44,10 +45,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class InstitutionsMapping {
 
-    private final ThreadLocal<ChangeSignal> change = ThreadLocal.withInitial(() -> new ChangeSignal());
-
-    public boolean mapOrgansiations(Document opus, ModsDefinition mods) throws Exception {
-        change.get().reset();
+    public void mapOrgansiations(Document opus, ModsDefinition mods, ChangeLog changeLog) throws Exception {
         for (Organisation org : opus.getOrganisationArray()) {
             final Organisation.Type.Enum type = org.getType();
             final String place = org.getAddress();
@@ -60,53 +58,59 @@ public class InstitutionsMapping {
                 nameArray.remove(0);
                 final String token = buildTokenFrom("CORP_", significantName);
 
-                NameDefinition nd = getNameDefinition(mods, token);
-                setNamePart(significantName, nd);
+                NameDefinition nd = getNameDefinition(mods, token, changeLog);
+                setNamePart(significantName, nd, changeLog);
 
                 // FIXME Bad mapping hack to make up for inaptness of TYPO3 mapping configuration
-                addMappingHack(nd, type);
+                addMappingHack(nd, type, changeLog);
 
-                RoleDefinition rd = getRoleDefinition(nd);
-                setRoleTerm(role, rd);
+                RoleDefinition rd = getRoleDefinition(nd, changeLog);
+                setRoleTerm(role, rd, changeLog);
 
                 if (!nameArray.isEmpty()) {
-                    ExtensionDefinition ed = getExtensionDefinition(mods);
-                    InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed);
+                    ExtensionDefinition ed = getExtensionDefinition(mods, changeLog);
+                    InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed, changeLog);
                     if (id != null) {
                         ed.set(id);
-                        change.get().signal();
+                        changeLog.log(MODS);
                     }
                 }
             }
         }
-        return change.get().signaled();
     }
 
-    private InfoDocument getSlubInfoExtension(Organisation.Type.Enum type, String place, ArrayList<String> names, String token, ExtensionDefinition ed) throws Exception {
+    private InfoDocument getSlubInfoExtension(
+            Organisation.Type.Enum type,
+            String place,
+            ArrayList<String> names,
+            String token,
+            ExtensionDefinition ed,
+            ChangeLog changeLog) throws Exception {
+
         InfoDocument id = null;
         InfoType it = (InfoType) select("slub:info", ed);
         if (it == null) {
             id = InfoDocument.Factory.newInstance();
             it = id.addNewInfo();
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         CorporationType ct = (CorporationType) select("slub:corporation[@ref='" + token + "']", it);
         if (ct == null) {
             ct = it.addNewCorporation();
             ct.setRef(token);
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         final String mappedType = (Organisation.Type.OTHER.equals(type)) ? type.toString() : Organisation.Type.UNIVERSITY.toString();
         if (ct.getType() == null || !ct.getType().equals(mappedType)) {
             ct.setType(mappedType);
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         if (ct.getPlace() == null || !ct.getPlace().equals(place)) {
             ct.setPlace(place);
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         final LinkedList<String> otherHierarchy = new LinkedList<String>() {{
@@ -125,65 +129,65 @@ public class InstitutionsMapping {
         for (String name : names) {
             String hierarchyLevel = (hi.hasNext()) ? hi.next() : null;
             if (hierarchyLevel != null) {
-                createOrganizationType(ct, hierarchyLevel, name);
+                createOrganizationType(ct, hierarchyLevel, name, changeLog);
             }
         }
 
         return id;
     }
 
-    private void createOrganizationType(CorporationType ct, String hierarchy, String name) throws XPathExpressionException {
+    private void createOrganizationType(CorporationType ct, String hierarchy, String name, ChangeLog changeLog) throws XPathExpressionException {
         final String mappedName = singleline(name);
         switch (hierarchy) {
             case "institution":
                 if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) {
                     ct.addInstitution(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
             case "section":
                 if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) {
                     ct.addSection(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
             case "university":
                 if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) {
                     ct.addUniversity(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
             case "faculty":
                 if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) {
                     ct.addFaculty(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
             case "institute":
                 if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) {
                     ct.addInstitute(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
             case "chair":
                 if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) {
                     ct.addChair(mappedName);
-                    change.get().signal();
+                    changeLog.log(MODS);
                 }
                 break;
         }
     }
 
-    private ExtensionDefinition getExtensionDefinition(ModsDefinition mods) {
+    private ExtensionDefinition getExtensionDefinition(ModsDefinition mods, ChangeLog changeLog) {
         ExtensionDefinition ed = (ExtensionDefinition) select("mods:extension", mods);
         if (ed == null) {
             ed = mods.addNewExtension();
-            change.get().signal();
+            changeLog.log(MODS);
         }
         return ed;
     }
 
-    private void setRoleTerm(String role, RoleDefinition rd) {
+    private void setRoleTerm(String role, RoleDefinition rd, ChangeLog changeLog) {
         RoleTermDefinition rtd = (RoleTermDefinition) select("mods:roleTerm[text()='" + role + "']", rd);
         if (rtd == null) {
             rtd = rd.addNewRoleTerm();
@@ -192,40 +196,40 @@ public class InstitutionsMapping {
             rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
             rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + role);
             rtd.setStringValue(role);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 
-    private RoleDefinition getRoleDefinition(NameDefinition nd) {
+    private RoleDefinition getRoleDefinition(NameDefinition nd, ChangeLog changeLog) {
         RoleDefinition rd = (RoleDefinition) select("mods:role", nd);
         if (rd == null) {
             rd = nd.addNewRole();
-            change.get().signal();
+            changeLog.log(MODS);
         }
         return rd;
     }
 
-    private void setNamePart(String significantName, NameDefinition nd) {
+    private void setNamePart(String significantName, NameDefinition nd, ChangeLog changeLog) {
         NamePartDefinition npd = (NamePartDefinition) select("mods:namePart[text()='" + significantName + "']", nd);
         if (npd == null) {
             npd = nd.addNewNamePart();
             npd.setStringValue(significantName);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 
-    private NameDefinition getNameDefinition(ModsDefinition mods, String token) {
+    private NameDefinition getNameDefinition(ModsDefinition mods, String token, ChangeLog changeLog) {
         NameDefinition nd = (NameDefinition) select("mods:name[@ID='" + token + "' and @type='corporate']", mods);
         if (nd == null) {
             nd = mods.addNewName();
             nd.setID(token);
             nd.setType2(CORPORATE);
-            change.get().signal();
+            changeLog.log(MODS);
         }
         return nd;
     }
 
-    private void addMappingHack(NameDefinition nd, Organisation.Type.Enum type) {
+    private void addMappingHack(NameDefinition nd, Organisation.Type.Enum type, ChangeLog changeLog) {
         String mappingHack = "";
         if (Organisation.Type.OTHER.equals(type)) {
             mappingHack = "mapping-hack-other";
@@ -234,7 +238,7 @@ public class InstitutionsMapping {
         }
         if (!mappingHack.equals(nd.getDisplayLabel())) {
             nd.setDisplayLabel(mappingHack);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 

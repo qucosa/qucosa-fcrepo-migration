@@ -34,6 +34,7 @@ import static gov.loc.mods.v3.NamePartDefinition.Type.DATE;
 import static gov.loc.mods.v3.NamePartDefinition.Type.FAMILY;
 import static gov.loc.mods.v3.NamePartDefinition.Type.GIVEN;
 import static gov.loc.mods.v3.NamePartDefinition.Type.TERMS_OF_ADDRESS;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
@@ -43,10 +44,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class PersonMapping {
 
-    private final ThreadLocal<ChangeSignal> change = ThreadLocal.withInitial(() -> new ChangeSignal());
-
-    public boolean mapPersons(Person[] persons, ModsDefinition mods) {
-        change.get().reset();
+    public void mapPersons(Person[] persons, ModsDefinition mods, ChangeLog changeLog) {
         for (Person person : persons) {
             final String given = person.getFirstName();
             final String family = person.getLastName();
@@ -54,16 +52,15 @@ public class PersonMapping {
             final String date = dateEncoding(person.getDateOfBirth());
             final String marcRoleTerm = marcrelatorEncoding(person.getRole());
 
-            NameDefinition nd = findOrCreateNameDefinition(mods, given, family, date);
-            setNameParts(given, family, termsOfAddress, date, nd);
-            setNodeIdForReferencing(given, family, termsOfAddress, nd);
-            setRole(marcRoleTerm, nd);
-            setExtension(person, nd, mods);
+            NameDefinition nd = findOrCreateNameDefinition(mods, given, family, date, changeLog);
+            setNameParts(given, family, termsOfAddress, date, nd, changeLog);
+            setNodeIdForReferencing(given, family, termsOfAddress, nd, changeLog);
+            setRole(marcRoleTerm, nd, changeLog);
+            setExtension(person, nd, mods, changeLog);
         }
-        return change.get().signaled();
     }
 
-    private void setExtension(Person person, NameDefinition nd, ModsDefinition mods) {
+    private void setExtension(Person person, NameDefinition nd, ModsDefinition mods, ChangeLog changeLog) {
         final String phone = emptyIfNull(person.getPhone());
         final String mbox = emptyIfNull(person.getEmail());
         final String gender = emptyIfNull(genderMapping(person.getGender()));
@@ -75,7 +72,7 @@ public class PersonMapping {
         ExtensionDefinition ext = (ExtensionDefinition) select("mods:extension", mods);
         if (ext == null) {
             ext = mods.addNewExtension();
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         PersonDocument.Person foafPerson = (PersonDocument.Person)
@@ -89,14 +86,14 @@ public class PersonMapping {
             foafPerson.newCursor().setAttributeText(
                     new QName(NS_RDF, "about"), nd.getID());
             _importPd = true;
-            change.get().signal();
+            changeLog.log(MODS);
         }
 
         if (!phone.isEmpty()) {
             if (foafPerson.getPhone() == null
                     || !foafPerson.getPhone().equals(phone)) {
                 foafPerson.setPhone(phone);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
 
@@ -104,7 +101,7 @@ public class PersonMapping {
             if (foafPerson.getMbox() == null
                     || !foafPerson.getMbox().equals(mbox)) {
                 foafPerson.setMbox(mbox);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
 
@@ -112,7 +109,7 @@ public class PersonMapping {
             if (foafPerson.getGender() == null
                     || !foafPerson.getGender().equals(gender)) {
                 foafPerson.setGender(gender);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
 
@@ -137,12 +134,12 @@ public class PersonMapping {
         }
     }
 
-    private void setRole(String marcRoleTerm, NameDefinition nd) {
+    private void setRole(String marcRoleTerm, NameDefinition nd, ChangeLog changeLog) {
         if (marcRoleTerm != null) {
             RoleDefinition rd = (RoleDefinition) select("mods:role", nd);
             if (rd == null) {
                 rd = nd.addNewRole();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             RoleTermDefinition rtd = (RoleTermDefinition)
@@ -162,36 +159,36 @@ public class PersonMapping {
                 rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
                 rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + marcRoleTerm);
                 rtd.setStringValue(marcRoleTerm);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void setNameParts(String given, String family, String termsOfAddress, String date, NameDefinition nd) {
+    private void setNameParts(String given, String family, String termsOfAddress, String date, NameDefinition nd, ChangeLog changeLog) {
         if (given != null && !given.isEmpty()) {
-            checkOrSetNamePart(GIVEN, given, nd);
+            checkOrSetNamePart(GIVEN, given, nd, changeLog);
         }
         if (family != null && !family.isEmpty()) {
-            checkOrSetNamePart(FAMILY, family, nd);
+            checkOrSetNamePart(FAMILY, family, nd, changeLog);
         }
         if (termsOfAddress != null && !termsOfAddress.isEmpty()) {
-            checkOrSetNamePart(TERMS_OF_ADDRESS, termsOfAddress, nd);
+            checkOrSetNamePart(TERMS_OF_ADDRESS, termsOfAddress, nd, changeLog);
         }
         if (date != null) {
-            checkOrSetNamePart(DATE, date, nd);
+            checkOrSetNamePart(DATE, date, nd, changeLog);
         }
     }
 
-    private void setNodeIdForReferencing(String given, String family, String termsOfAddress, NameDefinition nd) {
+    private void setNodeIdForReferencing(String given, String family, String termsOfAddress, NameDefinition nd, ChangeLog changeLog) {
         String ndid = nd.getID();
         if (ndid == null || ndid.isEmpty()) {
             String token = buildTokenFrom("PERS_", given, family, termsOfAddress);
             nd.setID(token);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 
-    private NameDefinition findOrCreateNameDefinition(ModsDefinition mods, String given, String family, String date) {
+    private NameDefinition findOrCreateNameDefinition(ModsDefinition mods, String given, String family, String date, ChangeLog changeLog) {
         StringBuilder sb = new StringBuilder();
         sb.append("mods:name[");
         sb.append("@type='personal'");
@@ -214,12 +211,12 @@ public class PersonMapping {
         if (nd == null) {
             nd = mods.addNewName();
             nd.setType2(PERSONAL);
-            change.get().signal();
+            changeLog.log(MODS);
         }
         return nd;
     }
 
-    private void checkOrSetNamePart(NamePartDefinition.Type.Enum type, String value, NameDefinition nd) {
+    private void checkOrSetNamePart(NamePartDefinition.Type.Enum type, String value, NameDefinition nd, ChangeLog changeLog) {
         final String mValue = singleline(value);
         NamePartDefinition np = (NamePartDefinition)
                 select("mods:namePart[@type='" + type + "' and text()='" + mValue + "']", nd);
@@ -228,7 +225,7 @@ public class PersonMapping {
             np = nd.addNewNamePart();
             np.setType(type);
             np.setStringValue(mValue);
-            change.get().signal();
+            changeLog.log(MODS);
         }
     }
 

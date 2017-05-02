@@ -49,6 +49,7 @@ abstract class MappingTestBase {
     ModsDefinition mods;
     InfoType info;
     Document opus;
+    ChangeLog changeLog;
 
     @Before
     public void setupModsDocument() {
@@ -69,5 +70,10 @@ abstract class MappingTestBase {
     public void setupXMLUnitNamespaceContext() {
         // This could be a @BeforeClass setup, but static functions cannot be called from derived test classes
         XMLUnit.setXpathNamespaceContext(simpleNamespaceContext);
+    }
+
+    @Before
+    public void setupChangeLog() {
+        changeLog = new ChangeLog();
     }
 }

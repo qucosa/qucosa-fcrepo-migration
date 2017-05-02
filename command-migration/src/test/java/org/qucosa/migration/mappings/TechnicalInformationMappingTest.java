@@ -34,16 +34,16 @@ public class TechnicalInformationMappingTest extends MappingTestBase {
 
     @Test
     public void setsEdition() throws Exception {
-        boolean result = technicalInformationMapping.ensureEdition(mods);
-        assertTrue("Mapper should signal successful change", result);
+        technicalInformationMapping.ensureEdition(mods, changeLog);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:originInfo[@eventType='distribution']/mods:edition[text()='[Electronic ed.]']",
                 mods.getDomNode().getOwnerDocument());
     }
 
     @Test
     public void setsPhysicalDescription() throws Exception {
-        boolean result = technicalInformationMapping.ensurePhysicalDescription(mods);
-        assertTrue("Mapper should signal successful change", result);
+        technicalInformationMapping.ensurePhysicalDescription(mods, changeLog);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:physicalDescription/mods:digitalOrigin[text()='born digital']",
                 mods.getDomNode().getOwnerDocument());
     }

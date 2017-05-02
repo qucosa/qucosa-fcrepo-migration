@@ -23,12 +23,12 @@ import gov.loc.mods.v3.RelatedItemDefinition;
 import noNamespace.Document;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.ORIGINAL;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class SourceMapping {
 
-    public boolean mapSource(Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapSource(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         String reference = opus.getSource();
         if (reference != null && !reference.isEmpty()) {
             RelatedItemDefinition ri = (RelatedItemDefinition)
@@ -36,7 +36,7 @@ public class SourceMapping {
             if (ri == null) {
                 ri = mods.addNewRelatedItem();
                 ri.setType(ORIGINAL);
-                change = true;
+                changeLog.log(MODS);
             }
 
             NoteDefinition note = (NoteDefinition)
@@ -45,10 +45,9 @@ public class SourceMapping {
                 note = ri.addNewNote();
                 note.setType("z");
                 note.setStringValue(reference);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
 }

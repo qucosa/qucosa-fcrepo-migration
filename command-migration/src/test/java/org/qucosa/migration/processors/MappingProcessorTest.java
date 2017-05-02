@@ -28,13 +28,14 @@ import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.camel.impl.DefaultExchange;
 import org.junit.Before;
 import org.junit.Test;
+import org.qucosa.migration.mappings.ChangeLog;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
-import static org.qucosa.migration.processors.MappingProcessor.MODS_CHANGES;
-import static org.qucosa.migration.processors.MappingProcessor.SLUB_INFO_CHANGES;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
+import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 
 public class MappingProcessorTest {
 
@@ -62,23 +63,25 @@ public class MappingProcessorTest {
     public void setsChangesPropertyToExchangeIfProcessorReportsChanges() throws Exception {
         MappingProcessor mappingProcessor = new MappingProcessor() {
             @Override
-            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) {
-                signalChanges(MODS_CHANGES);
-                signalChanges(SLUB_INFO_CHANGES);
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument, ChangeLog changeLog) {
+                changeLog.log(MODS);
+                changeLog.log(SLUB_INFO);
             }
         };
 
         mappingProcessor.process(exchange);
 
-        assertTrue((Boolean) exchange.getProperty(MODS_CHANGES));
-        assertTrue((Boolean) exchange.getProperty(SLUB_INFO_CHANGES));
+        ChangeLog changeLog = exchange.getProperty("CHANGELOG", ChangeLog.class);
+        assertTrue(changeLog.hasChanges());
+        assertTrue(changeLog.hasModsChanges());
+        assertTrue(changeLog.hasSlubInfoChanges());
     }
 
     @Test
     public void returnsMapInExchangeBody() throws Exception {
         MappingProcessor mappingProcessor = new MappingProcessor() {
             @Override
-            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) throws Exception {
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument, ChangeLog changeLog) throws Exception {
             }
         };
 
@@ -95,7 +98,7 @@ public class MappingProcessorTest {
     public void handles_RuntimeExceptions() throws Exception {
         MappingProcessor processor = new MappingProcessor() {
             @Override
-            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument) throws Exception {
+            public void process(Document opusDocument, ModsDefinition modsDocument, InfoType infoDocument, ChangeLog changeLog) throws Exception {
                 throw new RuntimeException();
             }
         };

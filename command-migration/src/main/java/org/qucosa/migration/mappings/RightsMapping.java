@@ -27,19 +27,18 @@ import org.apache.xmlbeans.XmlObject;
 import java.util.ArrayList;
 
 import static de.slubDresden.YesNo.YES;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
 
 public class RightsMapping {
 
-    public boolean mapFileAttachments(Document opus, InfoType info) {
-        boolean change = false;
-
+    public void mapFileAttachments(Document opus, InfoType info, ChangeLog changeLog) {
         RightsType rights = info.getRights();
         if (rights == null) {
             rights = info.addNewRights();
-            change = true;
+            changeLog.log(MODS);
         }
 
         final ArrayList<String> existingAttachmentRefs = new ArrayList<>();
@@ -61,26 +60,26 @@ public class RightsMapping {
             AttachmentType at = (AttachmentType) select(query, rights);
             if (at == null) {
                 at = rights.addNewAttachment();
-                change = true;
+                changeLog.log(MODS);
             }
 
             processedAttachmentRefs.add(ref);
 
             if (at.getRef() == null || !at.getRef().equals(ref)) {
                 at.setRef(ref);
-                change = true;
+                changeLog.log(MODS);
             }
             if (at.getHasArchivalValue() == null || !at.getHasArchivalValue().equals(hasArchivalValue)) {
                 at.setHasArchivalValue(hasArchivalValue);
-                change = true;
+                changeLog.log(MODS);
             }
             if (at.getIsDownloadable() == null || !at.getIsDownloadable().equals(isDownloadable)) {
                 at.setIsDownloadable(isDownloadable);
-                change = true;
+                changeLog.log(MODS);
             }
             if (at.getIsRedistributable() == null || !at.getIsRedistributable().equals(isRedistributable)) {
                 at.setIsRedistributable(isRedistributable);
-                change = true;
+                changeLog.log(MODS);
             }
 
             i++;
@@ -92,8 +91,6 @@ public class RightsMapping {
                 rights.removeAttachment(j);
             }
         }
-
-        return change;
     }
 
 }

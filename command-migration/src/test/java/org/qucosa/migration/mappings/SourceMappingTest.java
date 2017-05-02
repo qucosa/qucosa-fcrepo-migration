@@ -37,9 +37,9 @@ public class SourceMappingTest extends MappingTestBase {
         String sourceRef = "Netzwerk Bibliothek : Tagungsband zum 95. Deutschen Bibliothekartag";
         opus.setSource(sourceRef);
 
-        boolean result = sourceMapping.mapSource(opus, mods);
+        sourceMapping.mapSource(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(String.format(
                 "//mods:relatedItem[@type='original']/mods:note[@type='z' and text()='%s']", sourceRef),
                 mods.getDomNode().getOwnerDocument());

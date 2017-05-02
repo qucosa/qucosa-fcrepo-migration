@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
 import static gov.loc.mods.v3.LanguageTermDefinition.Authority.ISO_639_2_B;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
@@ -40,11 +41,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class PublicationInfoMapping {
 
-    private final ThreadLocal<ChangeSignal> change = ThreadLocal.withInitial(() -> new ChangeSignal());
-
-    public boolean mapOriginInfoElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        change.get().reset();
-
+    public void mapOriginInfoElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         final Boolean hasPublishedDate = nodeExistsAndHasChildNodes("PublishedDate", opus);
         final Boolean hasPublishedYear = nodeExistsAndHasChildNodes("PublishedYear", opus);
         final Boolean hasDateAccepted = nodeExistsAndHasChildNodes("DateAccepted", opus);
@@ -55,20 +52,16 @@ public class PublicationInfoMapping {
             if (oid == null) {
                 oid = mods.addNewOriginInfo();
                 oid.setEventType("publication");
-                change.get().signal();
+                changeLog.log(MODS);
             }
-            if (hasPublishedDate) mapPublishedDate(opus, oid);
-            if (hasPublishedYear) mapPublishedYear(opus, oid);
-            if (hasDateAccepted) mapDateAccepted(opus, oid);
-            if (hasEdition) mapEdition(opus, oid);
+            if (hasPublishedDate) mapPublishedDate(opus, oid, changeLog);
+            if (hasPublishedYear) mapPublishedYear(opus, oid, changeLog);
+            if (hasDateAccepted) mapDateAccepted(opus, oid, changeLog);
+            if (hasEdition) mapEdition(opus, oid, changeLog);
         }
-
-        return change.get().signaled();
     }
 
-    public boolean mapLanguageElement(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
-
+    public void mapLanguageElement(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         ArrayList<String> languageCodes = new ArrayList<>();
         for (String opusLanguage : opus.getLanguageArray()) {
             for (String code : opusLanguage.split(",")) {
@@ -84,7 +77,7 @@ public class PublicationInfoMapping {
                     select("mods:language", mods);
             if (ld == null) {
                 ld = mods.addNewLanguage();
-                change = true;
+                changeLog.log(MODS);
             }
             final String query = String.format("//mods:language/mods:languageTerm[@authority='%s' and @type='%s' and text()='%s']",
                     "iso639-2b", "code", languageCode);
@@ -93,13 +86,12 @@ public class PublicationInfoMapping {
                 lngtd.setAuthority(ISO_639_2_B);
                 lngtd.setType(CODE);
                 lngtd.setStringValue(languageCode);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    private void mapDateAccepted(Document opus, OriginInfoDefinition oid) {
+    private void mapDateAccepted(Document opus, OriginInfoDefinition oid, ChangeLog changeLog) {
         final String mappedDateEncoding = dateEncoding(opus.getDateAccepted());
 
         if (mappedDateEncoding != null) {
@@ -111,17 +103,17 @@ public class PublicationInfoMapping {
                 dateOther = oid.addNewDateOther();
                 dateOther.setEncoding(ISO_8601);
                 dateOther.setType("defense");
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if (!dateOther.getStringValue().equals(mappedDateEncoding)) {
                 dateOther.setStringValue(mappedDateEncoding);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void mapEdition(Document opus, OriginInfoDefinition oid) {
+    private void mapEdition(Document opus, OriginInfoDefinition oid, ChangeLog changeLog) {
         String opusEdition = opus.getEdition();
 
         if (opusEdition != null && !opusEdition.isEmpty()) {
@@ -130,17 +122,17 @@ public class PublicationInfoMapping {
 
             if (edition == null) {
                 edition = oid.addNewEdition();
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if (!edition.getStringValue().equals(opusEdition)) {
                 edition.setStringValue(opusEdition);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void mapPublishedYear(Document opus, OriginInfoDefinition oid) {
+    private void mapPublishedYear(Document opus, OriginInfoDefinition oid, ChangeLog changeLog) {
         final String mappedPublishedYear = dateEncoding(opus.getPublishedYear());
 
         if (mappedPublishedYear != null) {
@@ -150,17 +142,17 @@ public class PublicationInfoMapping {
             if (dateIssuedDefinition == null) {
                 dateIssuedDefinition = oid.addNewDateIssued();
                 dateIssuedDefinition.setEncoding(ISO_8601);
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if (!dateIssuedDefinition.getStringValue().equals(mappedPublishedYear)) {
                 dateIssuedDefinition.setStringValue(mappedPublishedYear);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }
 
-    private void mapPublishedDate(Document opus, OriginInfoDefinition oid) {
+    private void mapPublishedDate(Document opus, OriginInfoDefinition oid, ChangeLog changeLog) {
         final String mappedDateEncoding = dateEncoding(opus.getPublishedDate());
 
         if (mappedDateEncoding != null) {
@@ -172,12 +164,12 @@ public class PublicationInfoMapping {
                 dateOther = oid.addNewDateOther();
                 dateOther.setEncoding(ISO_8601);
                 dateOther.setType("submission");
-                change.get().signal();
+                changeLog.log(MODS);
             }
 
             if (!dateOther.getStringValue().equals(mappedDateEncoding)) {
                 dateOther.setStringValue(mappedDateEncoding);
-                change.get().signal();
+                changeLog.log(MODS);
             }
         }
     }

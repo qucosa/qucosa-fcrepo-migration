@@ -17,18 +17,33 @@
 
 package org.qucosa.migration.mappings;
 
-class ChangeSignal {
-    private boolean signal = false;
+public class ChangeLog {
 
-    boolean signaled() {
-        return signal;
+    public enum Type {
+        MODS, SLUB_INFO
     }
 
-    void signal() {
-        signal = true;
+    private boolean mods_changes = false;
+    private boolean slub_info_changes = false;
+
+    public boolean hasModsChanges() {
+        return mods_changes;
     }
 
-    void reset() {
-        signal = false;
+    public boolean hasSlubInfoChanges() {
+        return slub_info_changes;
     }
+
+    public boolean hasChanges() {
+        return mods_changes || slub_info_changes;
+    }
+
+    public void log(Type type) {
+        if (type == Type.MODS) {
+            mods_changes = true;
+        } else if (type == Type.SLUB_INFO) {
+            slub_info_changes = true;
+        }
+    }
+
 }

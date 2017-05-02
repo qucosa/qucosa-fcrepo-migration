@@ -37,9 +37,9 @@ public class DocumentTypeMappingTest extends MappingTestBase {
         String type = "diploma_thesis";
         opus.setType(type);
 
-        boolean result = documentTypeMapping.mapDocumentType(opus, info);
+        documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:documentType[text()='" + type + "']",
                 info.getDomNode().getOwnerDocument());
@@ -50,9 +50,9 @@ public class DocumentTypeMappingTest extends MappingTestBase {
         opus.setType("article");
         info.setDocumentType("book");
 
-        boolean result = documentTypeMapping.mapDocumentType(opus, info);
+        documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:documentType[text()='article']",
                 info.getDomNode().getOwnerDocument());
@@ -62,9 +62,9 @@ public class DocumentTypeMappingTest extends MappingTestBase {
     public void properlyEncodesJournalDocumentType() throws Exception {
         opus.setType("journal");
 
-        boolean result = documentTypeMapping.mapDocumentType(opus, info);
+        documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:documentType[text()='periodical']",
                 info.getDomNode().getOwnerDocument());

@@ -39,7 +39,7 @@ public class ContactInformationMappingTest extends MappingTestBase {
         note.setScope("private");
         note.setMessage("The Message");
 
-        contactInformationMapping.mapNotes(opus.getNoteArray(), info);
+        contactInformationMapping.mapNotes(opus.getNoteArray(), info, changeLog);
 
         XMLAssert.assertXpathExists(
                 "//slub:note[@from='me' and @scope='private' and text()='The Message']",
@@ -54,7 +54,7 @@ public class ContactInformationMappingTest extends MappingTestBase {
         submitter.setFirstName("Maxi");
         submitter.setLastName("Musterfrau");
 
-        contactInformationMapping.mapPersonSubmitter(opus.getPersonSubmitterArray(), info);
+        contactInformationMapping.mapPersonSubmitter(opus.getPersonSubmitterArray(), info, changeLog);
 
         XMLAssert.assertXpathExists(
                 "//slub:submitter/foaf:Person[" +

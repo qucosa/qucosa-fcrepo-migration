@@ -20,21 +20,20 @@ package org.qucosa.migration.mappings;
 import de.slubDresden.InfoType;
 import noNamespace.Document;
 
+import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.documentTypeEncoding;
 
 public class DocumentTypeMapping {
 
-    public boolean mapDocumentType(Document opus, InfoType info) {
-        boolean change = false;
+    public void mapDocumentType(Document opus, InfoType info, ChangeLog changeLog) {
         final String type = opus.getType();
         if (type != null && !type.isEmpty()) {
             final String encodedType = documentTypeEncoding(type);
             if (info.getDocumentType() == null || !info.getDocumentType().equals(encodedType)) {
                 info.setDocumentType(encodedType);
-                change = true;
+                changeLog.log(SLUB_INFO);
             }
         }
-        return change;
     }
 
 }

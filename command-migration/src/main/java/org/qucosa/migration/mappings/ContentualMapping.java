@@ -28,6 +28,7 @@ import noNamespace.Document;
 import noNamespace.Subject;
 import noNamespace.Title;
 
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
@@ -35,8 +36,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class ContentualMapping {
 
-    public boolean mapTitleAbstract(Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapTitleAbstract(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         for (Title ot : opus.getTitleAbstractArray()) {
             final String lang = languageEncoding(ot.getLanguage());
             final String abst = multiline(ot.getValue());
@@ -50,14 +50,12 @@ public class ContentualMapping {
                 ad.setLang(lang);
                 ad.setType("summary");
                 ad.setStringValue(abst);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    public boolean mapSubject(String type, Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapSubject(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
         Subject[] subjects;
 
         String mappedType = type;
@@ -93,19 +91,17 @@ public class ContentualMapping {
                 cl = mods.addNewClassification();
                 cl.setAuthority(mappedType);
                 if (lang != null) cl.setLang(lang);
-                change = true;
+                changeLog.log(MODS);
             }
 
             if (!cl.getStringValue().equals(value)) {
                 cl.setStringValue(value);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    public boolean mapTableOfContent(Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapTableOfContent(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         String opusTableOfContent = opus.getTableOfContent();
         final String mappedToc = multiline(opusTableOfContent);
         if (opusTableOfContent != null && !opusTableOfContent.isEmpty()) {
@@ -113,40 +109,37 @@ public class ContentualMapping {
             if (toc == null) {
                 toc = mods.addNewTableOfContents();
                 toc.setStringValue(mappedToc);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    public boolean mapIssue(Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapIssue(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         String issue = opus.getIssue();
         if (issue != null && !issue.isEmpty()) {
             PartDefinition partDefinition = (PartDefinition) select("mods:part[@type='issue']", mods);
             if (partDefinition == null) {
                 partDefinition = mods.addNewPart();
                 partDefinition.setType("issue");
-                change = true;
+                changeLog.log(MODS);
             }
 
             DetailDefinition detailDefinition = (DetailDefinition) select("mods:detail", partDefinition);
             if (detailDefinition == null) {
                 detailDefinition = partDefinition.addNewDetail();
-                change = true;
+                changeLog.log(MODS);
             }
 
             StringPlusLanguage number = (StringPlusLanguage) select("mods:number", detailDefinition);
             if (number == null) {
                 number = detailDefinition.addNewNumber();
-                change = true;
+                changeLog.log(MODS);
             }
 
             if (!issue.equals(number.getStringValue())) {
                 number.setStringValue(issue);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 }

@@ -25,6 +25,7 @@ import de.slubDresden.SubmitterType;
 import noNamespace.Note;
 import noNamespace.Person;
 
+import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.combineName;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
@@ -32,9 +33,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class ContactInformationMapping {
 
-    public boolean mapPersonSubmitter(Person[] submitters, InfoType targetSlubInfoElement) {
-        boolean change = false;
-
+    public void mapPersonSubmitter(Person[] submitters, InfoType targetSlubInfoElement, ChangeLog changeLog) {
         for (Person submitter : submitters) {
             final String name = singleline(combineName(submitter.getFirstName(), submitter.getLastName()));
             final String phone = submitter.getPhone();
@@ -49,15 +48,12 @@ public class ContactInformationMapping {
                 foafPerson.setName(name);
                 if (phone != null && !phone.isEmpty()) foafPerson.setPhone(phone);
                 if (mbox != null && !mbox.isEmpty()) foafPerson.setMbox(mbox);
-                change = true;
+                changeLog.log(SLUB_INFO);
             }
         }
-        return change;
     }
 
-    public boolean mapNotes(Note[] notes, InfoType targetSlubInfoElement) {
-        boolean change = false;
-
+    public void mapNotes(Note[] notes, InfoType targetSlubInfoElement, ChangeLog changeLog) {
         for (Note note : notes) {
             final String creator = singleline(note.getCreator());
             final String scope = singleline(note.getScope());
@@ -71,11 +67,9 @@ public class ContactInformationMapping {
                 noteElement.setFrom(creator);
                 noteElement.setScope(ScopeType.Enum.forString(scope));
                 noteElement.setStringValue(message);
-                change = true;
+                changeLog.log(SLUB_INFO);
             }
         }
-
-        return change;
     }
 
 }

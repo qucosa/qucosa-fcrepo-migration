@@ -26,6 +26,7 @@ import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.qucosa.migration.mappings.AdministrativeInformationMapping;
+import org.qucosa.migration.mappings.ChangeLog;
 import org.qucosa.migration.mappings.ContactInformationMapping;
 import org.qucosa.migration.mappings.ContentualMapping;
 import org.qucosa.migration.mappings.DocumentTypeMapping;
@@ -42,12 +43,6 @@ import org.qucosa.migration.mappings.TitleMapping;
 import java.util.Map;
 
 public class MappingProcessor implements Processor {
-
-    static final String MODS_CHANGES = "MODS_CHANGES";
-    static final String SLUB_INFO_CHANGES = "SLUB-INFO_CHANGES";
-
-    private boolean modsChanges;
-    private boolean slubChanges;
 
     private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
     private final ContactInformationMapping cim = new ContactInformationMapping();
@@ -66,28 +61,74 @@ public class MappingProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
         Map m = (Map) exchange.getIn().getBody();
-
-        modsChanges = (boolean) exchange.getProperty(MODS_CHANGES, false);
-        slubChanges = (boolean) exchange.getProperty(SLUB_INFO_CHANGES, false);
+        ChangeLog changelog = new ChangeLog();
 
         try {
-            OpusDocument opusXmlObject = getOpusDocument(m);
-            ModsDocument modsXmlObject = getModsDocument(m);
-            InfoDocument infoXmlObject = getInfoDocument(m);
-
-            process(opusXmlObject.getOpus().getOpusDocument(),
-                    modsXmlObject.getMods(),
-                    infoXmlObject.getInfo());
+            process(getOpusDocument(m), getModsDocument(m), getInfoDocument(m), changelog);
+            exchange.getIn().setBody(m);
+            exchange.setProperty("CHANGELOG", changelog);
         } catch (RuntimeException rte) {
             throw new Exception("Processor failed with RuntimeException", rte);
         }
-
-        exchange.getIn().setBody(m);
-        exchange.setProperty(MODS_CHANGES, modsChanges);
-        exchange.setProperty(SLUB_INFO_CHANGES, slubChanges);
     }
 
-    private InfoDocument getInfoDocument(Map m) {
+    public void process(Document opus, ModsDefinition mods, InfoType info, ChangeLog changeLog) throws Exception {
+        aim.mapCompletedDate(opus.getCompletedDate(), mods, changeLog);
+        aim.mapDefaultPublisherInfo(opus, mods, changeLog);
+
+        cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info, changeLog);
+        cim.mapNotes(opus.getNoteArray(), info, changeLog);
+
+        aim.mapVgWortopenKey(opus, info, changeLog);
+
+        cm.mapTitleAbstract(opus, mods, changeLog);
+        cm.mapSubject("ddc", opus, mods, changeLog);
+        cm.mapSubject("rvk", opus, mods, changeLog);
+        cm.mapSubject("swd", opus, mods, changeLog);
+        cm.mapSubject("uncontrolled", opus, mods, changeLog);
+        cm.mapTableOfContent(opus, mods, changeLog);
+        cm.mapIssue(opus, mods, changeLog);
+
+        dm.mapDocumentType(opus, info, changeLog);
+
+        im.mapIdentifiers(opus, mods, changeLog);
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        pm.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonAdvisorArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonContributorArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonEditorArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonRefereeArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonOtherArray(), mods, changeLog);
+        pm.mapPersons(opus.getPersonTranslatorArray(), mods, changeLog);
+
+        publicationInfoMapping.mapLanguageElement(opus, mods, changeLog);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
+
+        rm.mapSeriesReference(opus, mods, changeLog);
+
+        rm.mapHostAndPredecessorReferences(opus, mods, changeLog);
+        rm.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods, changeLog);
+        rm.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods, changeLog);
+        rm.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods, changeLog);
+
+        rightsMapping.mapFileAttachments(opus, info, changeLog);
+
+        sourceMapping.mapSource(opus, mods, changeLog);
+
+        tim.ensureEdition(mods, changeLog);
+        tim.ensurePhysicalDescription(mods, changeLog);
+
+        aim.ensureRightsAgreement(info, changeLog);
+
+        tm.mapTitleMainElements(opus, mods, changeLog);
+        tm.mapTitleSubElements(opus, mods, changeLog);
+        tm.mapTitleAlternativeElements(opus, mods, changeLog);
+        tm.mapTitleParentElements(opus, mods, changeLog);
+    }
+
+    private InfoType getInfoDocument(Map m) {
         InfoDocument infoXmlObject = (InfoDocument) m.get("SLUB-INFO");
         if (infoXmlObject != null) {
             if (infoXmlObject.getInfo() == null) {
@@ -96,10 +137,10 @@ public class MappingProcessor implements Processor {
         } else {
             throw new IllegalArgumentException("SLUB-INFO XML is missing");
         }
-        return infoXmlObject;
+        return infoXmlObject.getInfo();
     }
 
-    private ModsDocument getModsDocument(Map m) {
+    private ModsDefinition getModsDocument(Map m) {
         ModsDocument modsXmlObject = (ModsDocument) m.get("MODS");
         if (modsXmlObject != null) {
             if (modsXmlObject.getMods() == null) {
@@ -108,10 +149,10 @@ public class MappingProcessor implements Processor {
         } else {
             throw new IllegalArgumentException("MODS XML is missing");
         }
-        return modsXmlObject;
+        return modsXmlObject.getMods();
     }
 
-    private OpusDocument getOpusDocument(Map m) {
+    private Document getOpusDocument(Map m) {
         OpusDocument opusXmlObject;
         opusXmlObject = (OpusDocument) m.get("QUCOSA-XML");
         if (opusXmlObject != null) {
@@ -125,56 +166,7 @@ public class MappingProcessor implements Processor {
         } else {
             throw new IllegalArgumentException("QUCOSA XML is missing");
         }
-        return opusXmlObject;
-    }
-
-    public void process(Document opus, ModsDefinition mods, InfoType info) throws Exception {
-        if (aim.mapCompletedDate(opus.getCompletedDate(), mods)) signalChanges(MODS_CHANGES);
-        if (aim.mapDefaultPublisherInfo(opus, mods)) signalChanges(MODS_CHANGES);
-        if (cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info)) signalChanges(SLUB_INFO_CHANGES);
-        if (cim.mapNotes(opus.getNoteArray(), info)) signalChanges(SLUB_INFO_CHANGES);
-        if (aim.mapVgWortopenKey(opus, info)) signalChanges(SLUB_INFO_CHANGES);
-        if (cm.mapTitleAbstract(opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapSubject("ddc", opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapSubject("rvk", opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapSubject("swd", opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapSubject("uncontrolled", opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapTableOfContent(opus, mods)) signalChanges(MODS_CHANGES);
-        if (cm.mapIssue(opus, mods)) signalChanges(MODS_CHANGES);
-        if (dm.mapDocumentType(opus, info)) signalChanges(SLUB_INFO_CHANGES);
-        if (im.mapIdentifiers(opus, mods)) signalChanges(MODS_CHANGES);
-        if (institutionsMapping.mapOrgansiations(opus, mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonAuthorArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonAdvisorArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonContributorArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonEditorArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonRefereeArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonOtherArray(), mods)) signalChanges(MODS_CHANGES);
-        if (pm.mapPersons(opus.getPersonTranslatorArray(), mods)) signalChanges(MODS_CHANGES);
-        if (publicationInfoMapping.mapLanguageElement(opus, mods)) signalChanges(MODS_CHANGES);
-        if (publicationInfoMapping.mapOriginInfoElements(opus, mods)) signalChanges(MODS_CHANGES);
-        if (rm.mapSeriesReference(opus, mods)) signalChanges(MODS_CHANGES);
-        if (rm.mapHostAndPredecessorReferences(opus, mods)) signalChanges(MODS_CHANGES);
-        if (rm.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods)) signalChanges(MODS_CHANGES);
-        if (rm.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods)) signalChanges(MODS_CHANGES);
-        if (rm.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods)) signalChanges(MODS_CHANGES);
-        if (rightsMapping.mapFileAttachments(opus, info)) signalChanges(SLUB_INFO_CHANGES);
-        if (sourceMapping.mapSource(opus, mods)) signalChanges(MODS_CHANGES);
-        if (tim.ensureEdition(mods)) signalChanges(MODS_CHANGES);
-        if (tim.ensurePhysicalDescription(mods)) signalChanges(MODS_CHANGES);
-        if (aim.ensureRightsAgreement(info)) signalChanges(SLUB_INFO_CHANGES);
-        if (tm.mapTitleMainElements(opus, mods)) signalChanges(MODS_CHANGES);
-        if (tm.mapTitleSubElements(opus, mods)) signalChanges(MODS_CHANGES);
-        if (tm.mapTitleAlternativeElements(opus, mods)) signalChanges(MODS_CHANGES);
-        if (tm.mapTitleParentElements(opus, mods)) signalChanges(MODS_CHANGES);
-    }
-
-    void signalChanges(String dsid) {
-        if (dsid.equals(MODS_CHANGES)) {
-            this.modsChanges = true;
-        } else if (dsid.equals(SLUB_INFO_CHANGES)) {
-            this.slubChanges = true;
-        }
+        return opusXmlObject.getOpus().getOpusDocument();
     }
 
 }

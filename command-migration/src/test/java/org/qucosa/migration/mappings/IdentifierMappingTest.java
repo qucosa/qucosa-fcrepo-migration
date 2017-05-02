@@ -37,9 +37,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String isbn = "978-3-8439-2186-2";
         opus.addNewIdentifierIsbn().setValue(isbn);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='isbn' and text()='" + isbn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -50,9 +50,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String urn = "urn:nbn:de:bsz:14-ds-1229936868096-20917";
         opus.addNewIdentifierUrn().setValue(urn);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -63,9 +63,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String urn = "urn:nbn:de:bsz:14-qucosa-172331";
         opus.addNewIdentifierUrn().setValue(urn);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='qucosa:urn' and text()='" + urn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -76,9 +76,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String doi = "10.3389/fnins.2015.00227";
         opus.addNewIdentifierDoi().setValue(doi);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:relatedItem[@type='otherVersion']/mods:identifier[@type='doi' and text()='" + doi + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -89,9 +89,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String issn = "1662-453X";
         opus.addNewIdentifierIssn().setValue(issn);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='issn' and text()='" + issn + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -102,9 +102,9 @@ public class IdentifierMappingTest extends MappingTestBase {
         String ppn = "303072784";
         opus.addNewIdentifierPpn().setValue(ppn);
 
-        boolean result = identifierMapping.mapIdentifiers(opus, mods);
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='swb-ppn' and text()='" + ppn + "']",
                 mods.getDomNode().getOwnerDocument());

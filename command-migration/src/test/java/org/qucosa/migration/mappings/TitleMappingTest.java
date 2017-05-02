@@ -45,9 +45,9 @@ public class TitleMappingTest extends MappingTestBase {
         final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";
         addTitleMain(language, value);
 
-        boolean result = titleMapping.mapTitleMainElements(opus, mods);
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @usage='primary']/mods:title[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -59,9 +59,9 @@ public class TitleMappingTest extends MappingTestBase {
         final String value = "The Incredibly Strange Creatures Who Stopped Living and Became Mixed-Up Zombies";
         addTitleSub(language, value);
 
-        boolean result = titleMapping.mapTitleSubElements(opus, mods);
+        titleMapping.mapTitleSubElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -73,9 +73,9 @@ public class TitleMappingTest extends MappingTestBase {
         final String value = "Schülerecho";
         addTitleAlternative(language, value);
 
-        boolean result = titleMapping.mapTitleAlternativeElements(opus, mods);
+        titleMapping.mapTitleAlternativeElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @type='alternative']/mods:title[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -87,9 +87,9 @@ public class TitleMappingTest extends MappingTestBase {
         final String value = "Forschungsberichte des Instituts für Wirtschaftsinformatik";
         addTitleParent(language, value);
 
-        boolean result = titleMapping.mapTitleParentElements(opus, mods);
+        titleMapping.mapTitleParentElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:relatedItem[@type='series']/mods:titleInfo[@lang='" + language + "']/" +
                         "mods:title[text()='" + value + "']",
@@ -111,9 +111,9 @@ public class TitleMappingTest extends MappingTestBase {
         StringPlusLanguage title = titleInfoDefinition.addNewTitle();
         title.setStringValue(value);
 
-        boolean result = titleMapping.mapTitleMainElements(opus, mods);
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
-        assertFalse(result);
+        assertFalse("Mapper should not signal changes", changeLog.hasChanges());
     }
 
     @Test
@@ -123,9 +123,9 @@ public class TitleMappingTest extends MappingTestBase {
         addTitleMain("eng", "English Title");
         addTitleMain("ice", "íslenska titill");
 
-        boolean result = titleMapping.mapTitleMainElements(opus, mods);
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document ownerDocument = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:titleInfo[@lang='ger' and not(@type) and mods:title='Deutscher Titel']", ownerDocument);
         assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);

@@ -41,9 +41,9 @@ public class ContentualMappingTest extends MappingTestBase {
         oa.setLanguage("ger");
         oa.setValue(value);
 
-        boolean result = contentualMapping.mapTitleAbstract(opus, mods);
+        contentualMapping.mapTitleAbstract(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:abstract[@lang='ger' and @type='summary' and text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -55,9 +55,9 @@ public class ContentualMappingTest extends MappingTestBase {
         os.setType("ddc");
         os.setValue("004");
 
-        boolean result = contentualMapping.mapSubject("ddc", opus, mods);
+        contentualMapping.mapSubject("ddc", opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:classification[@authority='ddc' and text()='004']",
                 mods.getDomNode().getOwnerDocument());
@@ -69,9 +69,9 @@ public class ContentualMappingTest extends MappingTestBase {
         os.setType("rvk");
         os.setValue("ST 270");
 
-        boolean result = contentualMapping.mapSubject("rvk", opus, mods);
+        contentualMapping.mapSubject("rvk", opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:classification[@authority='rvk' and text()='ST 270']",
                 mods.getDomNode().getOwnerDocument());
@@ -83,9 +83,9 @@ public class ContentualMappingTest extends MappingTestBase {
         os.setType("swd");
         os.setValue("XYZ");
 
-        boolean result = contentualMapping.mapSubject("swd", opus, mods);
+        contentualMapping.mapSubject("swd", opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:classification[@authority='sswd' and text()='XYZ']",
                 mods.getDomNode().getOwnerDocument());
@@ -98,9 +98,9 @@ public class ContentualMappingTest extends MappingTestBase {
         os.setLanguage("ger");
         os.setValue("A, B, C");
 
-        boolean result = contentualMapping.mapSubject("uncontrolled", opus, mods);
+        contentualMapping.mapSubject("uncontrolled", opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
                 mods.getDomNode().getOwnerDocument());
@@ -111,9 +111,9 @@ public class ContentualMappingTest extends MappingTestBase {
         final String value = "Inhaltsverzeichnis";
         opus.setTableOfContent(value);
 
-        boolean result = contentualMapping.mapTableOfContent(opus, mods);
+        contentualMapping.mapTableOfContent(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:tableOfContents[text()='" + value + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -124,9 +124,9 @@ public class ContentualMappingTest extends MappingTestBase {
         String issue = "Jg. 25.2014, H. 11";
         opus.setIssue(issue);
 
-        boolean result = contentualMapping.mapIssue(opus, mods);
+        contentualMapping.mapIssue(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:part[@type='issue']/mods:detail/mods:number[text()='" + issue + "']",
                 mods.getDomNode().getOwnerDocument());

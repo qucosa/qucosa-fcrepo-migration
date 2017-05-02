@@ -47,9 +47,9 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         date.setMonth(BigInteger.valueOf(1));
         date.setDay(BigInteger.valueOf(31));
 
-        boolean result = aim.mapCompletedDate(date, mods);
+        aim.mapCompletedDate(date, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/" +
                         "mods:dateIssued[@encoding='iso8601' and @keyDate='yes' and text()='2013-01-31']",
@@ -62,11 +62,11 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         opus.setPublisherPlace("Dresden");
         opus.setPublisherAddress("Zellescher Weg 18, 01069 Dresden, Germany");
 
-        boolean result = aim.mapDefaultPublisherInfo(opus, mods);
+        aim.mapDefaultPublisherInfo(opus, mods, changeLog);
 
         org.w3c.dom.Document ownerDocument = mods.getDomNode().getOwnerDocument();
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']", ownerDocument);
         assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']/" +
                 "mods:nameIdentifier[@type='gnd' and text()='" + SLUB_GND_IDENTIFIER + "']", ownerDocument);
@@ -94,9 +94,9 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         infoDocument.addNewInfo().addNewCorporation().addNewUniversity().setStringValue("Foo University");
         ext.set(infoDocument);
 
-        boolean result = aim.mapDefaultPublisherInfo(opus, mods);
+        aim.mapDefaultPublisherInfo(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document ownerDocument = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:university='Foo University']", ownerDocument);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]", ownerDocument);
@@ -107,9 +107,9 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
         opus.setVgWortOpenKey(vgWortOpenKey);
 
-        boolean result = aim.mapVgWortopenKey(opus, info);
+        aim.mapVgWortopenKey(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
                 info.getDomNode().getOwnerDocument());
@@ -121,7 +121,7 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
         opus.setVgWortOpenKey(prefix + vgWortOpenKey);
 
-        aim.mapVgWortopenKey(opus, info);
+        aim.mapVgWortopenKey(opus, info, changeLog);
 
         assertXpathExists(
                 "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
@@ -130,7 +130,7 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
 
     @Test
     public void slubAgreementIsSetToYes() throws Exception {
-        aim.ensureRightsAgreement(info);
+        aim.ensureRightsAgreement(info, changeLog);
         assertXpathExists("//slub:rights/slub:agreement[@given='yes']", info.getDomNode().getOwnerDocument());
     }
 

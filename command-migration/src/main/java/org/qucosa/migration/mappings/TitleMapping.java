@@ -28,6 +28,7 @@ import org.apache.xmlbeans.XmlString;
 import javax.xml.xpath.XPathExpressionException;
 
 import static gov.loc.mods.v3.TitleInfoDefinition.Type.TRANSLATED;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
@@ -36,8 +37,7 @@ import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class TitleMapping {
 
-    public boolean mapTitleAlternativeElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void mapTitleAlternativeElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         for (Title ot : opus.getTitleAlternativeArray()) {
             final String encLang = languageEncoding(ot.getLanguage());
 
@@ -47,14 +47,12 @@ public class TitleMapping {
             if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(value);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    public boolean mapTitleParentElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void mapTitleParentElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         if (nodeExists("TitleParent", opus)) {
             RelatedItemDefinition relatedItemDefinition =
                     (RelatedItemDefinition) select("mods:relatedItem[@type='series']", mods);
@@ -62,7 +60,7 @@ public class TitleMapping {
             if (relatedItemDefinition == null) {
                 relatedItemDefinition = mods.addNewRelatedItem();
                 relatedItemDefinition.setType(RelatedItemDefinition.Type.SERIES);
-                change = true;
+                changeLog.log(MODS);
             }
 
             for (Title ot : opus.getTitleParentArray()) {
@@ -74,15 +72,13 @@ public class TitleMapping {
                 if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                     StringPlusLanguage mt = tid.addNewTitle();
                     mt.setStringValue(value);
-                    change = true;
+                    changeLog.log(MODS);
                 }
             }
         }
-        return change;
     }
 
-    public boolean mapTitleSubElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void mapTitleSubElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         for (Title ot : opus.getTitleSubArray()) {
             final String encLang = languageEncoding(ot.getLanguage());
 
@@ -92,14 +88,12 @@ public class TitleMapping {
             if (!nodeExists("mods:subTitle[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewSubTitle();
                 mt.setStringValue(value);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
-    public boolean mapTitleMainElements(Document opus, ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void mapTitleMainElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         String documentLanguage = languageEncoding((String) firstOf(opus.getLanguageArray()));
 
         for (Title ot : opus.getTitleMainArray()) {
@@ -117,11 +111,9 @@ public class TitleMapping {
             if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(value);
-                change = true;
+                changeLog.log(MODS);
             }
         }
-
-        return change;
     }
 
     private TitleInfoDefinition ensureTitleInfoElement(ModsDefinition modsDefinition, String lang) {

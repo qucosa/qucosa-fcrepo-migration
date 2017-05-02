@@ -49,9 +49,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "advisor", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonAdvisorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAdvisorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -66,9 +66,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -83,9 +83,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "contributor", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonContributorArray(), mods);
+        personMapping.mapPersons(opus.getPersonContributorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -100,9 +100,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "editor", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonEditorArray(), mods);
+        personMapping.mapPersons(opus.getPersonEditorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -117,9 +117,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "referee", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonRefereeArray(), mods);
+        personMapping.mapPersons(opus.getPersonRefereeArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -134,9 +134,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "other", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonOtherArray(), mods);
+        personMapping.mapPersons(opus.getPersonOtherArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -151,9 +151,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "translator", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonTranslatorArray(), mods);
+        personMapping.mapPersons(opus.getPersonTranslatorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']", xml);
         assertXpathExists("//mods:name/mods:namePart[@type='given' and text()='Hans']", xml);
@@ -195,9 +195,9 @@ public class PersonMappingTest extends MappingTestBase {
             np.setStringValue("Schneider");
         }
 
-        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal'" +
                 " and mods:namePart[@type='family' and text()='Mustermann']" +
@@ -209,9 +209,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='personal']" +
                 "/mods:role/mods:roleTerm[" +
@@ -226,9 +226,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -237,7 +237,7 @@ public class PersonMappingTest extends MappingTestBase {
     public void Skip_extension_when_no_FOAF_information_available() throws Exception {
         createPerson("Prof. Dr.", null, null, null, "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
         assertXpathNotExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]",
                 mods.getDomNode().getOwnerDocument());
@@ -249,9 +249,9 @@ public class PersonMappingTest extends MappingTestBase {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
                 "Hans", "Mustermann", "author", 1965, 11, 5);
 
-        boolean result = personMapping.mapPersons(opus.getPersonAuthorArray(), mods);
+        personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:extension/foaf:Person[foaf:phone='+49(0)1234567890']", xml);
         assertXpathExists("//mods:extension/foaf:Person[foaf:mbox='mustermann@musteruni.de']", xml);

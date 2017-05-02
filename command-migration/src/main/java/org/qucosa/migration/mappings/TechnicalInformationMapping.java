@@ -24,40 +24,37 @@ import gov.loc.mods.v3.PhysicalDescriptionDefinition;
 import javax.xml.xpath.XPathExpressionException;
 
 import static gov.loc.mods.v3.DigitalOriginDefinition.BORN_DIGITAL;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
 
 public class TechnicalInformationMapping {
 
-    public boolean ensurePhysicalDescription(ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void ensurePhysicalDescription(ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         PhysicalDescriptionDefinition pdd = (PhysicalDescriptionDefinition)
                 select("mods:physicalDescription", mods);
         if (pdd == null) {
             pdd = mods.addNewPhysicalDescription();
-            change = true;
+            changeLog.log(MODS);
         }
         if (!nodeExists("mods:digitalOrigin", pdd)) {
             pdd.addDigitalOrigin(BORN_DIGITAL);
-            change = true;
+            changeLog.log(MODS);
         }
-        return change;
     }
 
-    public boolean ensureEdition(ModsDefinition mods) throws XPathExpressionException {
-        boolean change = false;
+    public void ensureEdition(ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         OriginInfoDefinition oid = (OriginInfoDefinition)
                 select("mods:originInfo[@eventType='distribution']", mods);
         if (oid == null) {
             oid = mods.addNewOriginInfo();
             oid.setEventType("distribution");
-            change = true;
+            changeLog.log(MODS);
         }
         if (!nodeExists("mods:edition[text()='[Electronic ed.]']", oid)) {
             oid.addNewEdition().setStringValue("[Electronic ed.]");
-            change = true;
+            changeLog.log(MODS);
         }
-        return change;
     }
 
 }

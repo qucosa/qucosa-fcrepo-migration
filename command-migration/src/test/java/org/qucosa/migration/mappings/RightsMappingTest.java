@@ -39,9 +39,9 @@ public class RightsMappingTest extends MappingTestBase {
         addFile("file1.pdf", true, false);
         addFile("file2.pdf", false, true);
 
-        boolean result = rightsMapping.mapFileAttachments(opus, info);
+        rightsMapping.mapFileAttachments(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-0' and @hasArchivalValue='yes' and @isDownloadable='no']",
                 info.getDomNode().getOwnerDocument());
@@ -55,20 +55,19 @@ public class RightsMappingTest extends MappingTestBase {
         addFile("file1.pdf", true, false);
         info.addNewRights().addNewAttachment().setRef("ATT-1");
 
-        boolean result = rightsMapping.mapFileAttachments(opus, info);
+        rightsMapping.mapFileAttachments(opus, info, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathNotExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1']",
                 info.getDomNode().getOwnerDocument());
     }
 
-    private File addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
+    private void addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {
         File f = opus.addNewFile();
         f.setPathName(path);
         f.setOaiExport(oaiExport);
         f.setFrontdoorVisible(frontdoorVisible);
-        return f;
     }
 
 }

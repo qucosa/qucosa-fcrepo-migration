@@ -44,9 +44,9 @@ public class ReferencesMappingTest extends MappingTestBase {
         ru.setValue(referenceToSeries);
         ru.setRelation("series");
 
-        boolean result = referencesMapping.mapSeriesReference(opus, mods);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:relatedItem[@type='series']/mods:identifier[@type='urn' and text()='" + referenceToSeries + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -61,9 +61,9 @@ public class ReferencesMappingTest extends MappingTestBase {
         String order = "201009";
         ru.setSortOrder(order);
 
-        boolean result = referencesMapping.mapSeriesReference(opus, mods);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("/mods:mods/mods:part[@order='" + order + "' and @type='volume']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -77,9 +77,9 @@ public class ReferencesMappingTest extends MappingTestBase {
         Reference ru = opus.addNewReferenceUrn();
         ru.setRelation("series");
 
-        boolean result = referencesMapping.mapSeriesReference(opus, mods);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("/mods:mods/mods:part[@type='volume']/mods:detail/mods:number[text()='" + volumeInfo + "']",
                 mods.getDomNode().getOwnerDocument());
     }
@@ -94,9 +94,9 @@ public class ReferencesMappingTest extends MappingTestBase {
         Reference ru = opus.addNewReferenceUrn();
         ru.setRelation("series");
 
-        boolean result = referencesMapping.mapSeriesReference(opus, mods);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:relatedItem[@type='series']/mods:titleInfo/mods:title[text()='" + volumeTitle + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -109,9 +109,9 @@ public class ReferencesMappingTest extends MappingTestBase {
         String volumeTitle = "Schriftenreihe des Landesamtes für Umwelt, Landwirtschaft und Geologie";
         tp.setValue(volumeTitle + " ; " + volumeInfo);
 
-        boolean result = referencesMapping.mapSeriesReference(opus, mods);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document ownerDocument = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:relatedItem[@type='series']/mods:titleInfo/mods:title[text()='" + volumeTitle + "']",
                 ownerDocument);
@@ -126,10 +126,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         Reference refUrl = opus.addNewReferenceIsbn();
         refUrl.setValue(value);
 
-        boolean result = referencesMapping.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods);
+        referencesMapping.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods, changeLog);
 
         final Document document = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:relatedItem[@type='otherVersion']" +
                 "/mods:identifier[@type='isbn' and text()='" + value + "']", document);
     }
@@ -140,10 +140,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         Reference refUrl = opus.addNewReferenceIssn();
         refUrl.setValue(value);
 
-        boolean result = referencesMapping.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods);
+        referencesMapping.mapExternalReferenceElements(opus.getReferenceIssnArray(), "issn", mods, changeLog);
 
         final Document document = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:relatedItem[@type='otherVersion']" +
                 "/mods:identifier[@type='issn' and text()='" + value + "']", document);
     }
@@ -156,10 +156,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setValue(value);
         refUrl.setLabel(label);
 
-        boolean result = referencesMapping.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods);
+        referencesMapping.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:relatedItem[@type='otherVersion']/mods:note[text()='" + label + "']", ownerDocument);
         assertXpathExists("//mods:relatedItem[@type='otherVersion']/mods:location/mods:url[text()='" + value + "']",
                 ownerDocument);
@@ -174,10 +174,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         r2.setLabel("L2");
         r2.setValue("http://L2");
 
-        boolean result = referencesMapping.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods);
+        referencesMapping.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:relatedItem[@type='otherVersion'" +
                 " and mods:note='L1'" +
                 " and mods:location/mods:url='http://L1']", ownerDocument);
@@ -198,10 +198,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setRelation("journal");
         refUrl.setSortOrder(sortOrder);
 
-        boolean result = referencesMapping.mapHostAndPredecessorReferences(opus, mods);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);
@@ -221,10 +221,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setRelation("book");
         refUrl.setSortOrder(sortOrder);
 
-        boolean result = referencesMapping.mapHostAndPredecessorReferences(opus, mods);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);
@@ -244,10 +244,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setRelation("proceeding");
         refUrl.setSortOrder(sortOrder);
 
-        boolean result = referencesMapping.mapHostAndPredecessorReferences(opus, mods);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);
@@ -267,10 +267,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setRelation("issue");
         refUrl.setSortOrder(sortOrder);
 
-        boolean result = referencesMapping.mapHostAndPredecessorReferences(opus, mods);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);
@@ -287,10 +287,10 @@ public class ReferencesMappingTest extends MappingTestBase {
         refUrl.setValue(urn);
         refUrl.setRelation("predecessor");
 
-        boolean result = referencesMapping.mapHostAndPredecessorReferences(opus, mods);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 format("//mods:relatedItem[@type='preceding']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);

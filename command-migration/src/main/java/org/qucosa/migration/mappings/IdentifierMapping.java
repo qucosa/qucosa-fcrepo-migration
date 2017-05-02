@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
+import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
 import static org.qucosa.migration.mappings.XmlFunctions.select;
@@ -43,29 +44,23 @@ public class IdentifierMapping {
         put("Urn", "qucosa:urn");
     }};
 
-    public boolean mapIdentifiers(Document opus, ModsDefinition mods) {
-        boolean change = false;
+    public void mapIdentifiers(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         for (String identifierName : typeNameMap.keySet()) {
-            change |= map(identifierName, opus, mods);
+            map(identifierName, opus, mods, changeLog);
         }
-
         // special mapping for DOI identifier
-        change |= mapDoiToRelatedItem(opus, mods);
-
-        return change;
+        mapDoiToRelatedItem(opus, mods, changeLog);
     }
 
-    private boolean map(String type, Document opus, ModsDefinition mods) {
-        boolean change = false;
+    private void map(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
         for (XmlObject xmlObject : selectAll("Identifier" + type, opus)) {
             Identifier oid = (Identifier) xmlObject;
             String oidValue = oid.getValue();
             String mappedType = typeNameMap.get(type);
             if (ensureIdentifierElement(mappedType, oidValue, mods)) {
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
     private boolean ensureIdentifierElement(String type, String id, XmlObject modsElement) {
@@ -87,27 +82,24 @@ public class IdentifierMapping {
         return false;
     }
 
-    private boolean mapDoiToRelatedItem(Document opus, ModsDefinition mods) {
-        boolean change = false;
-
+    private void mapDoiToRelatedItem(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         List<XmlObject> doiIdentifiers = selectAll("IdentifierDoi", opus);
-        if (doiIdentifiers.isEmpty()) return false;
+        if (doiIdentifiers.isEmpty()) return;
 
         RelatedItemDefinition ri = (RelatedItemDefinition)
                 select("mods:relatedItem[@type='otherVersion']", mods);
         if (ri == null) {
             ri = mods.addNewRelatedItem();
             ri.setType(OTHER_VERSION);
-            change = true;
+            changeLog.log(MODS);
         }
         for (XmlObject xmlObject : doiIdentifiers) {
             Identifier oid = (Identifier) xmlObject;
             String oidValue = oid.getValue();
             if (ensureIdentifierElement("doi", oidValue, ri)) {
-                change = true;
+                changeLog.log(MODS);
             }
         }
-        return change;
     }
 
 }

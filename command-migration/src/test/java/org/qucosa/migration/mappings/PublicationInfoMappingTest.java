@@ -36,9 +36,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         final String lang = "ger";
         opus.addLanguage(lang);
 
-        boolean result = publicationInfoMapping.mapLanguageElement(opus, mods);
+        publicationInfoMapping.mapLanguageElement(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code' and text()='" + lang + "']",
                 mods.getDomNode().getOwnerDocument());
@@ -50,9 +50,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         final String lang = "ger,eng,chi";
         opus.addLanguage(lang);
 
-        boolean result = publicationInfoMapping.mapLanguageElement(opus, mods);
+        publicationInfoMapping.mapLanguageElement(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         final String s = "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code'";
         assertXpathExists(s + " and text()='ger']", ownerDocument);
@@ -71,9 +71,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         ocd.setSecond(BigInteger.valueOf(40));
         ocd.setTimezone("GMT-2");
 
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']" +
                         "/mods:dateOther[@encoding='iso8601' and @type='submission' and text()='2009-06-04']",
@@ -91,9 +91,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         ocd.setSecond(BigInteger.valueOf(0));
         ocd.setTimezone("GMT-1");
 
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateOther[@encoding='iso8601' and @type='defense' and text()='2009-06-20']",
@@ -104,9 +104,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
     public void extractsPublishedYear() throws Exception {
         opus.setPublishedYear(BigInteger.valueOf(2009));
 
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateIssued[@encoding='iso8601' and text()='2009']",
@@ -117,9 +117,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
     public void handlesZeroPublishedYear() throws Exception {
         opus.setPublishedYear(BigInteger.ZERO);
 
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/mods:dateIssued",
                 mods.getDomNode().getOwnerDocument());
@@ -129,9 +129,9 @@ public class PublicationInfoMappingTest extends MappingTestBase {
     public void extractsEdition() throws Exception {
         opus.setEdition("2nd. Edition");
 
-        boolean result = publicationInfoMapping.mapOriginInfoElements(opus, mods);
+        publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
-        assertTrue("Mapper should signal successful change", result);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/mods:edition[text()='2nd. Edition']",
                 mods.getDomNode().getOwnerDocument());
