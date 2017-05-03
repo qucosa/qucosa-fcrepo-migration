@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.mappings;
+package org.qucosa.migration.org.qucosa.migration.xml;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
@@ -36,16 +36,16 @@ public class XmlFunctions {
                     "declare namespace foaf='" + NS_FOAF + "'; " +
                     "declare namespace xlink='" + NS_XLINK + "'; ";
 
-    static Boolean nodeExists(String expression, XmlObject object) {
+    public static Boolean nodeExists(String expression, XmlObject object) {
         return (XmlFunctions.select(expression, object) != null);
     }
 
-    static Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
+    public static Boolean nodeExistsAndHasChildNodes(String expression, XmlObject object) {
         XmlObject node = XmlFunctions.select(expression, object);
         return (node != null && node.getDomNode().hasChildNodes());
     }
 
-    static List<XmlObject> selectAll(String query, XmlObject xmlObject) {
+    public static List<XmlObject> selectAll(String query, XmlObject xmlObject) {
         List<XmlObject> results = new ArrayList<>();
         XmlCursor cursor = xmlObject.newCursor();
         cursor.selectPath(xpathNSDeclaration + query);
@@ -62,6 +62,18 @@ public class XmlFunctions {
         XmlObject result = cursor.toNextSelection() ? cursor.getObject() : null;
         cursor.dispose();
         return result;
+    }
+
+    public static void insertNode(XmlObject source, XmlObject target) {
+        XmlCursor targetCursor = target.newCursor();
+        XmlCursor sourceCursor = source.newCursor();
+        if (target.getDomNode().getOwnerDocument() == null) {
+            // when target is XML-fragment, move to first child
+            targetCursor.toFirstChild();
+        }
+        targetCursor.toEndToken();
+        sourceCursor.toFirstChild();
+        sourceCursor.copyXml(targetCursor);
     }
 
 }

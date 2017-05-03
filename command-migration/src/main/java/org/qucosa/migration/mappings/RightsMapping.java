@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import static de.slubDresden.YesNo.YES;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
-import static org.qucosa.migration.mappings.XmlFunctions.selectAll;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.selectAll;
 
 public class RightsMapping {
 

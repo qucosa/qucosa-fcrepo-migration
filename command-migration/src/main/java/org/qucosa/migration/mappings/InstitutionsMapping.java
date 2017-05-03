@@ -40,8 +40,9 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
-import static org.qucosa.migration.mappings.XmlFunctions.nodeExists;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class InstitutionsMapping {
 
@@ -71,7 +72,7 @@ public class InstitutionsMapping {
                     ExtensionDefinition ed = getExtensionDefinition(mods, changeLog);
                     InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed, changeLog);
                     if (id != null) {
-                        ed.set(id);
+                        insertNode(id, ed);
                         changeLog.log(MODS);
                     }
                 }

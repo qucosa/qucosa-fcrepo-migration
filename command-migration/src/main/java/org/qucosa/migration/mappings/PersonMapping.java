@@ -40,7 +40,8 @@ import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.Namespaces.NS_RDF;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class PersonMapping {
 
@@ -114,7 +115,8 @@ public class PersonMapping {
         }
 
         if (_importPd) {
-            ext.set(pd);
+            insertNode(pd, ext);
+            changeLog.log(MODS);
         }
     }
 

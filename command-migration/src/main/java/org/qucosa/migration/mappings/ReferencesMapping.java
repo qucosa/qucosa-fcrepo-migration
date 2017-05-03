@@ -40,7 +40,7 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.volume;
 import static org.qucosa.migration.mappings.MappingFunctions.volumeTitle;
-import static org.qucosa.migration.mappings.XmlFunctions.select;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ReferencesMapping {
 
