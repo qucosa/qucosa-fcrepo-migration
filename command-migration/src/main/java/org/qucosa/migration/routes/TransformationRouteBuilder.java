@@ -88,12 +88,17 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("QUCOSA-XML"))
+                .doTry()
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
                 .to(fedoraUri)
                 .convertBodyTo(String.class)
-                .bean(OpusDocument.Factory.class, "parse(${body})");
+                .bean(OpusDocument.Factory.class, "parse(${body})")
+                .doCatch(HttpOperationFailedException.class)
+                .onWhen(simple("${exception.statusCode} == 404"))
+                .log("${header.PID} has no ${header.DSID} datastream for migration")
+                .stop();
 
         final ModsDocument modsDocumentTemplate = ModsDocument.Factory.newInstance();
         modsDocumentTemplate.addNewMods();
