@@ -38,6 +38,7 @@ import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.SERIES;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.MappingFunctions.volume;
 import static org.qucosa.migration.mappings.MappingFunctions.volumeTitle;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
@@ -96,7 +97,7 @@ public class ReferencesMapping {
                 continue;
             }
 
-            final String label = r.getLabel();
+            final String label = singleline(r.getLabel());
 
             StringBuilder queryBuilder = new StringBuilder();
             ArrayList<String> queryParameters = new ArrayList<>();
