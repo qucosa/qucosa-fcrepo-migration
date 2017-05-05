@@ -24,12 +24,13 @@ import noNamespace.Document;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.ORIGINAL;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class SourceMapping {
 
     public void mapSource(Document opus, ModsDefinition mods, ChangeLog changeLog) {
-        String reference = opus.getSource();
+        String reference = singleline(opus.getSource());
         if (reference != null && !reference.isEmpty()) {
             RelatedItemDefinition ri = (RelatedItemDefinition)
                     select("mods:relatedItem[@type='original']", mods);
