@@ -28,6 +28,8 @@ import noNamespace.Document;
 import noNamespace.Subject;
 import noNamespace.Title;
 
+import java.util.ArrayList;
+
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
@@ -58,7 +60,7 @@ public class ContentualMapping {
     public void mapSubject(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
         Subject[] subjects;
 
-        String mappedType = type;
+        String authority = type;
         switch (type) {
             case "ddc":
                 subjects = opus.getSubjectDdcArray();
@@ -68,28 +70,39 @@ public class ContentualMapping {
                 break;
             case "swd":
                 subjects = opus.getSubjectSwdArray();
-                mappedType = "sswd";
+                authority = "sswd";
                 break;
             case "uncontrolled":
                 subjects = opus.getSubjectUncontrolledArray();
-                mappedType = "z";
+                authority = "z";
                 break;
             default:
                 throw new IllegalArgumentException(String.format("Unkown subject type `%s`", type));
         }
 
-        String query = "[@authority='%s' and text()='%s']";
         for (Subject subject : subjects) {
             final String value = singleline(subject.getValue());
             final String lang = languageEncoding(subject.getLanguage());
 
+            ArrayList<String> queryParameters = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            sb.append("mods:classification");
+            sb.append("[@authority='%s']");
+            queryParameters.add(authority);
+            sb.append("[text()='%s']");
+            queryParameters.add(value);
+            if (lang != null && !lang.isEmpty()) {
+                sb.append("[@lang='%s']");
+                queryParameters.add(lang);
+            }
+            String query = String.format(sb.toString(), queryParameters.toArray());
+
             ClassificationDefinition cl;
-            cl = (ClassificationDefinition)
-                    select("mods:classification" + String.format(query, mappedType, value), mods);
+            cl = (ClassificationDefinition) select(query, mods);
 
             if (cl == null) {
                 cl = mods.addNewClassification();
-                cl.setAuthority(mappedType);
+                cl.setAuthority(authority);
                 if (lang != null) cl.setLang(lang);
                 changeLog.log(MODS);
             }

@@ -21,6 +21,7 @@ import noNamespace.Subject;
 import noNamespace.Title;
 import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
@@ -104,6 +105,29 @@ public class ContentualMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
                 mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void Extracts_multiple_equal_subjects_of_multiple_languages() throws Exception {
+        {
+            Subject os = opus.addNewSubjectUncontrolled();
+            os.setType("uncontrolled");
+            os.setLanguage("ger");
+            os.setValue("same, same");
+        }
+        {
+            Subject os = opus.addNewSubjectUncontrolled();
+            os.setType("uncontrolled");
+            os.setLanguage("eng");
+            os.setValue("same, same");
+        }
+
+        contentualMapping.mapSubject("uncontrolled", opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:classification[@authority='z' and @lang='ger' and text()='same, same']", ownerDocument);
+        assertXpathExists("//mods:classification[@authority='z' and @lang='eng' and text()='same, same']", ownerDocument);
     }
 
     @Test
