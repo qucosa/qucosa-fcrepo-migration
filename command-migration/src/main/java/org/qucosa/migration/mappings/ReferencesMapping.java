@@ -56,7 +56,15 @@ public class ReferencesMapping {
             volumeTitle = volumeTitle(firstTitleParent.getValue());
         }
 
-        Reference firstReferenceUrn = (Reference) firstOf(opus.getReferenceUrnArray());
+        // find first series reference
+        Reference firstReferenceUrn = null;
+        for (Reference ref : opus.getReferenceUrnArray()) {
+            if (SERIES.toString().equals(ref.getRelation())) {
+                firstReferenceUrn = ref;
+                break;
+            }
+        }
+
         String referenceUrn = null;
         String referenceSortOrder = null;
         if (firstReferenceUrn != null) {

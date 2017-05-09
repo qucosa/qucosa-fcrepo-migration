@@ -107,7 +107,6 @@ public class MappingProcessor implements Processor {
         publicationInfoMapping.mapOriginInfoElements(opus, mods, changeLog);
 
         rm.mapSeriesReference(opus, mods, changeLog);
-
         rm.mapHostAndPredecessorReferences(opus, mods, changeLog);
         rm.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods, changeLog);
         rm.mapExternalReferenceElements(opus.getReferenceIsbnArray(), "isbn", mods, changeLog);

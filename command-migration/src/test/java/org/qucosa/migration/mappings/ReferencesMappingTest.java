@@ -56,8 +56,7 @@ public class ReferencesMappingTest extends MappingTestBase {
         referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:relatedItem[@type='series']/mods:identifier[@type='urn' and text()='" + referenceToSeries + "']",
+        assertXpathExists("//mods:relatedItem[@type='series']/mods:identifier[@type='urn' and text()='" + referenceToSeries + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -106,8 +105,7 @@ public class ReferencesMappingTest extends MappingTestBase {
         referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:relatedItem[@type='series']/mods:titleInfo/mods:title[text()='" + volumeTitle + "']",
+        assertXpathExists("//mods:relatedItem[@type='series']/mods:titleInfo/mods:title[text()='" + volumeTitle + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -139,6 +137,7 @@ public class ReferencesMappingTest extends MappingTestBase {
 
         final Document document = mods.getDomNode().getOwnerDocument();
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathNotExists("//mods:relatedItem[@type='series']", mods.getDomNode().getOwnerDocument());
         assertXpathExists("//mods:relatedItem[@type='otherVersion']" +
                 "/mods:identifier[@type='isbn' and text()='" + value + "']", document);
     }
@@ -300,9 +299,27 @@ public class ReferencesMappingTest extends MappingTestBase {
 
         final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathNotExists("//mods:relatedItem[@type='host']", mods.getDomNode().getOwnerDocument());
+        assertXpathNotExists("//mods:relatedItem[@type='series']", mods.getDomNode().getOwnerDocument());
         assertXpathExists(
                 format("//mods:relatedItem[@type='preceding']/mods:identifier[@type='urn' and text()='%s']", urn),
                 ownerDocument);
+    }
+
+    @Test
+    public void No_series_mapping_if_reference_is_not_of_type_series() throws Exception {
+        String urn = "urn:nbn:de:bsz:14-qucosa-74328";
+
+        Reference refUrn = opus.addNewReferenceUrn();
+        refUrn.setValue(urn);
+        refUrn.setRelation("proceeding");
+        refUrn.setLabel("isPartOf");
+
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
+
+        assertXpathNotExists("//mods:relatedItem[@type='series']", mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:relatedItem[@type='host']", mods.getDomNode().getOwnerDocument());
     }
 
 }
