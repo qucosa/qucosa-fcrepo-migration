@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class IdentifierMappingTest extends MappingTestBase {
@@ -95,6 +97,18 @@ public class IdentifierMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:identifier[@type='issn' and text()='" + issn + "']",
                 mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void Extract_ISSN_only_if_document_type_is_not_article() throws Exception {
+        String issn = "1662-453X";
+        opus.addNewIdentifierIssn().setValue(issn);
+        opus.setType("article");
+
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
+
+        assertFalse("Changelog should be empty", changeLog.hasChanges());
+        assertXpathNotExists("//mods:identifier[@type='issn']", mods.getDomNode().getOwnerDocument());
     }
 
     @Test

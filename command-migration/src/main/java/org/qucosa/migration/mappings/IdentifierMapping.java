@@ -53,6 +53,9 @@ public class IdentifierMapping {
     }
 
     private void map(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
+        if (type.equals("Issn") && "article".equals(opus.getType())) {
+            return;
+        }
         for (XmlObject xmlObject : selectAll("Identifier" + type, opus)) {
             Identifier oid = (Identifier) xmlObject;
             String oidValue = oid.getValue();
