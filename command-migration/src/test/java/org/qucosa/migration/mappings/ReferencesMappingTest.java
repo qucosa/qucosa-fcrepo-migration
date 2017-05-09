@@ -26,6 +26,7 @@ import org.w3c.dom.Document;
 import static java.lang.String.format;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ReferencesMappingTest extends MappingTestBase {
@@ -35,6 +36,14 @@ public class ReferencesMappingTest extends MappingTestBase {
     @Before
     public void setup() {
         referencesMapping = new ReferencesMapping();
+    }
+
+    @Test
+    public void Generates_no_relatedItems_when_no_references_exist() throws Exception {
+        referencesMapping.mapHostAndPredecessorReferences(opus, mods, changeLog);
+        referencesMapping.mapExternalReferenceElements(opus.getReferenceUrlArray(), "url", mods, changeLog);
+        referencesMapping.mapSeriesReference(opus, mods, changeLog);
+        assertFalse("Changelog should be empty", changeLog.hasChanges());
     }
 
     @Test

@@ -66,7 +66,7 @@ public class ReferencesMapping {
 
         // stop here, if there is no information to map
         if (volumeTitle == null && referenceUrn == null) {
-            changeLog.log(MODS);
+            return;
         }
 
         // constructing relatedItem
