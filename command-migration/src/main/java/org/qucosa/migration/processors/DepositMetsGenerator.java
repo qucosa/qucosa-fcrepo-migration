@@ -141,7 +141,12 @@ public class DepositMetsGenerator implements Processor {
             metsFile.setID("ATT-" + i);
             i++;
             metsFile.setMIMETYPE(opusFile.getMimeType());
-            addMextLabelAttribute(opusFile.getLabel(), metsFile);
+
+            String fileLabel = opusFile.getLabel();
+            if (fileLabel == null || fileLabel.isEmpty()) {
+                fileLabel = opusFile.getPathName();
+            }
+            addMextLabelAttribute(fileLabel, metsFile);
 
             Hash bestHash = selectBestHash(opusFile);
             if (bestHash != null) {
