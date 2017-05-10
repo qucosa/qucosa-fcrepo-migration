@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -130,6 +131,20 @@ public class TitleMappingTest extends MappingTestBase {
         assertXpathExists("//mods:titleInfo[@lang='ger' and not(@type) and mods:title='Deutscher Titel']", ownerDocument);
         assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
         assertXpathExists("//mods:titleInfo[@lang='ice' and @type='translated' and mods:title='íslenska titill']", ownerDocument);
+    }
+
+    @Test
+    public void Detect_main_title_if_document_has_multiple_languages() throws Exception {
+        opus.addLanguage("ger,eng");
+        addTitleMain("ger", "Deutscher Titel");
+        addTitleMain("eng", "English Title");
+
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
     }
 
     private void addTitleMain(String language, String value) {

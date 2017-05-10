@@ -94,7 +94,7 @@ public class TitleMapping {
     }
 
     public void mapTitleMainElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
-        String documentLanguage = languageEncoding((String) firstOf(opus.getLanguageArray()));
+        String documentLanguage = (String) firstOf(((String) firstOf(opus.getLanguageArray())).split(","));
 
         for (Title ot : opus.getTitleMainArray()) {
             String encLang = languageEncoding(ot.getLanguage());
