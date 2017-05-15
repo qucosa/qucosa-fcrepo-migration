@@ -78,6 +78,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .stopOnException()
                 .to("direct:ds:qucosaxml", "direct:ds:mods", "direct:ds:slubxml")
                 .end()
+                .threads()
                 .process(new MappingProcessor())
                 .to("direct:ds:update");
 
@@ -85,7 +86,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
         from("direct:ds:qucosaxml")
                 .routeId("get-qucosaxml")
-                .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("QUCOSA-XML"))
                 .doTry()
@@ -113,7 +113,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
         from("direct:ds:mods")
                 .routeId("get-mods")
-                .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("MODS"))
                 .choice()
@@ -125,7 +124,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
         from("direct:ds:slubxml")
                 .routeId("get-slubxml")
-                .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("SLUB-INFO"))
                 .choice()
@@ -169,9 +167,9 @@ public class TransformationRouteBuilder extends RouteBuilder {
                         .backOffMultiplier(2)
                         .asyncDelayedRedelivery()
                         .retryAttemptedLogLevel(LoggingLevel.WARN))
-                .threads()
                 .setHeader("X-No-Op", constant(configuration.getBoolean("sword.noop")))
                 .setHeader("X-On-Behalf-Of", constant(configuration.getString("sword.ownerID", null)))
+                .threads()
                 .to("sword:update");
     }
 
