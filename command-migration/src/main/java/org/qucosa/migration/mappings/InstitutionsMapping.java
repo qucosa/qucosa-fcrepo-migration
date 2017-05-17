@@ -68,7 +68,7 @@ public class InstitutionsMapping {
                 RoleDefinition rd = getRoleDefinition(nd, changeLog);
                 setRoleTerm(role, rd, changeLog);
 
-                if (!nameArray.isEmpty()) {
+                if (!nameArray.isEmpty() || !place.isEmpty()) {
                     ExtensionDefinition ed = getExtensionDefinition(mods, changeLog);
                     InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed, changeLog);
                     if (id != null) {

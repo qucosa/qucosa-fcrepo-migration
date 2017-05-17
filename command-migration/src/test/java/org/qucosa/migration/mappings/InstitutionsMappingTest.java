@@ -22,6 +22,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import static noNamespace.Organisation.Type.CHAIR;
+import static noNamespace.Organisation.Type.FACULTY;
+import static noNamespace.Organisation.Type.INSTITUTE;
+import static noNamespace.Organisation.Type.OTHER;
+import static noNamespace.Organisation.Type.UNIVERSITY;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
@@ -37,7 +42,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsRole() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -48,7 +53,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void corporationReferencesModsName() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -60,7 +65,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void No_new_corporation_reference_if_one_already_exists() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -73,7 +78,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Recognizes_type_other() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -85,7 +90,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Recognizes_type_university() throws Exception {
-        createOrganisation(Organisation.Type.UNIVERSITY,
+        createOrganisation(UNIVERSITY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -97,7 +102,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Recognizes_type_chair_and_maps_to_university() throws Exception {
-        createOrganisation(Organisation.Type.CHAIR,
+        createOrganisation(CHAIR,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -109,7 +114,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Recognizes_type_faculty_and_maps_to_university() throws Exception {
-        createOrganisation(Organisation.Type.FACULTY,
+        createOrganisation(FACULTY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -121,7 +126,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Recognizes_type_institute_and_maps_to_university() throws Exception {
-        createOrganisation(Organisation.Type.INSTITUTE,
+        createOrganisation(INSTITUTE,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -133,7 +138,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsPlace() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -145,7 +150,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsUnitsForTypeOther() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -160,7 +165,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsUnitsForTypeUniversity() throws Exception {
-        createOrganisation(Organisation.Type.UNIVERSITY,
+        createOrganisation(UNIVERSITY,
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", "Professur für Datenbanken");
 
@@ -176,7 +181,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsUnitsForTypeChair() throws Exception {
-        createOrganisation(Organisation.Type.CHAIR,
+        createOrganisation(CHAIR,
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", "Professur für Datenbanken");
 
@@ -192,7 +197,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsUnitsForTypeFaculty() throws Exception {
-        createOrganisation(Organisation.Type.FACULTY,
+        createOrganisation(FACULTY,
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik", null, null);
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -205,7 +210,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void extractsUnitsForTypeInstitute() throws Exception {
-        createOrganisation(Organisation.Type.INSTITUTE,
+        createOrganisation(INSTITUTE,
                 "Dresden", "publisher", "Technische Universität Dresden", "Fakultät Informatik",
                 "Institut für Systemarchitektur", null);
 
@@ -220,7 +225,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void adds_mapping_hack_to_distinguish_other_corporations() throws Exception {
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -232,7 +237,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void adds_mapping_hack_to_distinguish_universities() throws Exception {
-        createOrganisation(Organisation.Type.UNIVERSITY,
+        createOrganisation(UNIVERSITY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Baz");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -245,7 +250,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
     @Test
     public void no_role_mapping_if_role_is_null() throws Exception {
         String firstLevelName = "Deutsche Zentralbibliothek für Blinde Leipzig (DZB)";
-        createOrganisation(Organisation.Type.OTHER,
+        createOrganisation(OTHER,
                 "Leipzig", null, firstLevelName, null, null, null);
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
@@ -256,13 +261,40 @@ public class InstitutionsMappingTest extends MappingTestBase {
         assertXpathNotExists("//mods:name[@type='other']/mods:role", xml);
     }
 
+
+    /*
+
+        Reworking mapping bit by bit
+
+     */
+
+
+    @Test
+    public void Type_other_role_contributor() throws Exception {
+        createOrganisation("Landesamt für Umwelt", OTHER, "contributor");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        System.out.println(mods);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']", xml);
+    }
+
+    private void createOrganisation(String name, Organisation.Type.Enum type, String role) {
+        createOrganisation(type, "Dresden", role, name, null, null, null);
+    }
+
     private void createOrganisation(
-            Organisation.Type.Enum type, String address, String publisher, String firstLevelName,
+            Organisation.Type.Enum type, String address, String role, String firstLevelName,
             String secondLevelName, String thirdLevelName, String fourthLevelName) {
         Organisation org = opus.addNewOrganisation();
         org.setType(type);
         org.setAddress(address);
-        org.setRole(publisher);
+        org.setRole(role);
         org.setFirstLevelName(firstLevelName);
         org.setSecondLevelName(secondLevelName);
         org.setThirdLevelName(thirdLevelName);
