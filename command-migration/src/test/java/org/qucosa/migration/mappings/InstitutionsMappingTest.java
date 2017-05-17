@@ -275,8 +275,6 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
 
-        System.out.println(mods);
-
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart", xml);

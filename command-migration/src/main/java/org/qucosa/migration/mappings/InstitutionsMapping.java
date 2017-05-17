@@ -70,17 +70,13 @@ public class InstitutionsMapping {
 
                 if (!nameArray.isEmpty() || !place.isEmpty()) {
                     ExtensionDefinition ed = getExtensionDefinition(mods, changeLog);
-                    InfoDocument id = getSlubInfoExtension(type, place, nameArray, token, ed, changeLog);
-                    if (id != null) {
-                        insertNode(id, ed);
-                        changeLog.log(MODS);
-                    }
+                    doSlubInfoExtension(type, place, nameArray, token, ed, changeLog);
                 }
             }
         }
     }
 
-    private InfoDocument getSlubInfoExtension(
+    private void doSlubInfoExtension(
             Organisation.Type.Enum type,
             String place,
             ArrayList<String> names,
@@ -88,12 +84,17 @@ public class InstitutionsMapping {
             ExtensionDefinition ed,
             ChangeLog changeLog) throws Exception {
 
-        InfoDocument id = null;
+        boolean insertSlubInfo = false;
+
+        InfoDocument id;
         InfoType it = (InfoType) select("slub:info", ed);
         if (it == null) {
             id = InfoDocument.Factory.newInstance();
             it = id.addNewInfo();
             changeLog.log(MODS);
+            insertSlubInfo = true;
+        } else {
+            id = InfoDocument.Factory.parse(it.getDomNode());
         }
 
         CorporationType ct = (CorporationType) select("slub:corporation[@ref='" + token + "']", it);
@@ -134,7 +135,10 @@ public class InstitutionsMapping {
             }
         }
 
-        return id;
+        if (insertSlubInfo) {
+            insertNode(id, ed);
+            changeLog.log(MODS);
+        }
     }
 
     private void createOrganizationType(CorporationType ct, String hierarchy, String name, ChangeLog changeLog) throws XPathExpressionException {
