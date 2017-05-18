@@ -45,6 +45,8 @@ import org.apache.camel.Processor;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.apache.xmlbeans.XmlString;
+import org.qucosa.migration.mappings.ChangeLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,15 +90,21 @@ public class DepositMetsGenerator implements Processor {
         addXsiSchemaLocation(metsRecord, String.format("%s %s",
                 METS_SCHEMA_LOCATION, MODS_SCHEMA_LOCATION));
 
+        boolean hasBody = false;
         if (msg.getBody() instanceof Map) {
             Map m = msg.getBody(Map.class);
             ModsDocument modsDocument = (ModsDocument) m.get("MODS");
-            if (exchange.getProperty("MODS_CHANGES").equals(true) && modsDocument != null) {
+            ChangeLog changeLog = exchange.getProperty("CHANGELOG", ChangeLog.class);
+
+            if (changeLog.hasModsChanges() && modsDocument != null) {
                 embedMods(metsRecord, modsDocument);
+                hasBody = true;
             }
+
             InfoDocument infoDocument = (InfoDocument) m.get("SLUB-INFO");
-            if (exchange.getProperty("SLUB-INFO_CHANGES").equals(true) && infoDocument != null) {
+            if (changeLog.hasSlubInfoChanges() && infoDocument != null) {
                 embedInfo(metsRecord, infoDocument);
+                hasBody = true;
             }
         } else {
             OpusDocument opusDocument = msg.getBody(OpusDocument.class);
@@ -105,13 +113,19 @@ public class DepositMetsGenerator implements Processor {
             generateBasicMods(metsRecord, opusDocument);
             URL fileUrl = new URL(msg.getHeader("Qucosa-File-Url").toString());
             attachUploadFileSections(metsRecord, opusDocument, fileUrl);
+            hasBody = true;
         }
 
-        if (log.isDebugEnabled()) {
+        if (hasBody) {
+            msg.setBody(metsDocument);
+        } else {
+            msg.setBody(null);
+        }
+
+        if (hasBody && log.isDebugEnabled()) {
             log.debug("\n" + metsDocument.xmlText(xmlOptions));
         }
 
-        msg.setBody(metsDocument);
     }
 
     private void attachUploadFileSections(Mets metsRecord, OpusDocument opusDocument, java.net.URL baseFileUrl)
@@ -127,7 +141,12 @@ public class DepositMetsGenerator implements Processor {
             metsFile.setID("ATT-" + i);
             i++;
             metsFile.setMIMETYPE(opusFile.getMimeType());
-            addMextLabelAttribute(opusFile.getLabel(), metsFile);
+
+            String fileLabel = opusFile.getLabel();
+            if (fileLabel == null || fileLabel.isEmpty()) {
+                fileLabel = opusFile.getPathName();
+            }
+            addMextLabelAttribute(fileLabel, metsFile);
 
             Hash bestHash = selectBestHash(opusFile);
             if (bestHash != null) {
@@ -213,6 +232,7 @@ public class DepositMetsGenerator implements Processor {
 
         final TitleInfoDefinition titleInfo = modsRecord.addNewTitleInfo();
         titleInfo.setLang(lang);
+        titleInfo.setUsage(XmlString.Factory.newValue("primary"));
         StringPlusLanguage mt = titleInfo.addNewTitle();
         mt.setStringValue(title);
 

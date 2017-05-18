@@ -17,7 +17,6 @@
 
 package org.qucosa.migration;
 
-import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.SystemConfiguration;
@@ -37,6 +36,7 @@ public class Main {
         System.setProperty("sword.slugheader", String.valueOf(options.useSlugHeader()));
         System.setProperty("sword.purge", String.valueOf(options.purgeBeforeDeposit()));
         System.setProperty("sword.collection", String.valueOf(options.getCollection()));
+        System.setProperty("transformation.discardExisting", String.valueOf(options.discardExistingDatastreams()));
 
         if (options.getOwnerId() != null) {
             System.setProperty("sword.ownerID", options.getOwnerId());
@@ -48,12 +48,10 @@ public class Main {
             Boolean hasStagingResourceFile = (!options.getIdFile().isEmpty());
             Boolean hasTransformResource = (options.getTransformResource() != null);
             Boolean hasTransformResourceFile = (!options.getPidFile().isEmpty());
-            Boolean hasExplicitMappings = options.getMappings().length > 0;
             Boolean isStageTransform = options.isStageTransform();
 
             Boolean isTransforming = hasTransformResource
                     || hasTransformResourceFile
-                    || hasExplicitMappings
                     || isStageTransform;
 
             Boolean isStaging = hasStagingResource || hasStagingResourceFile;
@@ -64,20 +62,20 @@ public class Main {
             ctx = new MigrationContext(conf, isStaging, isTransforming);
             ctx.start();
 
-            final String routingSlip = buildTransformationRoutingSlip(options);
+            ProducerTemplate template = ctx.createProducerTemplate();
 
             if (hasStagingResource) {
-                sendExchange("direct:staging", options.getStageResource(), ctx, routingSlip);
+                template.sendBody("direct:staging", options.getStageResource());
+            } else if (hasStagingResourceFile) {
+                template.sendBody("direct:staging:file", options.getIdFile());
             }
-            if (hasStagingResourceFile) {
-                sendExchange("direct:staging:file", options.getIdFile(), ctx, routingSlip);
-            }
+
             if (hasTransformResource) {
-                sendExchange("direct:transform", options.getTransformResource(), ctx, routingSlip);
+                template.sendBody("direct:transform", options.getTransformResource());
+            } else if (hasTransformResourceFile) {
+                template.sendBody("direct:transform:file", options.getPidFile());
             }
-            if (hasTransformResourceFile) {
-                sendExchange("direct:transform:file", options.getPidFile(), ctx, routingSlip);
-            }
+
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             exit(1);
@@ -90,32 +88,6 @@ public class Main {
                 exit(1);
             }
         }
-    }
-
-    private static void sendExchange(String endpointUri, String resource, CamelContext ctx, String routingSlip) {
-        ProducerTemplate template = ctx.createProducerTemplate();
-        if (routingSlip.isEmpty()) {
-            template.sendBody(endpointUri, resource);
-        } else {
-            template.sendBodyAndHeader(
-                    endpointUri, resource,
-                    "transformations", routingSlip);
-        }
-    }
-
-    private static String buildTransformationRoutingSlip(CommandLineOptions options) {
-        StringBuilder sb = new StringBuilder();
-        for (String m : options.getMappings()) {
-            sb.append("direct:transform:")
-                    .append(m.toLowerCase())
-                    .append(',');
-        }
-        if (sb.length() > 0) {
-            sb.deleteCharAt(sb.length() - 1);
-        } else {
-            sb.append("direct:transform:all");
-        }
-        return sb.toString();
     }
 
 }

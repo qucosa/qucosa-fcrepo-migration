@@ -23,30 +23,16 @@ import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.builder.ValueBuilder;
 import org.apache.camel.component.http.BasicAuthenticationHttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
 import org.apache.camel.http.common.HttpOperationFailedException;
-import org.apache.camel.model.RouteDefinition;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.qucosa.camel.component.sword.SwordDeposit;
 import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.FileReaderProcessor;
-import org.qucosa.migration.processors.HttpOperationFailedHelper;
-import org.qucosa.migration.processors.AdministrationProcessor;
-import org.qucosa.migration.processors.CataloguingProcessor;
-import org.qucosa.migration.processors.DistributionInfoProcessor;
-import org.qucosa.migration.processors.DocumentTypeProcessor;
-import org.qucosa.migration.processors.IdentifierProcessor;
-import org.qucosa.migration.processors.InstitutionInfoProcessor;
 import org.qucosa.migration.processors.MappingProcessor;
-import org.qucosa.migration.processors.PersonInfoProcessor;
-import org.qucosa.migration.processors.PublicationInfoProcessor;
-import org.qucosa.migration.processors.RelationInfoProcessor;
-import org.qucosa.migration.processors.RightsProcessor;
-import org.qucosa.migration.processors.SourcesInfoProcessor;
-import org.qucosa.migration.processors.StaticInfoProcessor;
-import org.qucosa.migration.processors.TitleInfoProcessor;
 
 import java.util.concurrent.TimeUnit;
 
@@ -62,8 +48,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        configureTransformationPipeline();
-
         final String fedoraUri = getConfigValueOrThrowException("fedora.url");
 
         configureHttpBasicAuth(
@@ -76,6 +60,8 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 getConfigValueOrThrowException("sword.user"),
                 getConfigValueOrThrowException("sword.password"));
 
+        ValueBuilder discardExistingDatastreams =
+                constant(configuration.getBoolean("transformation.discardExisting"));
 
         from("direct:transform:file")
                 .routeId("transform-file")
@@ -92,75 +78,84 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .stopOnException()
                 .to("direct:ds:qucosaxml", "direct:ds:mods", "direct:ds:slubxml")
                 .end()
-                .routingSlip(header("transformations")).ignoreInvalidEndpoints()
+                .threads()
+                .process(new MappingProcessor())
                 .to("direct:ds:update");
 
         final String datastreamPath = "/objects/${header[PID]}/datastreams/${header[DSID]}";
 
         from("direct:ds:qucosaxml")
                 .routeId("get-qucosaxml")
-                .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("QUCOSA-XML"))
+                .doTry()
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
                 .to(fedoraUri)
                 .convertBodyTo(String.class)
-                .bean(OpusDocument.Factory.class, "parse(${body})");
+                .bean(OpusDocument.Factory.class, "parse(${body})")
+                .doCatch(HttpOperationFailedException.class)
+                .onWhen(simple("${exception.statusCode} == 404"))
+                .log("${header.PID} has no ${header.DSID} datastream for migration")
+                .stop();
 
         final ModsDocument modsDocumentTemplate = ModsDocument.Factory.newInstance();
         modsDocumentTemplate.addNewMods();
 
-        from("direct:ds:mods")
-                .routeId("get-mods")
-
-                .onException(HttpOperationFailedException.class)
-                .onWhen(method(HttpOperationFailedHelper.class, "isNotFound"))
-                .setBody(constant(modsDocumentTemplate))
-                .continued(true)
-                .end()
-
-                .threads()
-                .setHeader("PID", body())
-                .setHeader("DSID", constant("MODS"))
-                .setHeader(Exchange.HTTP_METHOD, constant("GET"))
-                .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
-                .setBody(constant(""))
-                .to(fedoraUri)
-                .convertBodyTo(String.class)
-                .bean(ModsDocument.Factory.class, "parse(${body})");
-
         final InfoDocument infoDocumentTemplate = InfoDocument.Factory.newInstance();
         infoDocumentTemplate.addNewInfo();
 
+        from("direct:ds:template")
+                .choice()
+                .when(simple("${header.DSID} == 'MODS'")).setBody(constant(modsDocumentTemplate))
+                .when(simple("${header.DSID} == 'SLUB-INFO'")).setBody(constant(infoDocumentTemplate));
+
+        from("direct:ds:mods")
+                .routeId("get-mods")
+                .setHeader("PID", body())
+                .setHeader("DSID", constant("MODS"))
+                .choice()
+                    .when(discardExistingDatastreams).to("direct:ds:template")
+                    .otherwise().to("direct:tryget:datastream")
+                .end()
+                .convertBodyTo(String.class)
+                .bean(ModsDocument.Factory.class, "parse(${body})");
+
         from("direct:ds:slubxml")
                 .routeId("get-slubxml")
-
-                .onException(HttpOperationFailedException.class)
-                .onWhen(method(HttpOperationFailedHelper.class, "isNotFound"))
-                .setBody(constant(infoDocumentTemplate))
-                .continued(true)
-                .end()
-
-                .threads()
                 .setHeader("PID", body())
                 .setHeader("DSID", constant("SLUB-INFO"))
+                .choice()
+                    .when(discardExistingDatastreams).to("direct:ds:template")
+                    .otherwise().to("direct:tryget:datastream")
+                .end()
+                .convertBodyTo(String.class)
+                .bean(InfoDocument.Factory.class, "parse(${body})");
+
+        from("direct:tryget:datastream")
+                .doTry()
                 .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                 .setHeader(Exchange.HTTP_PATH, simple(datastreamPath + "/content"))
                 .setBody(constant(""))
                 .to(fedoraUri)
-                .convertBodyTo(String.class)
-                .bean(InfoDocument.Factory.class, "parse(${body})");
+                .doCatch(HttpOperationFailedException.class)
+                .onWhen(simple("${exception.statusCode} == 404"))
+                .to("direct:ds:template");
 
         from("direct:ds:update")
                 .routeId("update")
                 .bean(DepositMetsGenerator.class)
-                .setHeader("Qucosa-File-Url", constant(configuration.getString("qucosa.file.url")))
-                .setHeader("Collection", constant(configuration.getString("sword.collection")))
-                .setHeader("Content-Type", constant("application/vnd.qucosa.mets+xml"))
-                .convertBodyTo(SwordDeposit.class)
-                .to("direct:sword:update");
+                .choice()
+                    .when(body().isNotNull())
+                        .setHeader("Qucosa-File-Url", constant(configuration.getString("qucosa.file.url")))
+                        .setHeader("Collection", constant(configuration.getString("sword.collection")))
+                        .setHeader("Content-Type", constant("application/vnd.qucosa.mets+xml"))
+                        .convertBodyTo(SwordDeposit.class)
+                        .to("direct:sword:update")
+                    .otherwise()
+                        .stop()
+                .end();
 
         from("direct:sword:update")
                 .routeId("sword-update")
@@ -172,9 +167,9 @@ public class TransformationRouteBuilder extends RouteBuilder {
                         .backOffMultiplier(2)
                         .asyncDelayedRedelivery()
                         .retryAttemptedLogLevel(LoggingLevel.WARN))
-                .threads()
                 .setHeader("X-No-Op", constant(configuration.getBoolean("sword.noop")))
                 .setHeader("X-On-Behalf-Of", constant(configuration.getString("sword.ownerID", null)))
+                .threads()
                 .to("sword:update");
     }
 
@@ -182,39 +177,6 @@ public class TransformationRouteBuilder extends RouteBuilder {
         HttpEndpoint httpEndpoint = (HttpEndpoint) getContext().getEndpoint(uri);
         httpEndpoint.setHttpClientConfigurer(
                 new BasicAuthenticationHttpClientConfigurer(false, user, password));
-    }
-
-    private void configureTransformationPipeline() throws IllegalAccessException, InstantiationException {
-        Class[] pipeline = {
-                AdministrationProcessor.class,
-                CataloguingProcessor.class,
-                DistributionInfoProcessor.class,
-                DocumentTypeProcessor.class,
-                IdentifierProcessor.class,
-                InstitutionInfoProcessor.class,
-                PersonInfoProcessor.class,
-                PublicationInfoProcessor.class,
-                RelationInfoProcessor.class,
-                RightsProcessor.class,
-                SourcesInfoProcessor.class,
-                StaticInfoProcessor.class,
-                TitleInfoProcessor.class
-        };
-
-        RouteDefinition all = from("direct:transform:all")
-                .routeId("all-transformations")
-                .log("Defaulting to perform all available transformations");
-
-        for (Class c : pipeline) {
-            MappingProcessor mp = (MappingProcessor) c.newInstance();
-            String uri = "direct:transform:" + mp.getLabel();
-
-            all.to(uri);
-            from(uri)
-                    .routeId("transform-" + mp.getLabel())
-                    .log(LoggingLevel.DEBUG, "Processing...")
-                    .process(mp);
-        }
     }
 
     private String getConfigValueOrThrowException(String key) throws ConfigurationException {

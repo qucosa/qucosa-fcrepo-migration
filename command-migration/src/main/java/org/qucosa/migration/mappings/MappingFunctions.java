@@ -25,8 +25,11 @@ import org.qucosa.migration.stringfilters.TextInputStringFilters;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
@@ -35,7 +38,7 @@ import static de.slubDresden.YesNo.YES;
 
 public class MappingFunctions {
 
-    public static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
+    static final String LOC_GOV_VOCABULARY_RELATORS = "http://id.loc.gov/vocabulary/relators";
 
     private static final StringFilter multiLineFilter = new StringFilterChain(
             TextInputStringFilters.TRIM_FILTER,
@@ -50,8 +53,30 @@ public class MappingFunctions {
             TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
+    private static final HashMap<String, String> typeMapping = new HashMap<String, String>() {{
+        put("article", "article");
+        put("bachelor_thesis", "bachelor_thesis");
+        put("book", "monograph");
+        put("composition", "musical_notation");
+        put("diploma_thesis", "diploma_thesis");
+        put("doctoral_thesis", "doctoral_thesis");
+        put("habilitation_thesis", "habilitation_thesis");
+        put("in_book", "contained_work");
+        put("in_proceeding", "in_proceeding");
+        put("issue", "issue");
+        put("journal", "periodical");
+        put("lecture", "lecture");
+        put("magister_thesis", "magister_thesis");
+        put("master_thesis", "master_thesis");
+        put("paper", "paper");
+        put("preprint", "preprint");
+        put("proceeding", "proceeding");
+        put("report", "report");
+        put("research_paper", "research_paper");
+        put("study", "study");
+    }};
 
-    public static String dateEncoding(BigInteger year) {
+    static String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy");
@@ -60,7 +85,7 @@ public class MappingFunctions {
         return dateFormat.format(cal.getTime());
     }
 
-    public static String dateEncoding(noNamespace.Date date) {
+    static String dateEncoding(noNamespace.Date date) {
         if (date != null && (date.isSetYear() && date.isSetMonth() && date.isSetDay())) {
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -84,15 +109,15 @@ public class MappingFunctions {
         }
     }
 
-    public static String singleline(String s) {
+    static String singleline(String s) {
         return (s == null) ? null : singleLineFilter.apply(s);
     }
 
-    public static String multiline(String s) {
+    static String multiline(String s) {
         return (s == null) ? null : multiLineFilter.apply(s);
     }
 
-    public static String buildTokenFrom(String prefix, String... strings) {
+    static String buildTokenFrom(String prefix, String... strings) {
         StringBuilder sb = new StringBuilder();
         for (String s : strings) {
             if (s != null) {
@@ -102,8 +127,61 @@ public class MappingFunctions {
         return prefix + String.format("%02X", sb.toString().hashCode());
     }
 
-    public static YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
+    static YesNo.Enum yesNoBooleanMapping(boolean oaiExport) {
         return (oaiExport) ? YES : NO;
     }
 
+    static String combineName(String firstName, String lastName) {
+        StringBuilder sb = new StringBuilder();
+        if (firstName != null && !firstName.isEmpty()) {
+            sb.append(firstName).append(' ');
+        }
+        sb.append(lastName);
+        return sb.toString();
+    }
+
+    static String languageEncoding(String code) {
+        if (code != null) {
+            if (code.length() != 3) {
+                String result = Locale.forLanguageTag(code).getISO3Language();
+                if (result == null || result.isEmpty()) return null;
+            }
+        }
+        return code;
+    }
+
+    static Object firstOf(Object[] array) {
+        if (array == null || array.length == 0) {
+            return null;
+        }
+        return array[0];
+    }
+
+    static Object firstOf(ArrayList list) {
+        return (list.isEmpty()) ? null : list.get(0);
+    }
+
+    static String documentTypeEncoding(String type) {
+        return typeMapping.get(type);
+    }
+
+    static String volume(String t) {
+        if (t != null && !t.isEmpty()) {
+            int i = t.lastIndexOf(';') + 1;
+            if (i > 0) return t.substring(i).trim();
+        }
+        return null;
+    }
+
+    static String volumeTitle(String t) {
+        if (t != null && !t.isEmpty()) {
+            int i = t.lastIndexOf(';') - 1;
+            if (i > 0) {
+                return t.substring(0, i).trim();
+            } else {
+                return t.trim();
+            }
+        }
+        return null;
+    }
 }

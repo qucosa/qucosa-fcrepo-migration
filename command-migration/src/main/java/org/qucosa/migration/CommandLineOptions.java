@@ -24,7 +24,7 @@ import org.kohsuke.args4j.Option;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 
-public class CommandLineOptions {
+class CommandLineOptions {
 
     @Option(
             name = "--collection",
@@ -43,13 +43,6 @@ public class CommandLineOptions {
     private String idFile = "";
 
     @Option(
-            name = "--mappings",
-            aliases = "-m",
-            usage = "Comma separated list of mappings to apply when transforming a staged resource."
-    )
-    private String[] mappings = {};
-
-    @Option(
             name = "--noop",
             aliases = "-n",
             usage = "Will issue SWORD Noop operation on deposit"
@@ -65,9 +58,17 @@ public class CommandLineOptions {
     private String ownerId = null;
 
     @Option(
-            name = "--purge",
-            aliases = "-p",
-            usage = "Try to purge object before doing deposit"
+            name = "--discard-existing-datastreams",
+            aliases = "-d",
+            usage = "Don't load existing datastreams for update",
+            forbids = "--purge-before-deposit"
+    )
+    private Boolean discardExistingDatastreams = false;
+    @Option(
+            name = "--purge-before-deposit",
+            aliases = "-po",
+            usage = "Try to purge object before doing deposit",
+            forbids = "--discard-existing-datastreams"
     )
     private Boolean purgeBeforeDeposit = false;
 
@@ -105,12 +106,11 @@ public class CommandLineOptions {
 
     @Option(
             name = "--use-slug",
-            usage = "Given this option, the generated Fedora ID will reflect the original Opus ID",
-            depends = "--stage-resource"
+            usage = "Given this option, the generated Fedora ID will reflect the original Opus ID"
     )
     private Boolean useSlugHeader = false;
 
-    public CommandLineOptions(String[] args) {
+    CommandLineOptions(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
         try {
             parser.parseArgument(args);
@@ -122,47 +122,47 @@ public class CommandLineOptions {
 
     }
 
-    public String getPidFile() {
+    Boolean discardExistingDatastreams() {
+        return discardExistingDatastreams;
+    }
+
+    String getPidFile() {
         return pidFile;
     }
 
-    public Boolean isNoop() {
+    Boolean isNoop() {
         return noop;
     }
 
-    public String[] getMappings() {
-        return mappings;
-    }
-
-    public String getStageResource() {
+    String getStageResource() {
         return stageResource;
     }
 
-    public String getTransformResource() {
+    String getTransformResource() {
         return transformResource;
     }
 
-    public Boolean isStageTransform() {
+    Boolean isStageTransform() {
         return stageTransform;
     }
 
-    public String getOwnerId() {
+    String getOwnerId() {
         return ownerId;
     }
 
-    public String getCollection() {
+    String getCollection() {
         return collection;
     }
 
-    public Boolean purgeBeforeDeposit() {
+    Boolean purgeBeforeDeposit() {
         return purgeBeforeDeposit;
     }
 
-    public String getIdFile() {
+    String getIdFile() {
         return idFile;
     }
 
-    public Boolean useSlugHeader() {
+    Boolean useSlugHeader() {
         return useSlugHeader;
     }
 }
