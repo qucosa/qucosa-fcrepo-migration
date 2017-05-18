@@ -250,8 +250,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
     @Test
     public void no_role_mapping_if_role_is_null() throws Exception {
         String firstLevelName = "Deutsche Zentralbibliothek für Blinde Leipzig (DZB)";
-        createOrganisation(OTHER,
-                "Leipzig", null, firstLevelName, null, null, null);
+        createOrganisation(firstLevelName, "Leipzig", OTHER, null);
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
 
@@ -271,19 +270,116 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
     @Test
     public void Type_other_role_contributor() throws Exception {
-        createOrganisation("Landesamt für Umwelt", OTHER, "contributor");
+        createOrganisation("Landesamt für Umwelt", "Dresden", OTHER, "contributor");
 
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:name[@type='corporate']/mods:namePart", xml);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Landesamt für Umwelt']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']", xml);
     }
 
-    private void createOrganisation(String name, Organisation.Type.Enum type, String role) {
-        createOrganisation(type, "Dresden", role, name, null, null, null);
+    @Test
+    public void Type_other_role_publisher() throws Exception {
+        createOrganisation("Landesamt für Umwelt", "Dresden", OTHER, "publisher");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Landesamt für Umwelt']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='pbl']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']", xml);
+    }
+
+    @Test
+    public void Type_university_role_contributor() throws Exception {
+        createOrganisation("Technische Universität Dresden", "Dresden", UNIVERSITY, "contributor");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Type_university_role_publisher() throws Exception {
+        createOrganisation("Technische Universität Dresden", "Dresden", UNIVERSITY, "publisher");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Type_university_role_publisher_thesis() throws Exception {
+        setDocumentType("bachelor_thesis");
+        createOrganisation("Technische Universität Dresden", "Dresden", UNIVERSITY, "publisher");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='dgg']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Type_university_role_publisher_paper() throws Exception {
+        setDocumentType("paper");
+        createOrganisation("Technische Universität Dresden", "Dresden", UNIVERSITY, "publisher");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='dgg']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Type_chair_role_contributor_mapped_same_as_university() throws Exception {
+        createOrganisation("Technische Universität Dresden", "Dresden", CHAIR, "contributor");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Type_faculty_role_publisher_mapped_same_as_university() throws Exception {
+        createOrganisation("Technische Universität Dresden", "Dresden", FACULTY, "publisher");
+
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    private void setDocumentType(String doctype) {
+        opus.setType(doctype);
+    }
+
+    private void createOrganisation(String name, String place, Organisation.Type.Enum type, String role) {
+        createOrganisation(type, place, role, name, null, null, null);
     }
 
     private void createOrganisation(

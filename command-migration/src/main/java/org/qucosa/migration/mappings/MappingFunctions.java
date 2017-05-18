@@ -25,6 +25,7 @@ import org.qucosa.migration.stringfilters.TextInputStringFilters;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -154,6 +155,10 @@ public class MappingFunctions {
             return null;
         }
         return array[0];
+    }
+
+    static Object firstOf(ArrayList list) {
+        return (list.isEmpty()) ? null : list.get(0);
     }
 
     static String documentTypeEncoding(String type) {

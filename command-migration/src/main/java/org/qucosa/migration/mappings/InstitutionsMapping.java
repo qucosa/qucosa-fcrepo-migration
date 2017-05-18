@@ -39,6 +39,7 @@ import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
+import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
@@ -50,10 +51,11 @@ public class InstitutionsMapping {
         for (Organisation org : opus.getOrganisationArray()) {
             final Organisation.Type.Enum type = org.getType();
             final String place = org.getAddress();
-            final String role = marcrelatorEncoding(org.getRole());
+            final String doctype = opus.getType();
+            final String role = mapRoleToMarcRelator(doctype, type, org.getRole());
 
             final ArrayList<String> nameArray = buildNameArray(org);
-            final String significantName = singleline(nameArray.get(0));
+            final String significantName = singleline((String) firstOf(nameArray));
 
             if (significantName != null) {
                 nameArray.remove(0);
@@ -104,7 +106,7 @@ public class InstitutionsMapping {
             changeLog.log(MODS);
         }
 
-        final String mappedType = (Organisation.Type.OTHER.equals(type)) ? type.toString() : Organisation.Type.UNIVERSITY.toString();
+        final String mappedType = isUniversityUnit(type) ? "university" : "other";
         if (ct.getType() == null || !ct.getType().equals(mappedType)) {
             ct.setType(mappedType);
             changeLog.log(MODS);
@@ -238,7 +240,7 @@ public class InstitutionsMapping {
         String mappingHack = "";
         if (Organisation.Type.OTHER.equals(type)) {
             mappingHack = "mapping-hack-other";
-        } else if (Organisation.Type.UNIVERSITY.equals(type)) {
+        } else if (isUniversityUnit(type)) {
             mappingHack = "mapping-hack-university";
         }
         if (!mappingHack.equals(nd.getDisplayLabel())) {
@@ -260,14 +262,32 @@ public class InstitutionsMapping {
         if (s != null && !s.isEmpty()) ss.add(s);
     }
 
-    private String marcrelatorEncoding(String role) {
-        if ("publisher".equals(role)) {
-            return "pbl";
-        } else if ("contributor".equals(role)) {
-            return "ctb";
+    private String mapRoleToMarcRelator(String doctype, Organisation.Type.Enum orgType, String role) {
+        if (isUniversityUnit(orgType)) {
+            if ("publisher".equals(role) && isPaperOrThesis(doctype)) {
+                return "dgg";
+            } else {
+                return "edt";
+            }
         } else {
-            return null;
+            if ("publisher".equals(role)) {
+                return "pbl";
+            } else if ("contributor".equals(role)) {
+                return "edt";
+            }
         }
+        return null;
+    }
+
+    private boolean isUniversityUnit(Organisation.Type.Enum orgType) {
+        return (Organisation.Type.UNIVERSITY.equals(orgType)
+                || Organisation.Type.CHAIR.equals(orgType)
+                || Organisation.Type.FACULTY.equals(orgType)
+                || Organisation.Type.INSTITUTE.equals(orgType));
+    }
+
+    private boolean isPaperOrThesis(String doctype) {
+        return doctype != null && ("paper".equals(doctype) || doctype.contains("_thesis"));
     }
 
 }
