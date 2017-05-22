@@ -94,17 +94,28 @@ public class TitleMapping {
     }
 
     public void mapTitleMainElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
-        String documentLanguage = (String) firstOf(((String) firstOf(opus.getLanguageArray())).split(","));
+        String[] langCodeArray = ((String) firstOf(opus.getLanguageArray())).split(",");
+        String firstDocumentLanguage = (String) firstOf(langCodeArray);
+        Title[] titleMainArray = opus.getTitleMainArray();
 
-        for (Title ot : opus.getTitleMainArray()) {
+        boolean titleMatchingDocumentLanguageExists = false;
+        for (Title ot : titleMainArray) {
             String encLang = languageEncoding(ot.getLanguage());
+            if (encLang.equals(firstDocumentLanguage)) {
+                titleMatchingDocumentLanguageExists = true;
+                break;
+            }
+        }
 
+        for (Title ot : titleMainArray) {
+            String encLang = languageEncoding(ot.getLanguage());
             TitleInfoDefinition tid;
-            boolean isTranslated = !encLang.equals(documentLanguage);
-            if (isTranslated) {
-                tid = ensureTitleInfoElement(mods, encLang, TRANSLATED);
-            } else {
+            if (encLang.equals(firstDocumentLanguage)
+                    || titleMainArray.length == 1
+                    || !titleMatchingDocumentLanguageExists) {
                 tid = ensureTitleInfoElement(mods, encLang, "primary");
+            } else {
+                tid = ensureTitleInfoElement(mods, encLang, TRANSLATED);
             }
 
             final String value = singleline(ot.getValue());

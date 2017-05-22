@@ -147,6 +147,20 @@ public class TitleMappingTest extends MappingTestBase {
         assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
     }
 
+    @Test
+    public void Choose_first_main_title_if_no_title_matches_document_language() throws Exception {
+        opus.addLanguage("chi");
+        addTitleMain("ger", "Deutscher Titel");
+        addTitleMain("eng", "English Title");
+
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document ownerDocument = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", ownerDocument);
+        assertXpathNotExists("//mods:titleInfo[@lang='ger' and @type='translated' and mods:title='Deutscher Titel']", ownerDocument);
+    }
+
     private void addTitleMain(String language, String value) {
         Title ot = opus.addNewTitleMain();
         ot.setLanguage(language);
