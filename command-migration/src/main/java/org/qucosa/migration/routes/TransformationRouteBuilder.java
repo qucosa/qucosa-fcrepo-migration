@@ -169,7 +169,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
                         .retryAttemptedLogLevel(LoggingLevel.WARN))
                 .setHeader("X-No-Op", constant(configuration.getBoolean("sword.noop")))
                 .setHeader("X-On-Behalf-Of", constant(configuration.getString("sword.ownerID", null)))
-                .threads()
+                .threads().throttle(5).asyncDelayed()
                 .to("sword:update");
     }
 
