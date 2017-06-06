@@ -53,6 +53,10 @@ public class MappingFunctions {
             TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
+    private static final StringFilter uriFilter = new StringFilterChain(
+            singleLineFilter,
+            TextInputStringFilters.WHITESPACE_FILTER);
+
     private static final HashMap<String, String> typeMapping = new HashMap<String, String>() {{
         put("article", "article");
         put("bachelor_thesis", "bachelor_thesis");
@@ -115,6 +119,10 @@ public class MappingFunctions {
 
     static String multiline(String s) {
         return (s == null) ? null : multiLineFilter.apply(s);
+    }
+
+    static String uri(String s) {
+        return (s == null) ? null : uriFilter.apply(s);
     }
 
     static String buildTokenFrom(String prefix, String... strings) {

@@ -81,8 +81,10 @@ public class IdentifierMappingTest extends MappingTestBase {
         identifierMapping.mapIdentifiers(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathNotExists("/mods:mods/mods:identifier[@type='doi' and text()='" + doi + "']",
+                mods.getDomNode().getOwnerDocument());
         assertXpathExists(
-                "//mods:relatedItem[@type='otherVersion']/mods:identifier[@type='doi' and text()='" + doi + "']",
+                "/mods:mods/mods:relatedItem[@type='otherVersion']/mods:identifier[@type='doi' and text()='" + doi + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -121,6 +123,19 @@ public class IdentifierMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:identifier[@type='swb-ppn' and text()='" + ppn + "']",
+                mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void Filters_whitespace_from_identifier() throws Exception {
+        String doi = "10.1371/ journal.pone.0137353";
+        opus.addNewIdentifierDoi().setValue(doi);
+
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(String.format(
+                "//mods:identifier[@type='doi' and text()='%s']", doi.replaceAll(" ", "")),
                 mods.getDomNode().getOwnerDocument());
     }
 
