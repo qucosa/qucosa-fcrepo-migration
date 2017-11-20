@@ -29,6 +29,7 @@ import java.util.HashMap;
 
 public class MigrationContext extends DefaultCamelContext {
 
+    // TODO Make this mapping a parameter of the migration context
     private static final HashMap<String, String> institutionNameMap = new HashMap<String, String>() {{
         put("TU Chemnitz", "Technische Universität Chemnitz");
         put("TU-Chemnitz", "Technische Universität Chemnitz");
