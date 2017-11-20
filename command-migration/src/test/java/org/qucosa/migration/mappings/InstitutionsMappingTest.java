@@ -17,11 +17,12 @@
 
 package org.qucosa.migration.mappings;
 
+import com.google.common.collect.Maps;
 import noNamespace.Organisation;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
+import java.util.Collections;
 import java.util.HashMap;
 
 import static noNamespace.Organisation.Type.CHAIR;
@@ -36,15 +37,6 @@ import static org.junit.Assert.assertTrue;
 public class InstitutionsMappingTest extends MappingTestBase {
 
     private InstitutionsMapping institutionsMapping = new InstitutionsMapping();
-
-    @Before
-    public void setup() {
-        institutionsMapping.setInstitutionNameMap(new HashMap() {{
-            put("TU Chemnitz", "Technische Universität Chemnitz");
-            put("TU-Chemnitz", "Technische Universität Chemnitz");
-            put("University of Technology Chemnitz", "Technische Universität Chemnitz");
-        }});
-    }
 
     @Test
     public void extractsRole() throws Exception {
@@ -163,7 +155,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Chemnitz']", xml);
+        assertXpathExists("//mods:name/mods:namePart[text()='TU Chemnitz']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Rektorat']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Abteilung Foo']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[slub:section='Gruppe Baz']", xml);
@@ -238,7 +230,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-other']/mods:namePart[text()='Technische Universität Chemnitz']", xml);
+        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-other']/mods:namePart[text()='TU Chemnitz']", xml);
     }
 
     @Test
@@ -250,7 +242,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='Technische Universität Chemnitz']", xml);
+        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/mods:namePart[text()='TU Chemnitz']", xml);
     }
 
     @Test
@@ -381,10 +373,13 @@ public class InstitutionsMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void Map_institution_names_test() throws Exception {
+    public void Changes_institution_name_according_to_configured_map() throws Exception {
         createOrganisation(UNIVERSITY,
                 "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Bar");
 
+        institutionsMapping.setInstitutionNameMap(new HashMap<String, String>() {{
+            put("TU Chemnitz", "Technische Universität Chemnitz");
+        }});
         institutionsMapping.mapOrgansiations(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
