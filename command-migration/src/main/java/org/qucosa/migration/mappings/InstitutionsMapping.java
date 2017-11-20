@@ -272,8 +272,12 @@ public class InstitutionsMapping {
 
     private String mapRoleToMarcRelator(String doctype, Organisation.Type.Enum orgType, String role) {
         if (isUniversityUnit(orgType)) {
-            if ("publisher".equals(role) && isPaperOrThesis(doctype)) {
-                return "dgg";
+            if ("publisher".equals(role)) {
+                if (isPaperOrThesis(doctype)) {
+                    return "dgg";
+                } else {
+                    return "pbl";
+                }
             } else {
                 return "edt";
             }

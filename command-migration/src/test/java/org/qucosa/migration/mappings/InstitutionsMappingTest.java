@@ -314,7 +314,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='pbl']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
     }
 
@@ -368,7 +368,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         Document xml = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='pbl']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
     }
 
