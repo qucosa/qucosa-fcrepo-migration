@@ -78,7 +78,7 @@ public class MappingFunctions {
         put("proceeding", "proceeding");
         put("report", "report");
         put("research_paper", "research_paper");
-        put("study", "study");
+        put("study", "text");
     }};
 
     static String dateEncoding(BigInteger year) {
