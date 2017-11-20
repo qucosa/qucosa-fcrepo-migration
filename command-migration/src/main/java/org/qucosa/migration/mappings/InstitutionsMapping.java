@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.HashMap;
 
 import static gov.loc.mods.v3.CodeOrText.CODE;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
@@ -42,17 +41,17 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
-import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.MappingFunctions.mapOrganizationName;
+import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class InstitutionsMapping {
 
-    private Map institutionNameMap = new HashMap();
+    private Map<String, String> institutionNameMap;
 
-    public void setInstitutionNameMap(Map institutionNameMap) {
+    public void setInstitutionNameMap(Map<String, String> institutionNameMap) {
         this.institutionNameMap = institutionNameMap;
     }
 
