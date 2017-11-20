@@ -34,16 +34,20 @@ import org.qucosa.migration.processors.DepositMetsGenerator;
 import org.qucosa.migration.processors.FileReaderProcessor;
 import org.qucosa.migration.processors.MappingProcessor;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static org.qucosa.migration.processors.MappingProcessor.PROPERTY_INSTITUTION_NAME_MAPPING;
 import static org.qucosa.migration.processors.aggregate.HashMapAggregationStrategy.aggregateHashBy;
 
 public class TransformationRouteBuilder extends RouteBuilder {
 
     private final Configuration configuration;
+    private final Map<String, String> institutionNameMap;
 
-    public TransformationRouteBuilder(Configuration conf) {
+    public TransformationRouteBuilder(Configuration conf, Map<String, String> institutionNameMap) {
         this.configuration = conf;
+        this.institutionNameMap = institutionNameMap;
     }
 
     @Override
@@ -79,9 +83,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .to("direct:ds:qucosaxml", "direct:ds:mods", "direct:ds:slubxml")
                 .end()
                 .threads()
-                .setProperty(
-                        MappingProcessor.PROPERTY_INSTITUTION_NAME_MAPPING,
-                        constant(configuration.getProperty("institutionNameMap")))
+                .setProperty(PROPERTY_INSTITUTION_NAME_MAPPING, constant(institutionNameMap))
                 .process(new MappingProcessor())
                 .to("direct:ds:update");
 
