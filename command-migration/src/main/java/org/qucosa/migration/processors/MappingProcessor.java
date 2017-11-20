@@ -44,6 +44,7 @@ import java.util.Map;
 
 public class MappingProcessor implements Processor {
 
+    public static final String PROPERTY_INSTITUTION_NAME_MAPPING = "INST_NAME_MAPPING";
     private final AdministrativeInformationMapping aim = new AdministrativeInformationMapping();
     private final ContactInformationMapping cim = new ContactInformationMapping();
     private final ContentualMapping cm = new ContentualMapping();
@@ -62,6 +63,11 @@ public class MappingProcessor implements Processor {
     public void process(Exchange exchange) throws Exception {
         Map m = (Map) exchange.getIn().getBody();
         ChangeLog changelog = new ChangeLog();
+
+        Map namemap = exchange.getProperty(PROPERTY_INSTITUTION_NAME_MAPPING, Map.class);
+        if (namemap != null) {
+            institutionsMapping.setInstitutionNameMap(namemap);
+        }
 
         try {
             process(getOpusDocument(m), getModsDocument(m), getInfoDocument(m), changelog);

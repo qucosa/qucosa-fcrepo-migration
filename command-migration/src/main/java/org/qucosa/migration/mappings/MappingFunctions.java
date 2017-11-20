@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
+import java.util.Map;
 
 import static de.slubDresden.YesNo.NO;
 import static de.slubDresden.YesNo.YES;
@@ -171,6 +172,13 @@ public class MappingFunctions {
 
     static String documentTypeEncoding(String type) {
         return typeMapping.get(type);
+    }
+
+    static String mapOrganizationName(String originalName, Map<String, String> institutionNameMap) {
+        if (institutionNameMap != null && institutionNameMap.containsKey(originalName)) {
+            return institutionNameMap.get(originalName);
+        }
+        return originalName;
     }
 
     static String volume(String t) {

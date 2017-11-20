@@ -17,10 +17,13 @@
 
 package org.qucosa.migration.mappings;
 
+import com.google.common.collect.Maps;
 import noNamespace.Organisation;
-import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
+
+import java.util.Collections;
+import java.util.HashMap;
 
 import static noNamespace.Organisation.Type.CHAIR;
 import static noNamespace.Organisation.Type.FACULTY;
@@ -33,12 +36,7 @@ import static org.junit.Assert.assertTrue;
 
 public class InstitutionsMappingTest extends MappingTestBase {
 
-    private InstitutionsMapping institutionsMapping;
-
-    @Before
-    public void setup() {
-        institutionsMapping = new InstitutionsMapping();
-    }
+    private InstitutionsMapping institutionsMapping = new InstitutionsMapping();
 
     @Test
     public void extractsRole() throws Exception {
@@ -372,6 +370,21 @@ public class InstitutionsMappingTest extends MappingTestBase {
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", xml);
         assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", xml);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", xml);
+    }
+
+    @Test
+    public void Changes_institution_name_according_to_configured_map() throws Exception {
+        createOrganisation(UNIVERSITY,
+                "Chemnitz", "publisher", "TU Chemnitz", "Rektorat", "Abteilung Foo", "Gruppe Bar");
+
+        institutionsMapping.setInstitutionNameMap(new HashMap<String, String>() {{
+            put("TU Chemnitz", "Technische Universität Chemnitz");
+        }});
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        Document xml = mods.getDomNode().getOwnerDocument();
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Chemnitz']", xml);
     }
 
     private void setDocumentType(String doctype) {
