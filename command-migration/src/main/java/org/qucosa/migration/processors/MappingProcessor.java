@@ -64,6 +64,11 @@ public class MappingProcessor implements Processor {
         ChangeLog changelog = new ChangeLog();
 
         try {
+            Map namemap = exchange.getProperty("INST_NAME_MAPPING", Map.class);
+            if (namemap != null) {
+                institutionsMapping.setInstitutionNameMap(namemap);
+            }
+
             process(getOpusDocument(m), getModsDocument(m), getInfoDocument(m), changelog);
             exchange.getIn().setBody(m);
             exchange.setProperty("CHANGELOG", changelog);

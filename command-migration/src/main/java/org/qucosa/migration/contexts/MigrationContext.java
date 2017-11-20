@@ -25,7 +25,15 @@ import org.qucosa.camel.component.sword.SwordConnection;
 import org.qucosa.migration.routes.StagingRouteBuilder;
 import org.qucosa.migration.routes.TransformationRouteBuilder;
 
+import java.util.HashMap;
+
 public class MigrationContext extends DefaultCamelContext {
+
+    private static final HashMap<String, String> institutionNameMap = new HashMap<String, String>() {{
+        put("TU Chemnitz", "Technische Universität Chemnitz");
+        put("TU-Chemnitz", "Technische Universität Chemnitz");
+        put("University of Technology Chemnitz", "Technische Universität Chemnitz");
+    }};
 
     public MigrationContext(Configuration configuration, boolean isStaging, boolean isTransforming) throws Exception {
         super();
@@ -44,6 +52,8 @@ public class MigrationContext extends DefaultCamelContext {
         simpleRegistry.put(Opus4DataSource.DATA_SOURCE_NAME, opus4DataSource);
         simpleRegistry.put(SwordConnection.DATA_SOURCE_NAME, swordConnection);
         setRegistry(simpleRegistry);
+
+        conf.setProperty("institutionNameMap", institutionNameMap);
 
         if (isStaging) addRoutes(new StagingRouteBuilder(conf));
         if (isTransforming) addRoutes(new TransformationRouteBuilder(conf));
