@@ -79,7 +79,9 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .to("direct:ds:qucosaxml", "direct:ds:mods", "direct:ds:slubxml")
                 .end()
                 .threads()
-                .setProperty("INST_NAME_MAP", constant(configuration.getProperty("institutionNameMap")))
+                .setProperty(
+                        MappingProcessor.PROPERTY_INSTITUTION_NAME_MAPPING,
+                        constant(configuration.getProperty("institutionNameMap")))
                 .process(new MappingProcessor())
                 .to("direct:ds:update");
 
