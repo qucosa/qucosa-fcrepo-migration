@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
 
 public class DocumentTypeMappingTest extends MappingTestBase {
@@ -67,6 +68,26 @@ public class DocumentTypeMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:documentType[text()='periodical']",
+                info.getDomNode().getOwnerDocument());
+    }
+
+    /*
+    Tests specific Document-Type-Mapping.
+    Certain documents should be mapped to "series" type, series-type had no corresponding mapping in Opus
+    and therefore became Opus-"journals" which usually maps to "periodical".
+     */
+    @Test
+    public void properlyEncodesSpecificDocumentType() throws Exception {
+        opus.setDocumentId("22751");
+        opus.setType("journal");
+
+        documentTypeMapping.mapDocumentType(opus, info, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathNotExists(
+                "//slub:documentType[text()='periodical']",
+                info.getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:documentType[text()='series']",
                 info.getDomNode().getOwnerDocument());
     }
 

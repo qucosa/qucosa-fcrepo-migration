@@ -28,7 +28,7 @@ public class DocumentTypeMapping {
     public void mapDocumentType(Document opus, InfoType info, ChangeLog changeLog) {
         final String type = opus.getType();
         if (type != null && !type.isEmpty()) {
-            final String encodedType = documentTypeEncoding(type);
+            final String encodedType = documentTypeEncoding(type, opus.getDocumentId());
             if (info.getDocumentType() == null || !info.getDocumentType().equals(encodedType)) {
                 info.setDocumentType(encodedType);
                 changeLog.log(SLUB_INFO);
