@@ -162,6 +162,11 @@ public class ReferencesMapping {
 
             // constructing mods:relatedItem
 
+            if ("series".equals(r.getRelation())) {
+                // skip if document type is series
+                return;
+            }
+
             String relatedItemType = ("predecessor".equals(r.getRelation())) ? "preceding" : "host";
             RelatedItemDefinition rd = (RelatedItemDefinition) select("mods:relatedItem[@type='" + relatedItemType + "']", mods);
             if (rd == null) {
