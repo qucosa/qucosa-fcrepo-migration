@@ -81,6 +81,19 @@ public class MappingFunctions {
         put("study", "text");
     }};
 
+    private static final HashMap<String, String> specificDocumentIdMapping = new HashMap<String, String>() {{
+        put("22751", "series");
+        put("11387", "series");
+        put("11278", "series");
+        put("11167", "series");
+        put("14800", "series");
+        put("15304", "series");
+        put("17955", "series");
+        put("18657", "series");
+        put("11483", "series");
+        put("20965", "series");
+    }};
+
     static String dateEncoding(BigInteger year) {
         if ((year == null) || year.equals(BigInteger.ZERO)) return null;
 
@@ -170,7 +183,10 @@ public class MappingFunctions {
         return (list.isEmpty()) ? null : list.get(0);
     }
 
-    static String documentTypeEncoding(String type) {
+    static String documentTypeEncoding(String type, String opusDocumentId) {
+        if (specificDocumentIdMapping.containsKey(opusDocumentId)) {
+            return specificDocumentIdMapping.get(opusDocumentId);
+        }
         return typeMapping.get(type);
     }
 
