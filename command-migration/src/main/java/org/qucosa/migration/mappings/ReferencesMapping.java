@@ -269,7 +269,7 @@ public class ReferencesMapping {
 
     private void mapVolumeTitle(String volumeTitle, RelatedItemDefinition rid, ChangeLog changeLog) {
         if (volumeTitle != null && !volumeTitle.isEmpty()) {
-            TitleInfoDefinition tid = (TitleInfoDefinition) select("mods:title", rid);
+            TitleInfoDefinition tid = (TitleInfoDefinition) select("mods:titleInfo", rid);
             if (tid == null) {
                 tid = rid.addNewTitleInfo();
                 changeLog.log(MODS);
