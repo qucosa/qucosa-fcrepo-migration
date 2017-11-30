@@ -83,22 +83,6 @@ public class TitleMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void extractsTitleParent() throws Exception {
-        final String language = "ger";
-        final String value = "Forschungsberichte des Instituts für Wirtschaftsinformatik";
-        addTitleParent(language, value);
-
-        titleMapping.mapTitleParentElements(opus, mods, changeLog);
-
-        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:relatedItem[@type='series']/mods:titleInfo[@lang='" + language + "']/" +
-                        "mods:title[text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
-    }
-
-
-    @Test
     public void noChangesWhenTitleMainAlreadyPresent() throws Exception {
         final String language = "ger";
         final String value = "Effiziente Schemamigration in der modellgetriebenen Datenbankanwendungsentwicklung";

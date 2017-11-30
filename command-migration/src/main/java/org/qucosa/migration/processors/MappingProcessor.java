@@ -130,7 +130,6 @@ public class MappingProcessor implements Processor {
         tm.mapTitleMainElements(opus, mods, changeLog);
         tm.mapTitleSubElements(opus, mods, changeLog);
         tm.mapTitleAlternativeElements(opus, mods, changeLog);
-        tm.mapTitleParentElements(opus, mods, changeLog);
     }
 
     private InfoType getInfoDocument(Map m) {

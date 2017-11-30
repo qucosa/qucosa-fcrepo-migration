@@ -52,32 +52,6 @@ public class TitleMapping {
         }
     }
 
-    public void mapTitleParentElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
-        if (nodeExists("TitleParent", opus)) {
-            RelatedItemDefinition relatedItemDefinition =
-                    (RelatedItemDefinition) select("mods:relatedItem[@type='series']", mods);
-
-            if (relatedItemDefinition == null) {
-                relatedItemDefinition = mods.addNewRelatedItem();
-                relatedItemDefinition.setType(RelatedItemDefinition.Type.SERIES);
-                changeLog.log(MODS);
-            }
-
-            for (Title ot : opus.getTitleParentArray()) {
-                final String encLang = languageEncoding(ot.getLanguage());
-
-                TitleInfoDefinition tid = ensureTitleInfoElement(relatedItemDefinition, encLang);
-
-                final String value = singleline(ot.getValue());
-                if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
-                    StringPlusLanguage mt = tid.addNewTitle();
-                    mt.setStringValue(value);
-                    changeLog.log(MODS);
-                }
-            }
-        }
-    }
-
     public void mapTitleSubElements(Document opus, ModsDefinition mods, ChangeLog changeLog) throws XPathExpressionException {
         for (Title ot : opus.getTitleSubArray()) {
             final String encLang = languageEncoding(ot.getLanguage());
