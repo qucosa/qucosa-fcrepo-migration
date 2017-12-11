@@ -19,11 +19,15 @@ package org.qucosa.migration.mappings;
 
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
+import noNamespace.OpusDocument;
 import noNamespace.Title;
 import org.apache.xmlbeans.XmlString;
 import org.junit.Before;
 import org.junit.Test;
+import org.qucosa.migration.processors.MappingProcessor;
 import org.w3c.dom.Document;
+
+import java.io.File;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
@@ -33,10 +37,12 @@ import static org.junit.Assert.assertTrue;
 public class TitleMappingTest extends MappingTestBase {
 
     private TitleMapping titleMapping;
+    MappingProcessor mappingProcessor;
 
     @Before
     public void setup() {
         titleMapping = new TitleMapping();
+        mappingProcessor = new MappingProcessor();
     }
 
     @Test
@@ -65,6 +71,42 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + value + "']",
+                mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void extractsCombinationTitleMainAndTitleSub() throws Exception {
+        opus.addLanguage("ger");
+        final String language = "ger";
+        final String subValue = "Kooperation und Vernetzung der wissenschaftlichen Bibliotheken im Freistaat Sachsen";
+        final String mainValue = "Gemeinschaft macht stark";
+
+        opus.addLanguage("eng");
+        final String language2 = "eng";
+        final String subValue2 = "english sub title";
+        final String mainValue2 = "english main title";
+
+        addTitleSub(language, subValue);
+        addTitleMain(language, mainValue);
+
+        addTitleSub(language2, subValue2);
+        addTitleMain(language2, mainValue2);
+
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
+        titleMapping.mapTitleSubElements(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + subValue + "']",
+                mods.getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='" + language + "']/mods:title[text()='" + mainValue + "']",
+                mods.getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='" + language2 + "']/mods:subTitle[text()='" + subValue2 + "']",
+                mods.getDomNode().getOwnerDocument());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='" + language2 + "']/mods:title[text()='" + mainValue2 + "']",
                 mods.getDomNode().getOwnerDocument());
     }
 
@@ -143,6 +185,44 @@ public class TitleMappingTest extends MappingTestBase {
         Document ownerDocument = mods.getDomNode().getOwnerDocument();
         assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", ownerDocument);
         assertXpathNotExists("//mods:titleInfo[@lang='ger' and @type='translated' and mods:title='Deutscher Titel']", ownerDocument);
+    }
+
+    /*
+    Ensure TitleSub-Value (from Opus-Xml-String) is correctly mapped to mods:subTitle
+    https://jira.slub-dresden.de/browse/CMR-163
+     */
+    @Test
+    public void ensureSubTitleMappingFromOpusXMLExample() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        OpusDocument opusDocument = OpusDocument.Factory.parse(new File(classLoader.getResource("opus_394.xml").getFile()));
+
+        opus = opusDocument.getOpus().getOpusDocument();
+        mappingProcessor.process(opus, mods, info, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='ger']/mods:subTitle[text()='Kooperation und Vernetzung der wissenschaftlichen Bibliotheken im Freistaat Sachsen']",
+                mods.getDomNode().getOwnerDocument());
+    }
+
+    /*
+    Ensure TitleSub-Value (from Opus-Xml-String) is correctly mapped to mods:subTitle
+    https://jira.slub-dresden.de/browse/CMR-163
+     */
+    @Test
+    public void ensureSubTitleMappingFromOpusXMLExample2() throws Exception {
+        ClassLoader classLoader = getClass().getClassLoader();
+        OpusDocument opusDocument = OpusDocument.Factory.parse(
+                new File(classLoader.getResource("opus_13429.xml").getFile()));
+
+        opus = opusDocument.getOpus().getOpusDocument();
+        mappingProcessor.process(opus, mods, info, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(
+                "//mods:titleInfo[@lang='eng']/mods:subTitle[text()='a computer tomographic study in sheep and pigs with atelectasis in " +
+                        "otherwise normal lungs']",
+                mods.getDomNode().getOwnerDocument());
     }
 
     private void addTitleMain(String language, String value) {
