@@ -1,0 +1,153 @@
+<Opus version="2.0">
+    <Opus_Document>
+        <CompletedDate>
+            <Year>2008</Year>
+            <Month>3</Month>
+            <Day>10</Day>
+            <Hour>11</Hour>
+            <Minute>44</Minute>
+            <Second>56</Second>
+            <Timezone>GMT-1</Timezone>
+        </CompletedDate>
+        <CompletedYear>0000</CompletedYear>
+        <ContributingCorporation/>
+        <CreatingCorporation/>
+        <DateAccepted/>
+        <Edition/>
+        <Issue/>
+        <Language>ger</Language>
+        <NonInstituteAffiliation/>
+        <PageFirst>0</PageFirst>
+        <PageLast>0</PageLast>
+        <PageNumber>0</PageNumber>
+        <PublicationVersion/>
+        <PublishedDate/>
+        <PublishedYear/>
+        <PublisherName>Saechsische Landesbibliothek- Staats- und Universitaetsbibliothek Dresden</PublisherName>
+        <PublisherPlace>Dresden</PublisherPlace>
+        <PublisherAddress>Zellescher Weg 18, 01069 Dresden, Germany</PublisherAddress>
+        <PublisherUniversity/>
+        <Reviewed/>
+        <ServerDateModified>
+            <Year>2010</Year>
+            <Month>11</Month>
+            <Day>22</Day>
+            <Hour>15</Hour>
+            <Minute>38</Minute>
+            <Second>12</Second>
+            <Timezone>GMT-1</Timezone>
+        </ServerDateModified>
+        <ServerDatePublished>
+            <Year>2008</Year>
+            <Month>3</Month>
+            <Day>10</Day>
+            <Hour>11</Hour>
+            <Minute>44</Minute>
+            <Second>56</Second>
+            <Timezone>GMT-1</Timezone>
+        </ServerDatePublished>
+        <ServerDateUnlocking/>
+        <ServerDateValid/>
+        <ServerState>published</ServerState>
+        <Source>BIS - Das Magazin der Bibliotheken in Sachsen 1(2008)1, S. 8 - 11</Source>
+        <Type>article</Type>
+        <VgWortOpenKey/>
+        <Volume/>
+        <FisExport>0</FisExport>
+        <TableOfContent/>
+        <TitleMain>
+            <Language>ger</Language>
+            <Value>Gemeinschaft macht stark</Value>
+            <SortOrder/>
+        </TitleMain>
+        <TitleAbstract>
+            <Language>ger</Language>
+            <Value>Ein Bibliotheksland mit großer Geschichte Sachsen ist eine der dichtesten und traditionsreichsten
+                Bibliothekslandschaften in Deutschland. In der neuzeitlichen Geschichte bis 1933 gingen von hier
+                zahlreiche Impulse aus.
+            </Value>
+            <SortOrder/>
+        </TitleAbstract>
+        <TitleSub>
+            <Language>ger</Language>
+            <Value>Kooperation und Vernetzung der wissenschaftlichen Bibliotheken im Freistaat Sachsen</Value>
+            <SortOrder/>
+        </TitleSub>
+        <IdentifierUrn>
+            <Value>urn:nbn:de:bsz:14-ds-1205145664610-66041</Value>
+        </IdentifierUrn>
+        <IdentifierDeds>
+            <Value>1205145664610-6604</Value>
+        </IdentifierDeds>
+        <IdentifierPpn>
+            <Value>285361678</Value>
+        </IdentifierPpn>
+        <ReferenceUrn>
+            <Value>urn:nbn:de:bsz:14-ds-1206548602741-00127</Value>
+            <Label/>
+            <Relation>issue</Relation>
+            <SortOrder>008</SortOrder>
+        </ReferenceUrn>
+        <SubjectDdc>
+            <Language/>
+            <Type>ddc</Type>
+            <Value>020</Value>
+            <ExternalKey/>
+        </SubjectDdc>
+        <SubjectRvk>
+            <Language/>
+            <Type>rvk</Type>
+            <Value>AN 80190</Value>
+            <ExternalKey/>
+        </SubjectRvk>
+        <SubjectUncontrolled>
+            <Language>ger</Language>
+            <Type>uncontrolled</Type>
+            <Value>Sachsen, Bibliotheken, Kooperation, Vernetzung</Value>
+            <ExternalKey/>
+        </SubjectUncontrolled>
+        <SubjectUncontrolled>
+            <Language>eng</Language>
+            <Type>uncontrolled</Type>
+            <Value>Saxony, Libraries, Cooperation, Networking</Value>
+            <ExternalKey/>
+        </SubjectUncontrolled>
+        <File id="359">
+            <PathName>1205145664610-6604.pdf</PathName>
+            <SortOrder>0</SortOrder>
+            <Label>Volltextdokument (PDF)</Label>
+            <FileType/>
+            <MimeType>application/pdf</MimeType>
+            <Language/>
+            <TempFile/>
+            <FileSize>169608</FileSize>
+            <HashValue>
+                <Type>md5</Type>
+                <Value>f1545656599c64cf2999389007cbab8b</Value>
+            </HashValue>
+            <HashValue>
+                <Type>sha512</Type>
+                <Value>
+                    dbf558950d428ea48213c2239eafbbba8e114e4710e32ee2526a0d510d2bdcb71368a516ee69963c0e4c35a621764b256f4eb9c1e32920644cd64390f1a36bea
+                </Value>
+            </HashValue>
+            <OaiExport>1</OaiExport>
+            <FrontdoorVisible>1</FrontdoorVisible>
+        </File>
+        <Organisation>
+            <Type>other</Type>
+            <Address>Dresden</Address>
+            <Role>publisher</Role>
+            <TudFisKeyFaculty>0</TudFisKeyFaculty>
+            <TudFisKeyChair>0</TudFisKeyChair>
+            <FreeSubmission>0</FreeSubmission>
+            <FirstLevelName>SLUB Dresden</FirstLevelName>
+            <SecondLevelName>Allgemein</SecondLevelName>
+            <ThirdLevelName/>
+            <FourthLevelName/>
+            <FifthLevelName/>
+            <SixthLevelName/>
+        </Organisation>
+        <DocumentId>889</DocumentId>
+    </Opus_Document>
+</Opus>
