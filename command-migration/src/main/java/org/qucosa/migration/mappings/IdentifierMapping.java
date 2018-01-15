@@ -30,9 +30,7 @@ import java.util.List;
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.uri;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.selectAll;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.*;
 
 public class IdentifierMapping {
 
@@ -49,6 +47,8 @@ public class IdentifierMapping {
         }
         // special mapping for DOI identifier
         mapDoiToRelatedItem(opus, mods, changeLog);
+        // special mapping (source) for VG-Wort-Identifier
+        mapVgwortOpenKey(opus, mods, changeLog);
     }
 
     private void map(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
@@ -77,7 +77,11 @@ public class IdentifierMapping {
             } else {
                 throw new IllegalArgumentException("Mods element is not ModsDefinition or RelatedItemDefinition");
             }
-            identifierDefinition.setType(type.toLowerCase());
+            if (type.equals("vgwortOpenKey")) {
+                identifierDefinition.setType(type);
+            } else {
+                identifierDefinition.setType(type.toLowerCase());
+            }
             identifierDefinition.setStringValue(mid);
             return true;
         }
@@ -101,6 +105,28 @@ public class IdentifierMapping {
             if (ensureIdentifierElement("doi", oidValue, ri)) {
                 changeLog.log(MODS);
             }
+        }
+    }
+
+    private void mapVgwortOpenKey(Document opus, ModsDefinition mods, ChangeLog changeLog) {
+        String vgwortOpenKey = opus.getVgWortOpenKey();
+
+        if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
+            // filter URL prefixes
+            final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
+            if (ensureIdentifierElement("vgwortOpenKey", encodedVgWortOpenKey, mods)) {
+                changeLog.log(MODS);
+            }
+        }
+    }
+
+    private String vgwortEncoding(String vgWortOpenKey) {
+        if (vgWortOpenKey.startsWith("http")) {
+            return vgWortOpenKey.substring(
+                    vgWortOpenKey.lastIndexOf('/') + 1,
+                    vgWortOpenKey.length());
+        } else {
+            return vgWortOpenKey;
         }
     }
 

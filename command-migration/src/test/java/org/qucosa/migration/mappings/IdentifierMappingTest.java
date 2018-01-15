@@ -139,4 +139,30 @@ public class IdentifierMappingTest extends MappingTestBase {
                 mods.getDomNode().getOwnerDocument());
     }
 
+    @Test
+    public void extractsVgwortOpenKey() throws Exception {
+        String vgwortValue = "bd5bc0a8b7e54c64aadd2ff86ad7fc8a";
+        opus.setVgWortOpenKey(vgwortValue);
+
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(String.format(
+                "//mods:identifier[@type='vgwortOpenKey' and text()='%s']", vgwortValue),
+                mods.getDomNode().getOwnerDocument());
+    }
+
+    @Test
+    public void Filters_Url_Prefixes_from_VgWortOpenKey() throws Exception {
+        String prefix = "http://vg04.met.vgwort.de/";
+        String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
+        opus.setVgWortOpenKey(prefix + vgWortOpenKey);
+
+        identifierMapping.mapIdentifiers(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(String.format(
+                "//mods:identifier[@type='vgwortOpenKey' and text()='%s']", vgWortOpenKey),
+                mods.getDomNode().getOwnerDocument());
+    }
 }
