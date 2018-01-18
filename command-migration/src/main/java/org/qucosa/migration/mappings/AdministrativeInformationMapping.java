@@ -169,30 +169,6 @@ public class AdministrativeInformationMapping {
         }
     }
 
-    public void mapVgWortopenKey(Document opus, InfoType info, ChangeLog changeLog) {
-        String vgwortOpenKey = opus.getVgWortOpenKey();
-
-        if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
-            final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
-
-            if (info.getVgwortOpenKey() == null
-                    || !info.getVgwortOpenKey().equals(encodedVgWortOpenKey)) {
-                info.setVgwortOpenKey(encodedVgWortOpenKey);
-                changeLog.log(SLUB_INFO);
-            }
-        }
-    }
-
-    private String vgwortEncoding(String vgWortOpenKey) {
-        if (vgWortOpenKey.startsWith("http")) {
-            return vgWortOpenKey.substring(
-                    vgWortOpenKey.lastIndexOf('/') + 1,
-                    vgWortOpenKey.length());
-        } else {
-            return vgWortOpenKey;
-        }
-    }
-
     private OriginInfoDefinition getOriginInfoDistribution(ModsDefinition mods, ChangeLog changeLog) {
         OriginInfoDefinition oid = (OriginInfoDefinition)
                 select("mods:originInfo[@eventType='distribution']", mods);

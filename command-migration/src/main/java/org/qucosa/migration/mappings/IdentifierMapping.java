@@ -24,41 +24,62 @@ import noNamespace.Document;
 import noNamespace.Identifier;
 import org.apache.xmlbeans.XmlObject;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.uri;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.selectAll;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.*;
 
 public class IdentifierMapping {
+    private class IdentifierType {
+        private final String opusType;
+        private final String simpleType;
+        private final String modsType;
 
-    private static final HashMap<String, String> typeNameMap = new HashMap<String, String>() {{
-        put("Isbn", "isbn");
-        put("Issn", "issn");
-        put("Ppn", "swb-ppn");
-        put("Urn", "qucosa:urn");
-    }};
+        public String getOpusType() { return opusType; }
+        public String getSimpleType() { return simpleType; }
+        public String getModsType() { return modsType; }
+
+        public IdentifierType(String opusType, String simpleType, String modsType) {
+            this.opusType = opusType;
+            this.simpleType = simpleType;
+            this.modsType = modsType;
+        }
+    }
+
+    private ArrayList<IdentifierType> setupTypeMapping() {
+        ArrayList<IdentifierType> typeList = new ArrayList<>();
+        typeList.add(new IdentifierType("IdentifierIsbn", "isbn", "isbn"));
+        typeList.add(new IdentifierType("IdentifierIssn", "issn", "issn"));
+        typeList.add(new IdentifierType("IdentifierPpn", "ppn", "swb-ppn"));
+        typeList.add(new IdentifierType("IdentifierUrn", "urn", "qucosa:urn"));
+
+        return typeList;
+    }
 
     public void mapIdentifiers(Document opus, ModsDefinition mods, ChangeLog changeLog) {
-        for (String identifierName : typeNameMap.keySet()) {
-            map(identifierName, opus, mods, changeLog);
+        ArrayList<IdentifierType> typeList = setupTypeMapping();
+
+        for (IdentifierType type : typeList) {
+            map(type, opus, mods, changeLog);
         }
         // special mapping for DOI identifier
         mapDoiToRelatedItem(opus, mods, changeLog);
+        // special mapping (source) for VG-Wort-Identifier
+        mapVgwortOpenKey(opus, mods, changeLog);
     }
 
-    private void map(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
-        if (type.equals("Issn") && "article".equals(opus.getType())) {
+    private void map(IdentifierType type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
+        if (type.getSimpleType().equals("issn") && "article".equals(opus.getType())) {
             return;
         }
-        for (XmlObject xmlObject : selectAll("Identifier" + type, opus)) {
+
+        for (XmlObject xmlObject : selectAll(type.getOpusType(), opus)) {
             Identifier oid = (Identifier) xmlObject;
             String oidValue = oid.getValue();
-            String mappedType = typeNameMap.get(type);
+            String mappedType = type.getModsType();
             if (ensureIdentifierElement(mappedType, oidValue, mods)) {
                 changeLog.log(MODS);
             }
@@ -68,7 +89,7 @@ public class IdentifierMapping {
     private boolean ensureIdentifierElement(String type, String id, XmlObject modsElement) {
         final String mid = uri(id);
         if (mid != null && !nodeExists(
-                String.format("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), mid), modsElement)) {
+                String.format("mods:identifier[@type='%s' and text()='%s']", type, mid), modsElement)) {
             IdentifierDefinition identifierDefinition;
             if (modsElement instanceof ModsDefinition) {
                 identifierDefinition = ((ModsDefinition) modsElement).addNewIdentifier();
@@ -77,7 +98,8 @@ public class IdentifierMapping {
             } else {
                 throw new IllegalArgumentException("Mods element is not ModsDefinition or RelatedItemDefinition");
             }
-            identifierDefinition.setType(type.toLowerCase());
+
+            identifierDefinition.setType(type);
             identifierDefinition.setStringValue(mid);
             return true;
         }
@@ -101,6 +123,28 @@ public class IdentifierMapping {
             if (ensureIdentifierElement("doi", oidValue, ri)) {
                 changeLog.log(MODS);
             }
+        }
+    }
+
+    private void mapVgwortOpenKey(Document opus, ModsDefinition mods, ChangeLog changeLog) {
+        String vgwortOpenKey = opus.getVgWortOpenKey();
+
+        if (vgwortOpenKey != null && !vgwortOpenKey.isEmpty()) {
+            // filter URL prefixes
+            final String encodedVgWortOpenKey = vgwortEncoding(vgwortOpenKey);
+            if (ensureIdentifierElement("vgwortOpenKey", encodedVgWortOpenKey, mods)) {
+                changeLog.log(MODS);
+            }
+        }
+    }
+
+    private String vgwortEncoding(String vgWortOpenKey) {
+        if (vgWortOpenKey.startsWith("http")) {
+            return vgWortOpenKey.substring(
+                    vgWortOpenKey.lastIndexOf('/') + 1,
+                    vgWortOpenKey.length());
+        } else {
+            return vgWortOpenKey;
         }
     }
 

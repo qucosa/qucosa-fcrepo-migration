@@ -103,32 +103,6 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void Extracts_VgWortOpenKey() throws Exception {
-        String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
-        opus.setVgWortOpenKey(vgWortOpenKey);
-
-        aim.mapVgWortopenKey(opus, info, changeLog);
-
-        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
-                info.getDomNode().getOwnerDocument());
-    }
-
-    @Test
-    public void Filters_Url_Prefixes_from_VgWortOpenKey() throws Exception {
-        String prefix = "http://vg04.met.vgwort.de/";
-        String vgWortOpenKey = "6fd9288e617c4721b6f25624167249f6";
-        opus.setVgWortOpenKey(prefix + vgWortOpenKey);
-
-        aim.mapVgWortopenKey(opus, info, changeLog);
-
-        assertXpathExists(
-                "//slub:vgwortOpenKey[text()='" + vgWortOpenKey + "']",
-                info.getDomNode().getOwnerDocument());
-    }
-
-    @Test
     public void slubAgreementIsSetToYes() throws Exception {
         aim.ensureRightsAgreement(info, changeLog);
         assertXpathExists("//slub:rights/slub:agreement[@given='yes']", info.getDomNode().getOwnerDocument());

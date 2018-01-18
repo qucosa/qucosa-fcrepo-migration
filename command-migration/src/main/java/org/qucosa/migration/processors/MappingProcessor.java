@@ -85,8 +85,6 @@ public class MappingProcessor implements Processor {
         cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info, changeLog);
         cim.mapNotes(opus.getNoteArray(), info, changeLog);
 
-        aim.mapVgWortopenKey(opus, info, changeLog);
-
         cm.mapTitleAbstract(opus, mods, changeLog);
         cm.mapSubject("ddc", opus, mods, changeLog);
         cm.mapSubject("rvk", opus, mods, changeLog);
