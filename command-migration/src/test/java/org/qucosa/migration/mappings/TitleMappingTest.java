@@ -219,6 +219,23 @@ public class TitleMappingTest extends MappingTestBase {
                 mods);
     }
 
+    /*
+        Ensure single quotes remain single quotes.
+        https://jira.slub-dresden.de/browse/CMR-381
+     */
+    @Test
+    public void Ensure_title_single_quotes_remain() throws Exception {
+        opus.addLanguage("eng");
+        addTitleMain("eng", "Parzival by Wolfram von Eschenbach's");
+
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
+        titleMapping.mapTitleMainElements(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists("//mods:titleInfo[@lang='eng' and mods:title=\"Parzival by Wolfram von Eschenbach's\"]", mods);
+    }
+
+
     private void addTitleMain(String language, String value) {
         Title ot = opus.addNewTitleMain();
         ot.setLanguage(language);

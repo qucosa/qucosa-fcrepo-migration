@@ -44,14 +44,12 @@ public class MappingFunctions {
     private static final StringFilter multiLineFilter = new StringFilterChain(
             TextInputStringFilters.TRIM_FILTER,
             TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
     private static final StringFilter singleLineFilter = new StringFilterChain(
             TextInputStringFilters.NEW_LINE_FILTER,
             TextInputStringFilters.TRIM_FILTER,
             TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
     private static final StringFilter uriFilter = new StringFilterChain(
