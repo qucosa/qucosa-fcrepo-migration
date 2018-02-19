@@ -30,9 +30,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import java.util.Map;
 
 import static de.slubDresden.YesNo.NO;
 import static de.slubDresden.YesNo.YES;

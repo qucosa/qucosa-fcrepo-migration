@@ -25,19 +25,16 @@ import org.apache.xmlbeans.XmlString;
 import org.junit.Before;
 import org.junit.Test;
 import org.qucosa.migration.processors.MappingProcessor;
-import org.w3c.dom.Document;
 
 import java.io.File;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TitleMappingTest extends MappingTestBase {
 
     private TitleMapping titleMapping;
-    MappingProcessor mappingProcessor;
+    private MappingProcessor mappingProcessor;
 
     @Before
     public void setup() {
@@ -57,7 +54,7 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @usage='primary']/mods:title[text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -71,7 +68,7 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -98,16 +95,16 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:subTitle[text()='" + subValue + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "']/mods:title[text()='" + mainValue + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language2 + "']/mods:subTitle[text()='" + subValue2 + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language2 + "']/mods:title[text()='" + mainValue2 + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -121,7 +118,7 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='" + language + "' and @type='alternative']/mods:title[text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -153,10 +150,9 @@ public class TitleMappingTest extends MappingTestBase {
         titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:titleInfo[@lang='ger' and not(@type) and mods:title='Deutscher Titel']", ownerDocument);
-        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
-        assertXpathExists("//mods:titleInfo[@lang='ice' and @type='translated' and mods:title='íslenska titill']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='ger' and not(@type) and mods:title='Deutscher Titel']", mods);
+        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", mods);
+        assertXpathExists("//mods:titleInfo[@lang='ice' and @type='translated' and mods:title='íslenska titill']", mods);
     }
 
     @Test
@@ -168,9 +164,8 @@ public class TitleMappingTest extends MappingTestBase {
         titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", ownerDocument);
-        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", mods);
+        assertXpathExists("//mods:titleInfo[@lang='eng' and @type='translated' and mods:title='English Title']", mods);
     }
 
     @Test
@@ -182,9 +177,8 @@ public class TitleMappingTest extends MappingTestBase {
         titleMapping.mapTitleMainElements(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", ownerDocument);
-        assertXpathNotExists("//mods:titleInfo[@lang='ger' and @type='translated' and mods:title='Deutscher Titel']", ownerDocument);
+        assertXpathExists("//mods:titleInfo[@lang='ger' and @usage='primary' and mods:title='Deutscher Titel']", mods);
+        assertXpathNotExists("//mods:titleInfo[@lang='ger' and @type='translated' and mods:title='Deutscher Titel']", mods);
     }
 
     /*
@@ -202,7 +196,7 @@ public class TitleMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:titleInfo[@lang='ger']/mods:subTitle[text()='Kooperation und Vernetzung der wissenschaftlichen Bibliotheken im Freistaat Sachsen']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     /*
@@ -222,7 +216,7 @@ public class TitleMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:titleInfo[@lang='eng']/mods:subTitle[text()='a computer tomographic study in sheep and pigs with atelectasis in " +
                         "otherwise normal lungs']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     private void addTitleMain(String language, String value) {
@@ -239,12 +233,6 @@ public class TitleMappingTest extends MappingTestBase {
 
     private void addTitleAlternative(String language, String value) {
         Title ot = opus.addNewTitleAlternative();
-        ot.setLanguage(language);
-        ot.setValue(value);
-    }
-
-    private void addTitleParent(String language, String value) {
-        Title ot = opus.addNewTitleParent();
         ot.setLanguage(language);
         ot.setValue(value);
     }

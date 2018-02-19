@@ -19,12 +19,9 @@ package org.qucosa.migration.mappings;
 
 import noNamespace.Date;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
 import java.math.BigInteger;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
 
 public class PublicationInfoMappingTest extends MappingTestBase {
@@ -41,7 +38,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code' and text()='" + lang + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
 
@@ -53,11 +50,10 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         publicationInfoMapping.mapLanguageElement(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        final Document ownerDocument = mods.getDomNode().getOwnerDocument();
         final String s = "//mods:language/mods:languageTerm[@authority='iso639-2b' and @type='code'";
-        assertXpathExists(s + " and text()='ger']", ownerDocument);
-        assertXpathExists(s + " and text()='eng']", ownerDocument);
-        assertXpathExists(s + " and text()='chi']", ownerDocument);
+        assertXpathExists(s + " and text()='ger']", mods);
+        assertXpathExists(s + " and text()='eng']", mods);
+        assertXpathExists(s + " and text()='chi']", mods);
     }
 
     @Test
@@ -77,7 +73,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']" +
                         "/mods:dateOther[@encoding='iso8601' and @type='submission' and text()='2009-06-04']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -97,7 +93,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateOther[@encoding='iso8601' and @type='defense' and text()='2009-06-20']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -110,7 +106,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/" +
                         "mods:dateIssued[@encoding='iso8601' and text()='2009']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -122,7 +118,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathNotExists(
                 "//mods:originInfo[@eventType='publication']/mods:dateIssued",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -134,7 +130,7 @@ public class PublicationInfoMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='publication']/mods:edition[text()='2nd. Edition']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
 }

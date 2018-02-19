@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -34,9 +33,9 @@ public class CombinedModsExtensionMappingIT extends MappingTestBase {
 
         assertModsChanges();
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID and @type='other']" +
-                "/slub:section[text()='" + org.getSecondLevelName() + "']", mods.getDomNode().getOwnerDocument());
+                "/slub:section[text()='" + org.getSecondLevelName() + "']", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]" +
-                "/slub:university[text()='" + opus.getPublisherName() + "']", mods.getDomNode().getOwnerDocument());
+                "/slub:university[text()='" + opus.getPublisherName() + "']", mods);
     }
 
     @Test
@@ -48,8 +47,8 @@ public class CombinedModsExtensionMappingIT extends MappingTestBase {
 
         assertModsChanges();
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name[@type='corporate']/@ID]" +
-                "/slub:section[text()='" + org.getSecondLevelName() + "']", mods.getDomNode().getOwnerDocument());
-        assertXpathExists("//mods:extension/foaf:Person[@rdf:about=//mods:name[@type='personal']/@ID]", mods.getDomNode().getOwnerDocument());
+                "/slub:section[text()='" + org.getSecondLevelName() + "']", mods);
+        assertXpathExists("//mods:extension/foaf:Person[@rdf:about=//mods:name[@type='personal']/@ID]", mods);
     }
 
 
@@ -81,7 +80,7 @@ public class CombinedModsExtensionMappingIT extends MappingTestBase {
         person.setRole("author");
     }
 
-    private Organisation setupOrganisation() throws Exception {
+    private Organisation setupOrganisation() {
         Organisation org = opus.addNewOrganisation();
         org.setType(Organisation.Type.OTHER);
         org.setAddress("Chemnitz");

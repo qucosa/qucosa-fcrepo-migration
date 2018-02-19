@@ -19,7 +19,6 @@ package org.qucosa.migration.mappings;
 
 import noNamespace.Note;
 import noNamespace.Person;
-import org.custommonkey.xmlunit.XMLAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +32,7 @@ public class ContactInformationMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void Maps_note_element() throws Exception {
+    public void Maps_note_element() {
         Note note = opus.addNewNote();
         note.setCreator("me");
         note.setScope("private");
@@ -41,13 +40,11 @@ public class ContactInformationMappingTest extends MappingTestBase {
 
         contactInformationMapping.mapNotes(opus.getNoteArray(), info, changeLog);
 
-        XMLAssert.assertXpathExists(
-                "//slub:note[@from='me' and @scope='private' and text()='The Message']",
-                info.getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:note[@from='me' and @scope='private' and text()='The Message']", info);
     }
 
     @Test
-    public void Extracts_submitter_information() throws Exception {
+    public void Extracts_submitter_information() {
         Person submitter = opus.addNewPersonSubmitter();
         submitter.setPhone("+49 815 4711");
         submitter.setEmail("m.musterfrau@example.com");
@@ -56,12 +53,12 @@ public class ContactInformationMappingTest extends MappingTestBase {
 
         contactInformationMapping.mapPersonSubmitter(opus.getPersonSubmitterArray(), info, changeLog);
 
-        XMLAssert.assertXpathExists(
+        assertXpathExists(
                 "//slub:submitter/foaf:Person[" +
                         "foaf:name='Maxi Musterfrau' and " +
                         "foaf:phone='+49 815 4711' and " +
                         "foaf:mbox='m.musterfrau@example.com']",
-                info.getDomNode().getOwnerDocument());
+                info);
     }
 
 }

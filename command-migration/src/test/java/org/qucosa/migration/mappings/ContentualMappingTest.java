@@ -21,9 +21,7 @@ import noNamespace.Subject;
 import noNamespace.Title;
 import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
 
 public class ContentualMappingTest extends MappingTestBase {
@@ -36,7 +34,7 @@ public class ContentualMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void extractsTitleAbstract() throws Exception {
+    public void extractsTitleAbstract() {
         final String value = "Deutsches Abstract";
         Title oa = opus.addNewTitleAbstract();
         oa.setLanguage("ger");
@@ -47,11 +45,11 @@ public class ContentualMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:abstract[@lang='ger' and @type='summary' and text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
-    public void extractsSubjectDdc() throws Exception {
+    public void extractsSubjectDdc() {
         Subject os = opus.addNewSubjectDdc();
         os.setType("ddc");
         os.setValue("004");
@@ -59,13 +57,11 @@ public class ContentualMappingTest extends MappingTestBase {
         contentualMapping.mapSubject("ddc", opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:classification[@authority='ddc' and text()='004']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:classification[@authority='ddc' and text()='004']", mods);
     }
 
     @Test
-    public void extractsSubjectRvk() throws Exception {
+    public void extractsSubjectRvk() {
         Subject os = opus.addNewSubjectRvk();
         os.setType("rvk");
         os.setValue("ST 270");
@@ -73,13 +69,11 @@ public class ContentualMappingTest extends MappingTestBase {
         contentualMapping.mapSubject("rvk", opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:classification[@authority='rvk' and text()='ST 270']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:classification[@authority='rvk' and text()='ST 270']", mods);
     }
 
     @Test
-    public void extractsSubjectSwd() throws Exception {
+    public void extractsSubjectSwd() {
         Subject os = opus.addNewSubjectSwd();
         os.setType("swd");
         os.setValue("XYZ");
@@ -87,13 +81,11 @@ public class ContentualMappingTest extends MappingTestBase {
         contentualMapping.mapSubject("swd", opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:classification[@authority='sswd' and text()='XYZ']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:classification[@authority='sswd' and text()='XYZ']", mods);
     }
 
     @Test
-    public void extractsSubjectUncontrolled() throws Exception {
+    public void extractsSubjectUncontrolled() {
         Subject os = opus.addNewSubjectUncontrolled();
         os.setType("uncontrolled");
         os.setLanguage("ger");
@@ -102,13 +94,11 @@ public class ContentualMappingTest extends MappingTestBase {
         contentualMapping.mapSubject("uncontrolled", opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:classification[@authority='z' and @lang='ger' and text()='A, B, C']", mods);
     }
 
     @Test
-    public void Extracts_multiple_equal_subjects_of_multiple_languages() throws Exception {
+    public void Extracts_multiple_equal_subjects_of_multiple_languages() {
         {
             Subject os = opus.addNewSubjectUncontrolled();
             os.setType("uncontrolled");
@@ -125,35 +115,30 @@ public class ContentualMappingTest extends MappingTestBase {
         contentualMapping.mapSubject("uncontrolled", opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        Document ownerDocument = mods.getDomNode().getOwnerDocument();
-        assertXpathExists("//mods:classification[@authority='z' and @lang='ger' and text()='same, same']", ownerDocument);
-        assertXpathExists("//mods:classification[@authority='z' and @lang='eng' and text()='same, same']", ownerDocument);
+        assertXpathExists("//mods:classification[@authority='z' and @lang='ger' and text()='same, same']", mods);
+        assertXpathExists("//mods:classification[@authority='z' and @lang='eng' and text()='same, same']", mods);
     }
 
     @Test
-    public void extractsTableOfContent() throws Exception {
+    public void extractsTableOfContent() {
         final String value = "Inhaltsverzeichnis";
         opus.setTableOfContent(value);
 
         contentualMapping.mapTableOfContent(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:tableOfContents[text()='" + value + "']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:tableOfContents[text()='" + value + "']", mods);
     }
 
     @Test
-    public void Maps_issue_to_mods_part() throws Exception {
+    public void Maps_issue_to_mods_part() {
         String issue = "Jg. 25.2014, H. 11";
         opus.setIssue(issue);
 
         contentualMapping.mapIssue(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//mods:part[@type='issue']/mods:detail/mods:number[text()='" + issue + "']",
-                mods.getDomNode().getOwnerDocument());
+        assertXpathExists("//mods:part[@type='issue']/mods:detail/mods:number[text()='" + issue + "']", mods);
     }
 
 }

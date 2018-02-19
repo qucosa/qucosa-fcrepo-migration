@@ -21,8 +21,9 @@ import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
+import static org.junit.Assert.assertThat;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 public class XmlFunctionsTest {
 
@@ -31,7 +32,7 @@ public class XmlFunctionsTest {
         XmlObject target = XmlObject.Factory.parse("<A/>");
         XmlObject source = XmlObject.Factory.parse("<B/>");
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A/B", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -39,7 +40,7 @@ public class XmlFunctionsTest {
         XmlObject target = XmlObject.Factory.parse("<A attr='foo'><B attr='bar'>text</B></A>");
         XmlObject source = XmlObject.Factory.parse("<C/>");
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A[@attr='foo' and B[@attr='bar']]/C", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -47,7 +48,7 @@ public class XmlFunctionsTest {
         XmlObject target = XmlObject.Factory.parse("<A/>");
         XmlObject source = XmlObject.Factory.parse("<B attr='foo'/>");
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A/B[@attr='foo']", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -57,8 +58,8 @@ public class XmlFunctionsTest {
         XmlObject source2 = XmlObject.Factory.parse("<C/>");
         XmlFunctions.insertNode(source1, target);
         XmlFunctions.insertNode(source2, target);
-        assertXpathExists("/A/B", target.xmlText());
-        assertXpathExists("/A/C", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -67,7 +68,7 @@ public class XmlFunctionsTest {
         XmlObject source = XmlObject.Factory.parse("<C/>");
         XmlObject target = select("//B", xml);
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A/B/C", xml.xmlText());
+        assertThat(xml.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -76,7 +77,7 @@ public class XmlFunctionsTest {
         XmlObject source = XmlObject.Factory.parse("<D/>");
         XmlObject target = select("//B", xml);
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A/B[C and D]", xml.xmlText());
+        assertThat(xml.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -84,7 +85,7 @@ public class XmlFunctionsTest {
         XmlObject target = XmlObject.Factory.parse("<A/>");
         XmlObject source = XmlObject.Factory.parse("<B><C/></B>");
         XmlFunctions.insertNode(source, target);
-        assertXpathExists("/A/B/C", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test
@@ -94,8 +95,8 @@ public class XmlFunctionsTest {
         XmlObject source2 = XmlObject.Factory.parse("<D><E/></D>");
         XmlFunctions.insertNode(source1, target);
         XmlFunctions.insertNode(source2, target);
-        assertXpathExists("/A/B/C", target.xmlText());
-        assertXpathExists("/A/D/E", target.xmlText());
+        assertThat(target.xmlText(), hasXPath("/A/B"));
+        assertThat(target.xmlText(), hasXPath("/A/B"));
     }
 
     @Test

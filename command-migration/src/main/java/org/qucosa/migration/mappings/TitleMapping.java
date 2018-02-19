@@ -34,6 +34,7 @@ import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.stringfilters.TextInputStringFilters.SINGLE_QUOTE_Filter;
 
 public class TitleMapping {
 
@@ -93,7 +94,7 @@ public class TitleMapping {
             }
 
             final String value = singleline(ot.getValue());
-            if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
+            if (!nodeExists("mods:title[text()='" + SINGLE_QUOTE_Filter.apply(value) + "']", tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(value);
                 changeLog.log(MODS);

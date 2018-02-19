@@ -20,7 +20,6 @@ package org.qucosa.migration.mappings;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
 
 public class TechnicalInformationMappingTest extends MappingTestBase {
@@ -37,7 +36,7 @@ public class TechnicalInformationMappingTest extends MappingTestBase {
         technicalInformationMapping.ensureEdition(mods, changeLog);
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:originInfo[@eventType='distribution']/mods:edition[text()='[Electronic ed.]']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
     @Test
@@ -45,7 +44,7 @@ public class TechnicalInformationMappingTest extends MappingTestBase {
         technicalInformationMapping.ensurePhysicalDescription(mods, changeLog);
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:physicalDescription/mods:digitalOrigin[text()='born digital']",
-                mods.getDomNode().getOwnerDocument());
+                mods);
     }
 
 }
