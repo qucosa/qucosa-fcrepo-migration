@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
@@ -106,5 +107,11 @@ public class XmlFunctionsTest {
         assertEquals("C", selection.getDomNode().getLocalName());
     }
 
+    @Test
+    public void Formatting_XPath_escapes_apostroph_characters() {
+        String v = "That's something";
+        String result = formatXPath("//some/element[@a=%d and b='%s']", 1234, v);
+        assertEquals("//some/element[@a=1234 and b='That''s something']", result);
+    }
 
 }

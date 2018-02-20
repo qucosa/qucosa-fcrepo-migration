@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import static de.slubDresden.YesNo.YES;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.yesNoBooleanMapping;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.selectAll;
 
@@ -56,7 +57,7 @@ public class RightsMapping {
             final YesNo.Enum isDownloadable = yesNoBooleanMapping(opusFile.getFrontdoorVisible());
             final YesNo.Enum isRedistributable = YES;
 
-            final String query = String.format("slub:attachment[@ref='%s']", ref);
+            final String query = formatXPath("slub:attachment[@ref='%s']", ref);
             AttachmentType at = (AttachmentType) select(query, rights);
             if (at == null) {
                 at = rights.addNewAttachment();

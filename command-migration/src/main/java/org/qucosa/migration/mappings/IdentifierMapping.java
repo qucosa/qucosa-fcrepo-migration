@@ -30,6 +30,7 @@ import java.util.List;
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.uri;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.selectAll;
@@ -68,7 +69,7 @@ public class IdentifierMapping {
     private boolean ensureIdentifierElement(String type, String id, XmlObject modsElement) {
         final String mid = uri(id);
         if (mid != null && !nodeExists(
-                String.format("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), mid), modsElement)) {
+                formatXPath("mods:identifier[@type='%s' and text()='%s']", type.toLowerCase(), mid), modsElement)) {
             IdentifierDefinition identifierDefinition;
             if (modsElement instanceof ModsDefinition) {
                 identifierDefinition = ((ModsDefinition) modsElement).addNewIdentifier();

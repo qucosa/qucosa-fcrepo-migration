@@ -25,6 +25,7 @@ import noNamespace.Document;
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.ORIGINAL;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class SourceMapping {
@@ -41,7 +42,7 @@ public class SourceMapping {
             }
 
             NoteDefinition note = (NoteDefinition)
-                    select(String.format("mods:note[@type='z' and text()='%s']", reference), ri);
+                    select(formatXPath("mods:note[@type='z' and text()='%s']", reference), ri);
             if (note == null) {
                 note = ri.addNewNote();
                 note.setType("z");

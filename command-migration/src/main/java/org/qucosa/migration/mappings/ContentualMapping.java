@@ -34,6 +34,7 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ContentualMapping {
@@ -44,7 +45,7 @@ public class ContentualMapping {
             final String abst = multiline(ot.getValue());
 
             AbstractDefinition ad = (AbstractDefinition) select(
-                    String.format("mods:abstract[@lang='%s' and @type='%s' and text()='%s']",
+                    formatXPath("mods:abstract[@lang='%s' and @type='%s' and text()='%s']",
                             lang, "summary", abst), mods);
 
             if (ad == null) {
