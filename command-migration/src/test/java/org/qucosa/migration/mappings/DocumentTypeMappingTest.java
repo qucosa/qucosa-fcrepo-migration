@@ -20,8 +20,6 @@ package org.qucosa.migration.mappings;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
 
 public class DocumentTypeMappingTest extends MappingTestBase {
@@ -34,41 +32,35 @@ public class DocumentTypeMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void extractsDocumentType() throws Exception {
+    public void extractsDocumentType() {
         String type = "diploma_thesis";
         opus.setType(type);
 
         documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//slub:documentType[text()='" + type + "']",
-                info.getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:documentType[text()='" + type + "']", info);
     }
 
     @Test
-    public void updatesExistingDocumentType() throws Exception {
+    public void updatesExistingDocumentType() {
         opus.setType("article");
         info.setDocumentType("book");
 
         documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//slub:documentType[text()='article']",
-                info.getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:documentType[text()='article']", info);
     }
 
     @Test
-    public void properlyEncodesJournalDocumentType() throws Exception {
+    public void properlyEncodesJournalDocumentType() {
         opus.setType("journal");
 
         documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists(
-                "//slub:documentType[text()='periodical']",
-                info.getDomNode().getOwnerDocument());
+        assertXpathExists("//slub:documentType[text()='periodical']", info);
     }
 
     /*
@@ -77,18 +69,15 @@ public class DocumentTypeMappingTest extends MappingTestBase {
     and therefore became Opus-"journals" which usually maps to "periodical".
      */
     @Test
-    public void properlyEncodesSpecificDocumentType() throws Exception {
+    public void properlyEncodesSpecificDocumentType() {
         opus.setDocumentId("22751");
         opus.setType("journal");
 
         documentTypeMapping.mapDocumentType(opus, info, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathNotExists(
-                "//slub:documentType[text()='periodical']",
-                info.getDomNode().getOwnerDocument());
-        assertXpathExists("//slub:documentType[text()='series']",
-                info.getDomNode().getOwnerDocument());
+        assertXpathNotExists("//slub:documentType[text()='periodical']", info);
+        assertXpathExists("//slub:documentType[text()='series']", info);
     }
 
 }

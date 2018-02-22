@@ -21,12 +21,14 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
 import static org.qucosa.migration.mappings.Namespaces.NS_MODS_V3;
 import static org.qucosa.migration.mappings.Namespaces.NS_SLUB;
 import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
+import static org.qucosa.migration.stringfilters.TextInputStringFilters.SINGLE_QUOTE_Filter;
 
 public class XmlFunctions {
 
@@ -35,6 +37,13 @@ public class XmlFunctions {
                     "declare namespace slub='" + NS_SLUB + "'; " +
                     "declare namespace foaf='" + NS_FOAF + "'; " +
                     "declare namespace xlink='" + NS_XLINK + "'; ";
+
+    public static String formatXPath(String xpath, Object... values) {
+        return String.format(xpath,
+                Arrays.stream(values)
+                        .map(o -> (o instanceof String) ? SINGLE_QUOTE_Filter.apply((String) o) : o)
+                        .toArray());
+    }
 
     public static Boolean nodeExists(String expression, XmlObject object) {
         return (XmlFunctions.select(expression, object) != null);

@@ -43,6 +43,7 @@ import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.mapOrganizationName;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
@@ -107,7 +108,7 @@ public class InstitutionsMapping {
             id = InfoDocument.Factory.parse(it.getDomNode());
         }
 
-        CorporationType ct = (CorporationType) select("slub:corporation[@ref='" + token + "']", it);
+        CorporationType ct = (CorporationType) select(formatXPath("slub:corporation[@ref='%s']", token), it);
         if (ct == null) {
             ct = it.addNewCorporation();
             ct.setRef(token);
@@ -155,37 +156,37 @@ public class InstitutionsMapping {
         final String mappedName = mapOrganizationName(singleline(name), institutionNameMap);
         switch (hierarchy) {
             case "institution":
-                if (!nodeExists("slub:institution[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:institution[text()='%s']", mappedName), ct)) {
                     ct.addInstitution(mappedName);
                     changeLog.log(MODS);
                 }
                 break;
             case "section":
-                if (!nodeExists("slub:section[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:section[text()='%s']", mappedName), ct)) {
                     ct.addSection(mappedName);
                     changeLog.log(MODS);
                 }
                 break;
             case "university":
-                if (!nodeExists("slub:university[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:university[text()='%s']", mappedName), ct)) {
                     ct.addUniversity(mappedName);
                     changeLog.log(MODS);
                 }
                 break;
             case "faculty":
-                if (!nodeExists("slub:faculty[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:faculty[text()='%s']", mappedName), ct)) {
                     ct.addFaculty(mappedName);
                     changeLog.log(MODS);
                 }
                 break;
             case "institute":
-                if (!nodeExists("slub:institute[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:institute[text()='%s']", mappedName), ct)) {
                     ct.addInstitute(mappedName);
                     changeLog.log(MODS);
                 }
                 break;
             case "chair":
-                if (!nodeExists("slub:chair[text()='" + mappedName + "']", ct)) {
+                if (!nodeExists(formatXPath("slub:chair[text()='%s']", mappedName), ct)) {
                     ct.addChair(mappedName);
                     changeLog.log(MODS);
                 }
@@ -203,7 +204,7 @@ public class InstitutionsMapping {
     }
 
     private void setRoleTerm(String role, RoleDefinition rd, ChangeLog changeLog) {
-        RoleTermDefinition rtd = (RoleTermDefinition) select("mods:roleTerm[text()='" + role + "']", rd);
+        RoleTermDefinition rtd = (RoleTermDefinition) select(formatXPath("mods:roleTerm[text()='%s']", role), rd);
         if (rtd == null) {
             rtd = rd.addNewRoleTerm();
             rtd.setType(CODE);
@@ -225,7 +226,8 @@ public class InstitutionsMapping {
     }
 
     private void setNamePart(String significantName, NameDefinition nd, ChangeLog changeLog) {
-        NamePartDefinition npd = (NamePartDefinition) select("mods:namePart[text()='" + significantName + "']", nd);
+        NamePartDefinition npd = (NamePartDefinition) select(
+                formatXPath("mods:namePart[text()='%s']", significantName), nd);
         if (npd == null) {
             npd = nd.addNewNamePart();
             npd.setStringValue(significantName);
@@ -234,7 +236,7 @@ public class InstitutionsMapping {
     }
 
     private NameDefinition getNameDefinition(ModsDefinition mods, String token, ChangeLog changeLog) {
-        NameDefinition nd = (NameDefinition) select("mods:name[@ID='" + token + "' and @type='corporate']", mods);
+        NameDefinition nd = (NameDefinition) select(formatXPath("mods:name[@ID='%s' and @type='corporate']", token), mods);
         if (nd == null) {
             nd = mods.addNewName();
             nd.setID(token);

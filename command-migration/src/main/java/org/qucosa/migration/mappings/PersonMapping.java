@@ -40,6 +40,7 @@ import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.Namespaces.NS_RDF;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
@@ -77,7 +78,7 @@ public class PersonMapping {
         }
 
         PersonDocument.Person foafPerson = (PersonDocument.Person)
-                select("foaf:Person[@about='" + nd.getID() + "']", mods);
+                select(formatXPath("foaf:Person[@about='%s']", nd.getID()), mods);
 
         boolean _importPd = false;
         PersonDocument pd = PersonDocument.Factory.newInstance();
@@ -145,7 +146,7 @@ public class PersonMapping {
             }
 
             RoleTermDefinition rtd = (RoleTermDefinition)
-                    select(String.format("mods:roleTerm[@type='%s'" +
+                    select(formatXPath("mods:roleTerm[@type='%s'" +
                                     " and @authority='%s'" +
                                     " and @authorityURI='%s'" +
                                     " and @valueURI='%s'" +
@@ -196,14 +197,14 @@ public class PersonMapping {
         sb.append("@type='personal'");
         final String mGiven = singleline(given);
         if (mGiven != null && !mGiven.isEmpty()) {
-            sb.append(" and mods:namePart[@type='given' and text()='" + mGiven + "']");
+            sb.append(formatXPath(" and mods:namePart[@type='given' and text()='%s']", mGiven));
         }
         final String mFamily = singleline(family);
         if (mFamily != null && !mFamily.isEmpty()) {
-            sb.append(" and mods:namePart[@type='family' and text()='" + mFamily + "']");
+            sb.append(formatXPath(" and mods:namePart[@type='family' and text()='%s']", mFamily));
         }
         if (date != null) {
-            sb.append(" and mods:namePart[@type='date' and text()='" + date + "']");
+            sb.append(formatXPath(" and mods:namePart[@type='date' and text()='%s']", date));
         }
         sb.append(']');
 
@@ -221,7 +222,7 @@ public class PersonMapping {
     private void checkOrSetNamePart(NamePartDefinition.Type.Enum type, String value, NameDefinition nd, ChangeLog changeLog) {
         final String mValue = singleline(value);
         NamePartDefinition np = (NamePartDefinition)
-                select("mods:namePart[@type='" + type + "' and text()='" + mValue + "']", nd);
+                select(formatXPath("mods:namePart[@type='%s' and text()='%s']", type, mValue), nd);
 
         if (np == null) {
             np = nd.addNewNamePart();

@@ -30,9 +30,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import java.util.Map;
 
 import static de.slubDresden.YesNo.NO;
 import static de.slubDresden.YesNo.YES;
@@ -44,14 +44,12 @@ public class MappingFunctions {
     private static final StringFilter multiLineFilter = new StringFilterChain(
             TextInputStringFilters.TRIM_FILTER,
             TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
     private static final StringFilter singleLineFilter = new StringFilterChain(
             TextInputStringFilters.NEW_LINE_FILTER,
             TextInputStringFilters.TRIM_FILTER,
             TextInputStringFilters.TRIM_TAB_FILTER,
-            TextInputStringFilters.SINGLE_QUOTE_Filter,
             TextInputStringFilters.NFC_NORMALIZATION_FILTER);
 
     private static final StringFilter uriFilter = new StringFilterChain(

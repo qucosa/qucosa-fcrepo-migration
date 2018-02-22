@@ -18,7 +18,6 @@
 package org.qucosa.migration.mappings;
 
 import gov.loc.mods.v3.ModsDefinition;
-import gov.loc.mods.v3.RelatedItemDefinition;
 import gov.loc.mods.v3.StringPlusLanguage;
 import gov.loc.mods.v3.TitleInfoDefinition;
 import noNamespace.Document;
@@ -32,6 +31,7 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
@@ -44,7 +44,7 @@ public class TitleMapping {
             TitleInfoDefinition tid = ensureTitleInfoElement(mods, encLang, TitleInfoDefinition.Type.ALTERNATIVE);
 
             final String value = singleline(ot.getValue());
-            if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
+            if (!nodeExists(formatXPath("mods:title[text()='%s']", value), tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(value);
                 changeLog.log(MODS);
@@ -59,7 +59,7 @@ public class TitleMapping {
             TitleInfoDefinition tid = ensureTitleInfoElement(mods, encLang);
 
             final String value = singleline(ot.getValue());
-            if (!nodeExists("mods:subTitle[text()='" + value + "']", tid)) {
+            if (!nodeExists(formatXPath("mods:subTitle[text()='%s']", value), tid)) {
                 StringPlusLanguage mt = tid.addNewSubTitle();
                 mt.setStringValue(value);
                 changeLog.log(MODS);
@@ -87,13 +87,13 @@ public class TitleMapping {
             if (encLang.equals(firstDocumentLanguage)
                     || titleMainArray.length == 1
                     || !titleMatchingDocumentLanguageExists) {
-                tid = ensureTitleInfoElement(mods, encLang, "primary");
+                tid = ensurePrimaryTitleInfoElement(mods, encLang);
             } else {
                 tid = ensureTitleInfoElement(mods, encLang, TRANSLATED);
             }
 
             final String value = singleline(ot.getValue());
-            if (!nodeExists("mods:title[text()='" + value + "']", tid)) {
+            if (!nodeExists(formatXPath("mods:title[text()='%s']", value), tid)) {
                 StringPlusLanguage mt = tid.addNewTitle();
                 mt.setStringValue(value);
                 changeLog.log(MODS);
@@ -103,7 +103,7 @@ public class TitleMapping {
 
     private TitleInfoDefinition ensureTitleInfoElement(ModsDefinition modsDefinition, String lang) {
         TitleInfoDefinition titleInfoDefinition =
-                (TitleInfoDefinition) select("mods:titleInfo[@lang='" + lang + "']", modsDefinition);
+                (TitleInfoDefinition) select(formatXPath("mods:titleInfo[@lang='%s']", lang), modsDefinition);
         if (titleInfoDefinition == null) {
             titleInfoDefinition = modsDefinition.addNewTitleInfo();
             titleInfoDefinition.setLang(lang);
@@ -111,19 +111,9 @@ public class TitleMapping {
         return titleInfoDefinition;
     }
 
-    private TitleInfoDefinition ensureTitleInfoElement(RelatedItemDefinition relatedItemDefinition, String lang) {
-        TitleInfoDefinition titleInfoDefinition =
-                (TitleInfoDefinition) select("mods:titleInfo[@lang='" + lang + "']", relatedItemDefinition);
-        if (titleInfoDefinition == null) {
-            titleInfoDefinition = relatedItemDefinition.addNewTitleInfo();
-            titleInfoDefinition.setLang(lang);
-        }
-        return titleInfoDefinition;
-    }
-
     private TitleInfoDefinition ensureTitleInfoElement(ModsDefinition modsDefinition, String lang, TitleInfoDefinition.Type.Enum type) {
         TitleInfoDefinition titleInfoDefinition =
-                (TitleInfoDefinition) select("mods:titleInfo[@lang='" + lang + "' and @type='" + type + "']",
+                (TitleInfoDefinition) select(formatXPath("mods:titleInfo[@lang='%s' and @type='%s']", lang, type),
                         modsDefinition);
         if (titleInfoDefinition == null) {
             titleInfoDefinition = modsDefinition.addNewTitleInfo();
@@ -133,14 +123,15 @@ public class TitleMapping {
         return titleInfoDefinition;
     }
 
-    private TitleInfoDefinition ensureTitleInfoElement(ModsDefinition modsDefinition, String lang, String usage) {
+    private TitleInfoDefinition ensurePrimaryTitleInfoElement(ModsDefinition modsDefinition, String lang) {
         TitleInfoDefinition titleInfoDefinition =
-                (TitleInfoDefinition) select("mods:titleInfo[@lang='" + lang + "' and @usage='" + usage + "']",
+                (TitleInfoDefinition) select(
+                        formatXPath("mods:titleInfo[@lang='%s' and @usage='%s']", lang, "primary"),
                         modsDefinition);
         if (titleInfoDefinition == null) {
             titleInfoDefinition = modsDefinition.addNewTitleInfo();
             titleInfoDefinition.setLang(lang);
-            titleInfoDefinition.setUsage(XmlString.Factory.newValue(usage));
+            titleInfoDefinition.setUsage(XmlString.Factory.newValue("primary"));
         }
         return titleInfoDefinition;
     }

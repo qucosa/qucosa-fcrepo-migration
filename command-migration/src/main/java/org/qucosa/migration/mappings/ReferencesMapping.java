@@ -41,6 +41,7 @@ import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.MappingFunctions.volume;
 import static org.qucosa.migration.mappings.MappingFunctions.volumeTitle;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ReferencesMapping {
@@ -128,7 +129,7 @@ public class ReferencesMapping {
             }
 
             queryBuilder.append("]");
-            String query = String.format(queryBuilder.toString(), queryParameters.toArray());
+            String query = formatXPath(queryBuilder.toString(), queryParameters.toArray());
 
             RelatedItemDefinition rid = (RelatedItemDefinition) select(query, mods);
             if (rid == null) {
@@ -168,7 +169,8 @@ public class ReferencesMapping {
             }
 
             String relatedItemType = ("predecessor".equals(r.getRelation())) ? "preceding" : "host";
-            RelatedItemDefinition rd = (RelatedItemDefinition) select("mods:relatedItem[@type='" + relatedItemType + "']", mods);
+            RelatedItemDefinition rd = (RelatedItemDefinition) select(
+                    formatXPath("mods:relatedItem[@type='%s']", relatedItemType), mods);
             if (rd == null) {
                 rd = mods.addNewRelatedItem();
                 rd.setType(RelatedItemDefinition.Type.Enum.forString(relatedItemType));
@@ -181,7 +183,7 @@ public class ReferencesMapping {
             // constructing mods:identifier
 
             IdentifierDefinition id = (IdentifierDefinition)
-                    select("mods:identifier[@type='urn' and text()='" + urn + "']", rd);
+                    select(formatXPath("mods:identifier[@type='urn' and text()='%s']", urn), rd);
             if (id == null) {
                 id = rd.addNewIdentifier();
                 id.setType("urn");
@@ -319,7 +321,7 @@ public class ReferencesMapping {
     private void mapIdentifier(String uri, RelatedItemDefinition rid, final String type, ChangeLog changeLog) {
         if (uri != null && !uri.isEmpty()) {
             IdentifierDefinition id = (IdentifierDefinition)
-                    select("mods:identifier[@type='" + type + "' and text()='" + uri + "']", rid);
+                    select(formatXPath("mods:identifier[@type='%s' and text()='%s']", type, uri), rid);
             if (id == null) {
                 id = rid.addNewIdentifier();
                 id.setType(type);

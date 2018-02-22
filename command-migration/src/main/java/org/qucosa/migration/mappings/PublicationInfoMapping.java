@@ -35,6 +35,7 @@ import static gov.loc.mods.v3.LanguageTermDefinition.Authority.ISO_639_2_B;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExistsAndHasChildNodes;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
@@ -79,7 +80,8 @@ public class PublicationInfoMapping {
                 ld = mods.addNewLanguage();
                 changeLog.log(MODS);
             }
-            final String query = String.format("//mods:language/mods:languageTerm[@authority='%s' and @type='%s' and text()='%s']",
+            final String query =
+                    formatXPath("//mods:language/mods:languageTerm[@authority='%s' and @type='%s' and text()='%s']",
                     "iso639-2b", "code", languageCode);
             if (!nodeExists(query, ld)) {
                 LanguageTermDefinition lngtd = ld.addNewLanguageTerm();
@@ -96,7 +98,7 @@ public class PublicationInfoMapping {
 
         if (mappedDateEncoding != null) {
             DateOtherDefinition dateOther = (DateOtherDefinition)
-                    select(String.format("mods:dateOther[@encoding='%s' and @type='%s']",
+                    select(formatXPath("mods:dateOther[@encoding='%s' and @type='%s']",
                             "iso8601", "defense"), oid);
 
             if (dateOther == null) {
@@ -157,7 +159,7 @@ public class PublicationInfoMapping {
 
         if (mappedDateEncoding != null) {
             DateOtherDefinition dateOther = (DateOtherDefinition)
-                    select(String.format("mods:dateOther[@encoding='%s' and @type='%s']",
+                    select(formatXPath("mods:dateOther[@encoding='%s' and @type='%s']",
                             "iso8601", "submission"), oid);
 
             if (dateOther == null) {

@@ -38,6 +38,7 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
@@ -123,7 +124,7 @@ public class AdministrativeInformationMapping {
 
             // ensure mods:extension/slub:info/slub:corporation
             CorporationType corporation = (CorporationType)
-                    select("slub:corporation[@ref='" + nd.getID() + "']", info);
+                    select(formatXPath("slub:corporation[@ref='%s']", nd.getID()), info);
             if (corporation == null) {
                 corporation = info.addNewCorporation();
                 corporation.setRef(nd.getID());

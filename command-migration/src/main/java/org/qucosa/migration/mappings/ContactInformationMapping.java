@@ -29,6 +29,7 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.combineName;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ContactInformationMapping {
@@ -40,7 +41,7 @@ public class ContactInformationMapping {
             final String mbox = submitter.getEmail();
 
             SubmitterType st = (SubmitterType)
-                    select("slub:submitter[foaf:Person/foaf:name='" + name + "']", targetSlubInfoElement);
+                    select(formatXPath("slub:submitter[foaf:Person/foaf:name='%s']", name), targetSlubInfoElement);
 
             if (st == null) {
                 st = targetSlubInfoElement.addNewSubmitter();
@@ -59,7 +60,8 @@ public class ContactInformationMapping {
             final String scope = singleline(note.getScope());
             final String message = multiline(note.getMessage());
 
-            NoteType noteElement = (NoteType) select(String.format("slub:note[@from='%s' and @scope='%s' and @message='%s']",
+            NoteType noteElement = (NoteType) select(
+                    formatXPath("slub:note[@from='%s' and @scope='%s' and @message='%s']",
                     creator, scope, message), targetSlubInfoElement);
 
             if (noteElement == null) {

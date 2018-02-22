@@ -21,8 +21,6 @@ import noNamespace.File;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathNotExists;
 import static org.junit.Assert.assertTrue;
 
 public class RightsMappingTest extends MappingTestBase {
@@ -35,7 +33,7 @@ public class RightsMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void hasSlubAttachmentElementForEachFile() throws Exception {
+    public void hasSlubAttachmentElementForEachFile() {
         addFile("file1.pdf", true, false);
         addFile("file2.pdf", false, true);
 
@@ -44,14 +42,14 @@ public class RightsMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-0' and @hasArchivalValue='yes' and @isDownloadable='no']",
-                info.getDomNode().getOwnerDocument());
+                info);
         assertXpathExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1' and @hasArchivalValue='no' and @isDownloadable='yes']",
-                info.getDomNode().getOwnerDocument());
+                info);
     }
 
     @Test
-    public void holdsNoUnnecessaryAttachmentElements() throws Exception {
+    public void holdsNoUnnecessaryAttachmentElements() {
         addFile("file1.pdf", true, false);
         info.addNewRights().addNewAttachment().setRef("ATT-1");
 
@@ -60,7 +58,7 @@ public class RightsMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathNotExists(
                 "//slub:rights/slub:attachment[@ref='ATT-1']",
-                info.getDomNode().getOwnerDocument());
+                info);
     }
 
     private void addFile(String path, Boolean oaiExport, Boolean frontdoorVisible) {

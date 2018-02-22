@@ -20,7 +20,6 @@ package org.qucosa.migration.mappings;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.junit.Assert.assertTrue;
 
 public class SourceMappingTest extends MappingTestBase {
@@ -33,7 +32,7 @@ public class SourceMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void Maps_source_reference_to_MODS() throws Exception {
+    public void Maps_source_reference_to_MODS() {
         String sourceRef = "Netzwerk Bibliothek : Tagungsband zum 95. Deutschen Bibliothekartag";
         opus.setSource(sourceRef);
 
@@ -41,8 +40,7 @@ public class SourceMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(String.format(
-                "//mods:relatedItem[@type='original']/mods:note[@type='z' and text()='%s']", sourceRef),
-                mods.getDomNode().getOwnerDocument());
+                "//mods:relatedItem[@type='original']/mods:note[@type='z' and text()='%s']", sourceRef), mods);
     }
 
 }
