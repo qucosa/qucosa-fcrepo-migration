@@ -54,6 +54,8 @@ public class IdentifierMapping {
 
     private void map(String type, Document opus, ModsDefinition mods, ChangeLog changeLog) {
         if (type.equals("Issn") && "article".equals(opus.getType())) {
+            // Don't map ISSN identifier for document type article because there is no ISSN for
+            // articles, so they are for sure ment to be source ISSNs
             return;
         }
         for (XmlObject xmlObject : selectAll("Identifier" + type, opus)) {
