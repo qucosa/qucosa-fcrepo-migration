@@ -20,6 +20,7 @@ package org.qucosa.migration.mappings;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class SourceMappingTest extends MappingTestBase {
@@ -41,6 +42,34 @@ public class SourceMappingTest extends MappingTestBase {
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists(String.format(
                 "//mods:relatedItem[@type='original']/mods:note[@type='z' and text()='%s']", sourceRef), mods);
+    }
+
+    @Test
+    public void Maps_ISSN_identifier_to_source_reference() {
+        String issn = "1662-453X";
+        opus.addNewIdentifierIssn().setValue(issn);
+        opus.setType("article");
+
+        sourceMapping.mapISSN(opus, mods, changeLog);
+
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists(
+                "//mods:relatedItem[@type='original']/mods:identifier[@type='issn' and text()='" + issn + "']",
+                mods);
+    }
+
+    @Test
+    public void Dont_map_ISSN_identifier_if_document_type_is_not_article() {
+        String issn = "1662-453X";
+        opus.addNewIdentifierIssn().setValue(issn);
+        opus.setType("not-article");
+
+        sourceMapping.mapISSN(opus, mods, changeLog);
+
+        assertFalse("Changelog should be empty", changeLog.hasChanges());
+        assertXpathNotExists(
+                "//mods:relatedItem[@type='original']/mods:identifier[@type='issn' and text()='" + issn + "']",
+                mods);
     }
 
 }
