@@ -17,29 +17,30 @@
 
 package org.qucosa.migration.mappings;
 
+import gov.loc.mods.v3.IdentifierDefinition;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.NoteDefinition;
 import gov.loc.mods.v3.RelatedItemDefinition;
 import noNamespace.Document;
+import noNamespace.Identifier;
+import org.apache.xmlbeans.XmlObject;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.ORIGINAL;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
+import static org.qucosa.migration.mappings.MappingFunctions.uri;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
 import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 
 public class SourceMapping {
 
     public void mapSource(Document opus, ModsDefinition mods, ChangeLog changeLog) {
         String reference = singleline(opus.getSource());
+
         if (reference != null && !reference.isEmpty()) {
-            RelatedItemDefinition ri = (RelatedItemDefinition)
-                    select("mods:relatedItem[@type='original']", mods);
-            if (ri == null) {
-                ri = mods.addNewRelatedItem();
-                ri.setType(ORIGINAL);
-                changeLog.log(MODS);
-            }
+
+            RelatedItemDefinition ri = ensureRelatedItemDefinition(mods, changeLog);
 
             NoteDefinition note = (NoteDefinition)
                     select(formatXPath("mods:note[@type='z' and text()='%s']", reference), ri);
@@ -52,4 +53,52 @@ public class SourceMapping {
         }
     }
 
+    public void mapISSN(Document opus, ModsDefinition mods, ChangeLog changeLog) {
+        if (!"article".equals(opus.getType())) {
+            return;
+        }
+
+        Identifier[] issnIdentifiers = opus.getIdentifierIssnArray();
+        if (issnIdentifiers == null || issnIdentifiers.length == 0) {
+            return;
+        }
+
+        RelatedItemDefinition ri = ensureRelatedItemDefinition(mods, changeLog);
+
+        for (Identifier identifier : issnIdentifiers) {
+            if (ensureIssnIdentifierElement(identifier.getValue(), ri)) {
+                changeLog.log(MODS);
+            }
+        }
+    }
+
+    private RelatedItemDefinition ensureRelatedItemDefinition(ModsDefinition mods, ChangeLog changeLog) {
+        RelatedItemDefinition ri = (RelatedItemDefinition)
+                select("mods:relatedItem[@type='original']", mods);
+        if (ri == null) {
+            ri = mods.addNewRelatedItem();
+            ri.setType(ORIGINAL);
+            changeLog.log(MODS);
+        }
+        return ri;
+    }
+
+    private boolean ensureIssnIdentifierElement(String id, XmlObject modsElement) {
+        final String mid = uri(id);
+        if (mid != null && !nodeExists(
+                formatXPath("mods:identifier[@type='%s' and text()='%s']", "issn".toLowerCase(), mid), modsElement)) {
+            IdentifierDefinition identifierDefinition;
+            if (modsElement instanceof ModsDefinition) {
+                identifierDefinition = ((ModsDefinition) modsElement).addNewIdentifier();
+            } else if (modsElement instanceof RelatedItemDefinition) {
+                identifierDefinition = ((RelatedItemDefinition) modsElement).addNewIdentifier();
+            } else {
+                throw new IllegalArgumentException("Mods element is not ModsDefinition or RelatedItemDefinition");
+            }
+            identifierDefinition.setType("issn".toLowerCase());
+            identifierDefinition.setStringValue(mid);
+            return true;
+        }
+        return false;
+    }
 }

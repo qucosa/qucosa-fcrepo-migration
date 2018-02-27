@@ -121,6 +121,7 @@ public class MappingProcessor implements Processor {
         rightsMapping.mapFileAttachments(opus, info, changeLog);
 
         sourceMapping.mapSource(opus, mods, changeLog);
+        sourceMapping.mapISSN(opus, mods, changeLog);
 
         tim.ensureEdition(mods, changeLog);
         tim.ensurePhysicalDescription(mods, changeLog);
