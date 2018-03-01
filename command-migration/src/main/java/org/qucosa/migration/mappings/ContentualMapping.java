@@ -96,7 +96,7 @@ public class ContentualMapping {
                 sb.append("[@lang='%s']");
                 queryParameters.add(lang);
             }
-            String query = String.format(sb.toString(), queryParameters.toArray());
+            String query = formatXPath(sb.toString(), queryParameters.toArray());
 
             ClassificationDefinition cl;
             cl = (ClassificationDefinition) select(query, mods);
