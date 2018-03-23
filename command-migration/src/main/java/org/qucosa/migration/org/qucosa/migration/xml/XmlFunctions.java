@@ -26,6 +26,7 @@ import java.util.List;
 
 import static org.qucosa.migration.mappings.Namespaces.NS_FOAF;
 import static org.qucosa.migration.mappings.Namespaces.NS_MODS_V3;
+import static org.qucosa.migration.mappings.Namespaces.NS_PERSON;
 import static org.qucosa.migration.mappings.Namespaces.NS_SLUB;
 import static org.qucosa.migration.mappings.Namespaces.NS_XLINK;
 import static org.qucosa.migration.stringfilters.TextInputStringFilters.SINGLE_QUOTE_Filter;
@@ -36,7 +37,8 @@ public class XmlFunctions {
             "declare namespace mods='" + NS_MODS_V3 + "'; " +
                     "declare namespace slub='" + NS_SLUB + "'; " +
                     "declare namespace foaf='" + NS_FOAF + "'; " +
-                    "declare namespace xlink='" + NS_XLINK + "'; ";
+                    "declare namespace xlink='" + NS_XLINK + "'; " +
+                    "declare namespace person='" + NS_PERSON + "'; ";
 
     public static String formatXPath(String xpath, Object... values) {
         return String.format(xpath,
