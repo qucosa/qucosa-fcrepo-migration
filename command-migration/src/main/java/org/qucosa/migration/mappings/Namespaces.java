@@ -23,4 +23,5 @@ public class Namespaces {
     public static final String NS_FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String NS_MODS_V3 = "http://www.loc.gov/mods/v3";
     public static final String NS_SLUB = "http://slub-dresden.de/";
+    public static final String NS_PERSON = "http://www.w3.org/ns/person#";
 }

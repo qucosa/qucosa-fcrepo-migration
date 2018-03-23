@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.com/foaf/0.1/"
-           elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:person="http://www.w3.org/ns/person#"
+           targetNamespace="http://xmlns.com/foaf/0.1/"
+           elementFormDefault="qualified">
+
+    <xs:import namespace="http://www.w3.org/ns/person#" schemaLocation="person-fake.xsd"/>
+
     <xs:element name="Person">
         <xs:complexType>
             <xs:sequence>
@@ -8,6 +13,7 @@
                 <xs:element name="phone" type="xs:string"/>
                 <xs:element name="mbox" type="xs:string"/>
                 <xs:element name="gender" type="xs:string"/>
+                <xs:element ref="person:placeOfBirth"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

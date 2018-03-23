@@ -66,8 +66,9 @@ public class PersonMapping {
         final String phone = emptyIfNull(person.getPhone());
         final String mbox = emptyIfNull(person.getEmail());
         final String gender = emptyIfNull(genderMapping(person.getGender()));
+        final String birthplace = emptyIfNull(person.getPlaceOfBirth());
 
-        if (phone.isEmpty() && mbox.isEmpty() && gender.isEmpty()) {
+        if (phone.isEmpty() && mbox.isEmpty() && gender.isEmpty() && birthplace.isEmpty()) {
             return;
         }
 
@@ -107,10 +108,18 @@ public class PersonMapping {
             }
         }
 
-        if (gender != null) {
+        if (!gender.isEmpty()) {
             if (foafPerson.getGender() == null
                     || !foafPerson.getGender().equals(gender)) {
                 foafPerson.setGender(gender);
+                changeLog.log(MODS);
+            }
+        }
+
+        if (!birthplace.isEmpty()) {
+            if (foafPerson.getPlaceOfBirth() == null
+                    || !foafPerson.getPlaceOfBirth().equals(birthplace)) {
+                foafPerson.setPlaceOfBirth(birthplace);
                 changeLog.log(MODS);
             }
         }

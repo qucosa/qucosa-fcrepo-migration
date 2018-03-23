@@ -222,18 +222,19 @@ public class PersonMappingTest extends MappingTestBase {
 
     @Test
     public void Skip_extension_when_no_FOAF_information_available() {
-        createPerson("Prof. Dr.", null, null, null, "Hans", "Mustermann", "author", 1965, 11, 5);
+        createPerson("Prof. Dr.", null, null, null, null, "Hans",
+                "Mustermann", "author", 1965, 11, 5);
 
         personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
         assertXpathNotExists("//mods:extension/foaf:Person[@rdf:about=//mods:name/@ID]", mods);
-
     }
 
     @Test
     public void extractsFoafInfos() {
         createPerson("Prof. Dr.", "m", "+49(0)1234567890", "mustermann@musteruni.de",
-                "Hans", "Mustermann", "author", 1965, 11, 5);
+                "Musterstadt", "Hans", "Mustermann", "author", 1965,
+                11, 5);
 
         personMapping.mapPersons(opus.getPersonAuthorArray(), mods, changeLog);
 
@@ -241,9 +242,16 @@ public class PersonMappingTest extends MappingTestBase {
         assertXpathExists("//mods:extension/foaf:Person[foaf:phone='+49(0)1234567890']", mods);
         assertXpathExists("//mods:extension/foaf:Person[foaf:mbox='mustermann@musteruni.de']", mods);
         assertXpathExists("//mods:extension/foaf:Person[foaf:gender='male']", mods);
+        assertXpathExists("//mods:extension/foaf:Person[person:placeOfBirth='Musterstadt']", mods);
     }
 
     private void createPerson(String academicTitle, String gender, String phone, String email, String firstName,
+                              String lastName, String role, int yearOfBirth, int monthOfBirth, int dayOfBirth) {
+        createPerson(academicTitle, gender, phone, email, null, firstName,
+                lastName, role, yearOfBirth, monthOfBirth, dayOfBirth);
+    }
+
+    private void createPerson(String academicTitle, String gender, String phone, String email, String birthplace, String firstName,
                               String lastName, String role, int yearOfBirth, int monthOfBirth, int dayOfBirth) {
         Person person;
         switch (role) {
@@ -286,6 +294,7 @@ public class PersonMappingTest extends MappingTestBase {
         person.setFirstName(firstName);
         person.setLastName(lastName);
         person.setRole(role);
+        if (birthplace != null && !birthplace.isEmpty()) person.setPlaceOfBirth(birthplace);
     }
 
 }
