@@ -178,7 +178,7 @@ public class TransformationRouteBuilder extends RouteBuilder {
                 .to("sword:update");
     }
 
-    private void configureHttpBasicAuth(String uri, String user, String password) throws ConfigurationException {
+    private void configureHttpBasicAuth(String uri, String user, String password) {
         HttpEndpoint httpEndpoint = (HttpEndpoint) getContext().getEndpoint(uri);
         httpEndpoint.setHttpClientConfigurer(
                 new BasicAuthenticationHttpClientConfigurer(false, user, password));
