@@ -22,18 +22,23 @@ import de.slubDresden.CorporationType;
 import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import de.slubDresden.RightsType;
+import static gov.loc.mods.v3.CodeOrText.CODE;
 import gov.loc.mods.v3.DateDefinition;
 import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.IdentifierDefinition;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.NameDefinition;
+import gov.loc.mods.v3.NamePartDefinition;
 import gov.loc.mods.v3.OriginInfoDefinition;
+import gov.loc.mods.v3.RoleDefinition;
+import gov.loc.mods.v3.RoleTermDefinition;
 import noNamespace.Date;
 import noNamespace.Document;
 import org.apache.xmlbeans.XmlString;
 
 import static gov.loc.mods.v3.DateDefinition.Encoding.ISO_8601;
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
+import static org.qucosa.migration.mappings.MappingFunctions.LOC_GOV_VOCABULARY_RELATORS;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
@@ -71,14 +76,13 @@ public class AdministrativeInformationMapping {
         String publisherName = opus.getPublisherName();
         if (publisherName != null && !publisherName.isEmpty()) {
             NameDefinition nd = (NameDefinition)
-                    select("mods:name[@type='corporate' and @displayLabel='mapping-hack-default-publisher']", mods);
+                    select("mods:name[@type='corporate' and @displayLabel='mapping-hack-university']", mods);
 
             // ensure mods:name[@type='corporate']
             if (nd == null) {
                 nd = mods.addNewName();
-                nd.setType("corporate");
                 nd.setType2(CORPORATE);
-                nd.setDisplayLabel("mapping-hack-default-publisher");
+                nd.setDisplayLabel("mapping-hack-university");
                 changeLog.log(MODS);
             }
 
@@ -102,6 +106,35 @@ public class AdministrativeInformationMapping {
                     nid.setStringValue(SLUB_GND_IDENTIFIER);
                     changeLog.log(MODS);
                 }
+            }
+
+            // add mods:name/mods:namePart
+            NamePartDefinition npd = (NamePartDefinition) select(
+                    formatXPath("mods:namePart[text()='%s']", publisherName), nd);
+            if (npd == null) {
+                npd = nd.addNewNamePart();
+                npd.setStringValue(publisherName);
+                changeLog.log(MODS);
+            }
+
+            // add mods:name/mods:role
+            RoleDefinition rd = (RoleDefinition) select("mods:role", nd);
+            if (rd == null) {
+                rd = nd.addNewRole();
+                changeLog.log(MODS);
+            }
+
+            // add mods:name/mods:role/mods:roleTerm
+            String role = "prv";
+            RoleTermDefinition rtd = (RoleTermDefinition) select(formatXPath("mods:roleTerm[text()='%s']", role), rd);
+            if (rtd == null) {
+                rtd = rd.addNewRoleTerm();
+                rtd.setType(CODE);
+                rtd.setAuthority("marcrelator");
+                rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
+                rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + role);
+                rtd.setStringValue(role);
+                changeLog.log(MODS);
             }
 
             // ensure mods:extension
