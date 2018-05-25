@@ -250,7 +250,7 @@ public class PersonMapping {
             case "contributor":
                 return "ctb";
             case "editor":
-                return "pbl";
+                return "edt";
             case "referee":
                 return "rev";
             case "other":

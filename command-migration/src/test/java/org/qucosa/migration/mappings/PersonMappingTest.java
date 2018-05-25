@@ -102,7 +102,7 @@ public class PersonMappingTest extends MappingTestBase {
         assertXpathExists("//mods:name/mods:namePart[@type='family' and text()='Mustermann']", mods);
         assertXpathExists("//mods:name/mods:namePart[@type='termsOfAddress' and text()='Prof. Dr.']", mods);
         assertXpathExists("//mods:name/mods:namePart[@type='date' and text()='1965-11-05']", mods);
-        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='pbl']", mods);
+        assertXpathExists("//mods:name/mods:role/mods:roleTerm[text()='edt']", mods);
     }
 
     @Test
