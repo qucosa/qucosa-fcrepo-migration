@@ -82,7 +82,6 @@ public class AdministrativeInformationMapping {
             if (nd == null) {
                 nd = mods.addNewName();
                 nd.setType2(CORPORATE);
-                nd.setDisplayLabel("mapping-hack-university");
                 changeLog.log(MODS);
             }
 
@@ -132,7 +131,6 @@ public class AdministrativeInformationMapping {
                 rtd.setType(CODE);
                 rtd.setAuthority("marcrelator");
                 rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
-                rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + role);
                 rtd.setStringValue(role);
                 changeLog.log(MODS);
             }
@@ -186,14 +184,6 @@ public class AdministrativeInformationMapping {
                         changeLog.log(MODS);
                     }
                 }
-            }
-
-            // ensure mods:extension/slub:info/slub:corporation/slub:university
-            XmlString university = (XmlString) select("slub:university", corporation);
-            if (university == null) {
-                university = corporation.addNewUniversity();
-                university.setStringValue(publisherName);
-                changeLog.log(MODS);
             }
 
             if (embedNewInfoExtensionAfterwards) {

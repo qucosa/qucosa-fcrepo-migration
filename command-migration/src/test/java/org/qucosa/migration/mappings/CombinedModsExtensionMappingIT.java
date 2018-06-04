@@ -34,8 +34,6 @@ public class CombinedModsExtensionMappingIT extends MappingTestBase {
         assertModsChanges();
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID and @type='other']" +
                 "/slub:section[text()='" + org.getSecondLevelName() + "']", mods);
-        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]" +
-                "/slub:university[text()='" + opus.getPublisherName() + "']", mods);
     }
 
     @Test

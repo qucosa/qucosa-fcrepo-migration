@@ -62,19 +62,17 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         aim.mapDefaultPublisherInfo(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']", mods);
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/" +
+        assertXpathExists("//mods:name[@type='corporate']", mods);
+        assertXpathExists("//mods:name[@type='corporate']/" +
                 "mods:nameIdentifier[@type='gnd' and text()='" + SLUB_GND_IDENTIFIER + "']", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID" +
                 " and @place='" + opus.getPublisherPlace() + "'" +
                 " and @address='" + opus.getPublisherAddress() + "']", mods);
-        assertXpathExists("//mods:extension/slub:info/slub:corporation[@ref=//mods:name/@ID]" +
-                "/slub:university[text()='" + opus.getPublisherName() + "']", mods);
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/" +
+        assertXpathExists("//mods:name[@type='corporate']/" +
                 "mods:namePart[.='" + opus.getPublisherName() + "']", mods);
-        assertXpathExists("//mods:name[@type='corporate' and @displayLabel='mapping-hack-university']/" +
-                "mods:role/mods:roleTerm[@valueURI='http://id.loc.gov/vocabulary/relators/prv' and .='prv']", mods);
+        assertXpathExists("//mods:name[@type='corporate']/" +
+                "mods:role/mods:roleTerm[.='prv']", mods);
     }
 
     @Test
