@@ -210,7 +210,6 @@ public class InstitutionsMapping {
             rtd.setType(CODE);
             rtd.setAuthority("marcrelator");
             rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
-            rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + role);
             rtd.setStringValue(role);
             changeLog.log(MODS);
         }
