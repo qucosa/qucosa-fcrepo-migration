@@ -47,6 +47,24 @@ import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
 public class ReferencesMapping {
 
     public void mapSeriesReference(Document opus, ModsDefinition mods, ChangeLog changeLog) {
+
+        boolean isSeries = false;
+
+        // find first series reference
+        Reference firstReferenceUrn = null;
+        for (Reference ref : opus.getReferenceUrnArray()) {
+            if (SERIES.toString().equals(ref.getRelation())) {
+                firstReferenceUrn = ref;
+                isSeries = true;
+                break;
+            }
+        }
+
+        if (!isSeries) {
+            // skip if document type is not a series
+            return;
+        }
+
         // gathering data
         Title firstTitleParent = (Title) firstOf(opus.getTitleParentArray());
 
@@ -57,14 +75,6 @@ public class ReferencesMapping {
             volumeTitle = volumeTitle(firstTitleParent.getValue());
         }
 
-        // find first series reference
-        Reference firstReferenceUrn = null;
-        for (Reference ref : opus.getReferenceUrnArray()) {
-            if (SERIES.toString().equals(ref.getRelation())) {
-                firstReferenceUrn = ref;
-                break;
-            }
-        }
 
         String referenceUrn = null;
         String referenceSortOrder = null;
