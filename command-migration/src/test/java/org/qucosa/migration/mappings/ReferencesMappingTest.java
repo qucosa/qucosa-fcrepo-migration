@@ -20,6 +20,7 @@ package org.qucosa.migration.mappings;
 import noNamespace.Reference;
 import noNamespace.Title;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static java.lang.String.format;
@@ -106,6 +107,7 @@ public class ReferencesMappingTest extends MappingTestBase {
                 mods);
     }
 
+    @Ignore("Reference to parent series without URN should not be mapped anymore")
     @Test
     public void Reference_to_parent_series_without_URN_extracts_title_and_volume() {
         Title tp = opus.addNewTitleParent();
@@ -288,8 +290,11 @@ public class ReferencesMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void No_series_mapping_if_reference_is_not_of_type_series() {
+    public void No_series_mapping_if_reference_is_not_of_type_series_and_titleParent_exists() {
         String urn = "urn:nbn:de:bsz:14-qucosa-74328";
+
+        Title titleParent = opus.addNewTitleParent();
+        titleParent.setValue("Parent Document");
 
         Reference refUrn = opus.addNewReferenceUrn();
         refUrn.setValue(urn);
@@ -302,5 +307,4 @@ public class ReferencesMappingTest extends MappingTestBase {
         assertXpathNotExists("//mods:relatedItem[@type='series']", mods);
         assertXpathExists("//mods:relatedItem[@type='host']", mods);
     }
-
 }
