@@ -43,10 +43,10 @@ import static org.qucosa.migration.mappings.MappingFunctions.buildTokenFrom;
 import static org.qucosa.migration.mappings.MappingFunctions.firstOf;
 import static org.qucosa.migration.mappings.MappingFunctions.mapOrganizationName;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.insertNode;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.insertNode;
+import static org.qucosa.migration.xml.XmlFunctions.nodeExists;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class InstitutionsMapping {
 

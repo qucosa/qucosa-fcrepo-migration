@@ -29,9 +29,9 @@ import static gov.loc.mods.v3.RelatedItemDefinition.Type.ORIGINAL;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.MappingFunctions.uri;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.nodeExists;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class SourceMapping {
 

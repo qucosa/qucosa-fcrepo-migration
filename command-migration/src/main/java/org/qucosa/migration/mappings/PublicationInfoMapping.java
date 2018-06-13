@@ -35,10 +35,10 @@ import static gov.loc.mods.v3.LanguageTermDefinition.Authority.ISO_639_2_B;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
 import static org.qucosa.migration.mappings.MappingFunctions.dateEncoding;
 import static org.qucosa.migration.mappings.MappingFunctions.languageEncoding;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExistsAndHasChildNodes;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.nodeExists;
+import static org.qucosa.migration.xml.XmlFunctions.nodeExistsAndHasChildNodes;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class PublicationInfoMapping {
 

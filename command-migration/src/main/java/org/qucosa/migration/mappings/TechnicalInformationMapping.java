@@ -25,8 +25,8 @@ import javax.xml.xpath.XPathExpressionException;
 
 import static gov.loc.mods.v3.DigitalOriginDefinition.BORN_DIGITAL;
 import static org.qucosa.migration.mappings.ChangeLog.Type.MODS;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.nodeExists;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.nodeExists;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class TechnicalInformationMapping {
 

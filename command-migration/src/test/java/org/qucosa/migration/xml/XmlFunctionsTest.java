@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Saxon State and University Library Dresden (SLUB)
+ * Copyright (C) 2018 Saxon State and University Library Dresden (SLUB)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,15 +15,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.qucosa.migration.org.qucosa.migration.xml;
+package org.qucosa.migration.xml;
 
 import org.apache.xmlbeans.XmlObject;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 import static org.xmlunit.matchers.HasXPathMatcher.hasXPath;
 
 public class XmlFunctionsTest {

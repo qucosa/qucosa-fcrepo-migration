@@ -29,8 +29,8 @@ import static org.qucosa.migration.mappings.ChangeLog.Type.SLUB_INFO;
 import static org.qucosa.migration.mappings.MappingFunctions.combineName;
 import static org.qucosa.migration.mappings.MappingFunctions.multiline;
 import static org.qucosa.migration.mappings.MappingFunctions.singleline;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.formatXPath;
-import static org.qucosa.migration.org.qucosa.migration.xml.XmlFunctions.select;
+import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ContactInformationMapping {
 
