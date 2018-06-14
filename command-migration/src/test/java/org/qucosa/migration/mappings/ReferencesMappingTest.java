@@ -58,7 +58,7 @@ public class ReferencesMappingTest extends MappingTestBase {
     }
 
     @Test
-    public void Reference_to_parent_series_via_Qucosa_URN_extracts_part_order_number() {
+    public void Reference_to_parent_series_via_Qucosa_URN_extracts_sorting_key() {
         Reference ru = opus.addNewReferenceUrn();
         String referenceToSeries = "urn:nbn:de:bsz:14-qucosa-38419";
         ru.setValue(referenceToSeries);
@@ -69,7 +69,8 @@ public class ReferencesMappingTest extends MappingTestBase {
         referencesMapping.mapSeriesReference(opus, mods, changeLog);
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
-        assertXpathExists("/mods:mods/mods:part[@order='" + order + "' and @type='volume']",
+        assertXpathExists(
+                "/mods:mods/mods:relatedItem[@type='series']/mods:extension/slub:info[slub:sortingKey='" + order + "']",
                 mods);
     }
 
@@ -205,15 +206,17 @@ public class ReferencesMappingTest extends MappingTestBase {
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn),
                 mods);
         assertXpathExists(
-                format("/mods:mods/mods:part[@order='%s' and @type='issue']/mods:detail/mods:number[text()='%s']", sortOrder, issue),
+                format("//mods:relatedItem[@type='host']/mods:extension/slub:info[slub:sortingKey='%s']", sortOrder),
+                mods);
+        assertXpathExists(
+                format("/mods:mods/mods:part[@type='issue']/mods:detail/mods:number[text()='%s']", issue),
                 mods);
     }
 
     @Test
-    public void Reference_to_book_mapped_to_relatedItem_and_part() {
+    public void Reference_to_book_mapped_to_relatedItem_with_sorting_key() {
         String urn = "urn:nbn:de:bsz:14-qucosa-23464";
         String sortOrder = "095";
-        String expectedSortOrder = "95";
 
         Reference refUrl = opus.addNewReferenceUrn();
         refUrl.setValue(urn);
@@ -226,14 +229,13 @@ public class ReferencesMappingTest extends MappingTestBase {
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn), mods);
         assertXpathExists(
-                format("/mods:mods/mods:part[@order='%s' and not(@type)]", expectedSortOrder), mods);
+                format("//mods:relatedItem[@type='host']/mods:extension/slub:info[slub:sortingKey='%s']", sortOrder), mods);
     }
 
     @Test
-    public void Reference_to_proceeding_mapped_to_relatedItem_and_part() {
+    public void Reference_to_proceeding_mapped_to_relatedItem_with_sorting_key() {
         String urn = "urn:nbn:de:bsz:14-qucosa-151820";
         String sortOrder = "061";
-        String expectedSortOrder = "61";
 
         Reference refUrl = opus.addNewReferenceUrn();
         refUrl.setValue(urn);
@@ -246,14 +248,13 @@ public class ReferencesMappingTest extends MappingTestBase {
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn), mods);
         assertXpathExists(
-                format("/mods:mods/mods:part[@order='%s' and not(@type)]", expectedSortOrder), mods);
+                format("//mods:relatedItem[@type='host']/mods:extension/slub:info[slub:sortingKey='%s']", sortOrder), mods);
     }
 
     @Test
-    public void Reference_to_issue_mapped_to_relatedItem_and_part() {
+    public void Reference_to_issue_mapped_to_relatedItem_with_sorting_key() {
         String urn = "urn:nbn:de:bsz:14-ds-1206548602741-00127";
         String sortOrder = "008";
-        String expectedSortOrder = "8";
 
         Reference refUrl = opus.addNewReferenceUrn();
         refUrl.setValue(urn);
@@ -266,7 +267,7 @@ public class ReferencesMappingTest extends MappingTestBase {
         assertXpathExists(
                 format("//mods:relatedItem[@type='host']/mods:identifier[@type='urn' and text()='%s']", urn), mods);
         assertXpathExists(
-                format("/mods:mods/mods:part[@order='%s' and not(@type)]", expectedSortOrder), mods);
+                format("//mods:relatedItem[@type='host']/mods:extension/slub:info[slub:sortingKey='%s']", sortOrder), mods);
     }
 
     @Test
