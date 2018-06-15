@@ -25,8 +25,8 @@ import static org.qucosa.migration.stringfilters.TextInputStringFilters.*;
 public class TextInputStringFiltersTest {
 
     @Test
-    public void Newlines_should_be_removed() {
-        assertEquals("ABCDEF", NEW_LINE_FILTER.apply("ABC\nDEF\r\n"));
+    public void Newlines_are_replaced_by_whitespace() {
+        assertEquals("ABC DEF  ", NEW_LINE_FILTER.apply("ABC\nDEF\r\n"));
     }
 
     @Test
