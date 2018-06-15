@@ -45,6 +45,7 @@
             <xs:element type="rightsType" name="rights"/>
             <xs:element type="corporationType" name="corporation"/>
             <xs:element type="noteType" name="note" maxOccurs="unbounded"/>
+            <xs:element type="xs:string" name="sortingKey"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="submitterType">

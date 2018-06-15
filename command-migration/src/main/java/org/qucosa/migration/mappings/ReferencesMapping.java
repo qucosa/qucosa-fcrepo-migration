@@ -17,7 +17,10 @@
 
 package org.qucosa.migration.mappings;
 
+import de.slubDresden.InfoDocument;
+import de.slubDresden.InfoType;
 import gov.loc.mods.v3.DetailDefinition;
+import gov.loc.mods.v3.ExtensionDefinition;
 import gov.loc.mods.v3.IdentifierDefinition;
 import gov.loc.mods.v3.LocationDefinition;
 import gov.loc.mods.v3.ModsDefinition;
@@ -31,7 +34,6 @@ import noNamespace.Document;
 import noNamespace.Reference;
 import noNamespace.Title;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 import static gov.loc.mods.v3.RelatedItemDefinition.Type.OTHER_VERSION;
@@ -42,6 +44,7 @@ import static org.qucosa.migration.mappings.MappingFunctions.singleline;
 import static org.qucosa.migration.mappings.MappingFunctions.volume;
 import static org.qucosa.migration.mappings.MappingFunctions.volumeTitle;
 import static org.qucosa.migration.xml.XmlFunctions.formatXPath;
+import static org.qucosa.migration.xml.XmlFunctions.insertNode;
 import static org.qucosa.migration.xml.XmlFunctions.select;
 
 public class ReferencesMapping {
@@ -94,7 +97,7 @@ public class ReferencesMapping {
         }
 
         mapIdentifier(referenceUrn, rid, "urn", changeLog);
-        mapSortOrderToPartOrder(referenceSortOrder, pd, changeLog);
+        mapSortingKeyToRelatedItemExtension(referenceSortOrder, rid, changeLog);
         mapVolume(volume, pd, changeLog);
         mapVolumeTitle(volumeTitle, rid, changeLog);
     }
@@ -148,13 +151,6 @@ public class ReferencesMapping {
                 noteElement(label, rid, changeLog);
             }
 
-            PartDefinition pd = (PartDefinition) select("mods:part", rid);
-            if (pd == null) {
-                pd = rid.addNewPart();
-                changeLog.log(MODS);
-            }
-
-            mapSortOrderToPartOrder(r.getSortOrder(), pd, changeLog);
         }
     }
 
@@ -191,18 +187,12 @@ public class ReferencesMapping {
                 changeLog.log(MODS);
             }
 
+            mapSortingKeyToRelatedItemExtension(r.getSortOrder(), rd, changeLog);
+
             // constructing mods:part
-
             String issue = opus.getIssue();
-            BigInteger order = null;
-            try {
-                order = new BigInteger(r.getSortOrder());
-            } catch (NullPointerException | NumberFormatException ignored) {
-            }
-            boolean hasOrder = order != null;
             boolean hasIssue = (issue != null) && !issue.isEmpty();
-
-            if (hasOrder || hasIssue) {
+            if (hasIssue) {
                 PartDefinition pd = (PartDefinition) select("mods:part[@type='issue']", mods);
                 if (pd == null) {
                     pd = mods.addNewPart();
@@ -210,30 +200,23 @@ public class ReferencesMapping {
                     changeLog.log(MODS);
                 }
 
-                if (hasOrder && !order.equals(pd.getOrder())) {
-                    pd.setOrder(order);
+                // consructing mods:detail/mods:number
+
+                DetailDefinition dd = (DetailDefinition) firstOf(pd.getDetailArray());
+                if (dd == null) {
+                    dd = pd.addNewDetail();
                     changeLog.log(MODS);
                 }
 
-                // consructing mods:detail/mods:number
+                StringPlusLanguage number = (StringPlusLanguage) firstOf(dd.getNumberArray());
+                if (number == null) {
+                    number = dd.addNewNumber();
+                    changeLog.log(MODS);
+                }
 
-                if (hasIssue) {
-                    DetailDefinition dd = (DetailDefinition) firstOf(pd.getDetailArray());
-                    if (dd == null) {
-                        dd = pd.addNewDetail();
-                        changeLog.log(MODS);
-                    }
-
-                    StringPlusLanguage number = (StringPlusLanguage) firstOf(dd.getNumberArray());
-                    if (number == null) {
-                        number = dd.addNewNumber();
-                        changeLog.log(MODS);
-                    }
-
-                    if (!issue.equals(number.getStringValue())) {
-                        number.setStringValue(issue);
-                        changeLog.log(MODS);
-                    }
+                if (!issue.equals(number.getStringValue())) {
+                    number.setStringValue(issue);
+                    changeLog.log(MODS);
                 }
             }
         }
@@ -307,14 +290,33 @@ public class ReferencesMapping {
         }
     }
 
-    private void mapSortOrderToPartOrder(String orderString, PartDefinition pd, ChangeLog changeLog) {
-        try {
-            BigInteger order = new BigInteger(orderString);
-            if (!order.equals(pd.getOrder())) {
-                pd.setOrder(order);
+    private void mapSortingKeyToRelatedItemExtension(String sortingKey, RelatedItemDefinition rid, ChangeLog changeLog) {
+        if (sortingKey != null && !sortingKey.isEmpty()) {
+            ExtensionDefinition extensionDefinition = (ExtensionDefinition) select("mods:extension", rid);
+            if (extensionDefinition == null) {
+                extensionDefinition = rid.addNewExtension();
                 changeLog.log(MODS);
             }
-        } catch (NullPointerException | NumberFormatException ignored) {
+
+            boolean _importInfoDocument = false;
+            InfoDocument infoDocument = InfoDocument.Factory.newInstance();
+
+            InfoType infoType = (InfoType) select("slub:info", extensionDefinition);
+            if (infoType == null) {
+                infoType = infoDocument.addNewInfo();
+                changeLog.log(MODS);
+                _importInfoDocument = true;
+            }
+
+            if (!sortingKey.equals(infoType.getSortingKey())) {
+                infoType.setSortingKey(sortingKey);
+                changeLog.log(MODS);
+            }
+
+            if (_importInfoDocument) {
+                insertNode(infoDocument, extensionDefinition);
+                changeLog.log(MODS);
+            }
         }
     }
 
