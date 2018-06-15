@@ -158,18 +158,16 @@ public class PersonMapping {
                     select(formatXPath("mods:roleTerm[@type='%s'" +
                                     " and @authority='%s'" +
                                     " and @authorityURI='%s'" +
-                                    " and @valueURI='%s'" +
                                     " and text()='%s']",
                             "code", "marcrelator",
                             LOC_GOV_VOCABULARY_RELATORS,
-                            LOC_GOV_VOCABULARY_RELATORS + "/" + marcRoleTerm, marcRoleTerm), rd);
+                            marcRoleTerm), rd);
 
             if (rtd == null) {
                 rtd = rd.addNewRoleTerm();
                 rtd.setType(CODE);
                 rtd.setAuthority("marcrelator");
                 rtd.setAuthorityURI(LOC_GOV_VOCABULARY_RELATORS);
-                rtd.setValueURI(LOC_GOV_VOCABULARY_RELATORS + "/" + marcRoleTerm);
                 rtd.setStringValue(marcRoleTerm);
                 changeLog.log(MODS);
             }

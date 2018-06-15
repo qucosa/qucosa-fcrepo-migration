@@ -205,7 +205,6 @@ public class PersonMappingTest extends MappingTestBase {
                 "/mods:role/mods:roleTerm[" +
                 "@type='code' and @authority='marcrelator'" +
                 " and @authorityURI='http://id.loc.gov/vocabulary/relators'" +
-                " and @valueURI='http://id.loc.gov/vocabulary/relators/aut'" +
                 " and text()='aut']", mods);
     }
 
