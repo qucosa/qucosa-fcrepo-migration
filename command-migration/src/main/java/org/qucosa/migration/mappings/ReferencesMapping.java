@@ -151,7 +151,6 @@ public class ReferencesMapping {
                 noteElement(label, rid, changeLog);
             }
 
-            mapSortingKeyToRelatedItemExtension(r.getSortOrder(), rid, changeLog);
         }
     }
 
