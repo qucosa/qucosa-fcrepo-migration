@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 
 import static gov.loc.mods.v3.NameDefinition.Type.CORPORATE;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.qucosa.migration.mappings.AdministrativeInformationMapping.SLUB_GND_IDENTIFIER;
 
@@ -47,10 +48,20 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
 
         aim.mapCompletedDate(date, mods, changeLog);
 
-        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertTrue("Mapper should signal successful change", changeLog.hasChanges());
         assertXpathExists(
                 "//mods:originInfo[@eventType='distribution']/" +
                         "mods:dateIssued[@encoding='iso8601' and @keyDate='yes' and text()='2013-01-31']", mods);
+    }
+
+    @Test
+    public void Skips_dateIssued_if_completed_date_is_not_set() {
+        noNamespace.Date date = noNamespace.Date.Factory.newInstance();
+
+        aim.mapCompletedDate(date, mods, changeLog);
+
+        assertFalse("Mapper should not signal change", changeLog.hasChanges());
+        assertXpathNotExists("//mods:originInfo[@eventType='distribution']/mods:dateIssued", mods);
     }
 
     @Test

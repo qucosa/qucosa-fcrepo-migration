@@ -54,6 +54,8 @@ public class AdministrativeInformationMapping {
     public void mapCompletedDate(Date completedDate, ModsDefinition mods, ChangeLog changeLog) {
         final String mappedDateEncoding = dateEncoding(completedDate);
 
+        if (mappedDateEncoding == null) return;
+
         OriginInfoDefinition oid = getOriginInfoDistribution(mods, changeLog);
 
         DateDefinition dateIssued = (DateDefinition)
