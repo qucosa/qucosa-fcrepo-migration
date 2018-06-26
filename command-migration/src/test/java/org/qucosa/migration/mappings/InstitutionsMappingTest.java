@@ -357,6 +357,15 @@ public class InstitutionsMappingTest extends MappingTestBase {
         assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Chemnitz']", mods);
     }
 
+    @Test
+    public void Ignores_address_if_place_is_not_given() throws Exception {
+        createOrganisation("Technische Universität Dresden", null, FACULTY, "publisher");
+        institutionsMapping.mapOrgansiations(opus, mods, changeLog);
+        assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
+        assertXpathExists("//mods:name/mods:namePart[text()='Technische Universität Dresden']", mods);
+    }
+
+
     private void setDocumentType(String doctype) {
         opus.setType(doctype);
     }
