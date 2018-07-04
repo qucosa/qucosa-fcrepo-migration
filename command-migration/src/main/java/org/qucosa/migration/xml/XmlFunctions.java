@@ -19,6 +19,7 @@ package org.qucosa.migration.xml;
 
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -21,6 +21,7 @@ import de.slubDresden.InfoDocument;
 import de.slubDresden.InfoType;
 import gov.loc.mods.v3.ModsDefinition;
 import gov.loc.mods.v3.ModsDocument;
+import noNamespace.Date;
 import noNamespace.Document;
 import noNamespace.OpusDocument;
 import org.apache.camel.Exchange;
@@ -79,7 +80,9 @@ public class MappingProcessor implements Processor {
     }
 
     public void process(Document opus, ModsDefinition mods, InfoType info, ChangeLog changeLog) throws Exception {
-        aim.mapCompletedDate(opus.getCompletedDate(), mods, changeLog);
+        Date issued = (opus.getCompletedDate().getDomNode().hasChildNodes()) ? opus.getCompletedDate() : opus.getServerDatePublished();
+        aim.addDateIssued(issued, mods, changeLog);
+
         aim.mapDefaultPublisherInfo(opus, mods, changeLog);
 
         cim.mapPersonSubmitter(opus.getPersonSubmitterArray(), info, changeLog);

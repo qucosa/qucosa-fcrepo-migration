@@ -51,8 +51,8 @@ public class AdministrativeInformationMapping {
 
     static final String SLUB_GND_IDENTIFIER = "4519974-7";
 
-    public void mapCompletedDate(Date completedDate, ModsDefinition mods, ChangeLog changeLog) {
-        final String mappedDateEncoding = dateEncoding(completedDate);
+    public void addDateIssued(Date issued, ModsDefinition mods, ChangeLog changeLog) {
+        final String mappedDateEncoding = dateEncoding(issued);
 
         if (mappedDateEncoding == null) return;
 

@@ -46,7 +46,7 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
         date.setMonth(BigInteger.valueOf(1));
         date.setDay(BigInteger.valueOf(31));
 
-        aim.mapCompletedDate(date, mods, changeLog);
+        aim.addDateIssued(date, mods, changeLog);
 
         assertTrue("Mapper should signal successful change", changeLog.hasChanges());
         assertXpathExists(
@@ -58,7 +58,7 @@ public class AdministrativeInformationMappingTest extends MappingTestBase {
     public void Skips_dateIssued_if_completed_date_is_not_set() {
         noNamespace.Date date = noNamespace.Date.Factory.newInstance();
 
-        aim.mapCompletedDate(date, mods, changeLog);
+        aim.addDateIssued(date, mods, changeLog);
 
         assertFalse("Mapper should not signal change", changeLog.hasChanges());
         assertXpathNotExists("//mods:originInfo[@eventType='distribution']/mods:dateIssued", mods);
