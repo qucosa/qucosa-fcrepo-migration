@@ -253,7 +253,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Landesamt für Umwelt']", mods);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", mods);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='oth']", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='other']", mods);
     }
 
@@ -277,7 +277,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", mods);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", mods);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='oth']", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", mods);
     }
 
@@ -327,7 +327,7 @@ public class InstitutionsMappingTest extends MappingTestBase {
 
         assertTrue("Mapper should signalChange successful change", changeLog.hasChanges());
         assertXpathExists("//mods:name[@type='corporate']/mods:namePart[text()='Technische Universität Dresden']", mods);
-        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='edt']", mods);
+        assertXpathExists("//mods:name[@type='corporate']/mods:role/mods:roleTerm[text()='oth']", mods);
         assertXpathExists("//mods:extension/slub:info/slub:corporation[@type='university']", mods);
     }
 

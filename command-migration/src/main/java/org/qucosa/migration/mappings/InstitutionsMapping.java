@@ -153,7 +153,7 @@ public class InstitutionsMapping {
         }
     }
 
-    private void createOrganizationType(CorporationType ct, String hierarchy, String name, ChangeLog changeLog) throws XPathExpressionException {
+    private void createOrganizationType(CorporationType ct, String hierarchy, String name, ChangeLog changeLog) {
         final String mappedName = mapOrganizationName(singleline(name), institutionNameMap);
         switch (hierarchy) {
             case "institution":
@@ -280,9 +280,13 @@ public class InstitutionsMapping {
                 } else {
                     return "pbl";
                 }
+            } if ("contributor".equals(role)) {
+                return "oth";
             } else {
                 return "edt";
             }
+        } if (orgType == Organisation.Type.OTHER && "contributor".equals(role)) {
+            return "oth";
         } else {
             if ("publisher".equals(role)) {
                 return "pbl";
