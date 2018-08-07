@@ -17,6 +17,8 @@
 
 package org.qucosa.migration.routes;
 
+import noNamespace.Document;
+import noNamespace.OpusDocument;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.configuration.Configuration;
@@ -107,6 +109,14 @@ public class StagingRouteBuilder extends RouteBuilder {
 
                 .to("opus4:documents")
                 .setHeader("Qucosa-File-Url", constant(config.getString("qucosa.file.url")))
+
+                .filter(exchange -> {
+                    // filter out deleted documents
+                    OpusDocument opusDocument = exchange.getIn().getBody(OpusDocument.class);
+                    boolean isDeleted = opusDocument.getOpus().getOpusDocument()
+                            .getServerState().equals(Document.ServerState.DELETED);
+                    return !isDeleted;
+                })
 
                 .bean(DepositMetsGenerator.class)
 
